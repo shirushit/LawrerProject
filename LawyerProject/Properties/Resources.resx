@@ -148,12 +148,6 @@
   <data name="אודות1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\אודות.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="אנימה קיודין" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\אנימה קיודין4.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="אנימה קיודין4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\אנימה קיודין4.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="עין3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\עין.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
