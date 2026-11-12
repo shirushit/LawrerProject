@@ -183,7 +183,7 @@ namespace LawyerProject.GUI
             this.txtTeur.Name = "txtTeur";
             this.txtTeur.Size = new System.Drawing.Size(300, 27);
             this.txtTeur.TabIndex = 11;
-            this.txtTeur.MaxLength = 100;
+            this.txtTeur.MaxLength = 50;
             // 
             // lblAfter
             // 
@@ -312,7 +312,7 @@ namespace LawyerProject.GUI
             this.txtnumchek.Name = "txtnumchek";
             this.txtnumchek.Size = new System.Drawing.Size(200, 27);
             this.txtnumchek.TabIndex = 23;
-            this.txtnumchek.MaxLength = 20;
+            this.txtnumchek.MaxLength = 10;
             this.txtnumchek.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Digits_KeyPress);
             // 
             // lblBank
@@ -350,7 +350,7 @@ namespace LawyerProject.GUI
             this.txtNumSnif.Name = "txtNumSnif";
             this.txtNumSnif.Size = new System.Drawing.Size(80, 27);
             this.txtNumSnif.TabIndex = 27;
-            this.txtNumSnif.MaxLength = 4;
+            this.txtNumSnif.MaxLength = 3;
             this.txtNumSnif.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Digits_KeyPress);
             // 
             // lblAccount

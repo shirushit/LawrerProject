@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class FrmAddTaalichimLetik
     {
@@ -48,6 +48,7 @@
             this.txtSugTaalich.Location = new System.Drawing.Point(127, 311);
             this.txtSugTaalich.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtSugTaalich.Name = "txtSugTaalich";
+            this.txtSugTaalich.MaxLength = 50;
             this.txtSugTaalich.Size = new System.Drawing.Size(132, 27);
             this.txtSugTaalich.TabIndex = 35;
             // 
@@ -93,6 +94,7 @@
             this.txtNameTaalich.Location = new System.Drawing.Point(127, 171);
             this.txtNameTaalich.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtNameTaalich.Name = "txtNameTaalich";
+            this.txtNameTaalich.MaxLength = 50;
             this.txtNameTaalich.Size = new System.Drawing.Size(132, 27);
             this.txtNameTaalich.TabIndex = 30;
             // 

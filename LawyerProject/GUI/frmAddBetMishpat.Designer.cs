@@ -59,6 +59,7 @@ namespace LawyerProject.GUI
             this.txtNameBetMishpat.Location = new System.Drawing.Point(378, 282);
             this.txtNameBetMishpat.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtNameBetMishpat.Name = "txtNameBetMishpat";
+            this.txtNameBetMishpat.MaxLength = 50;
             this.txtNameBetMishpat.Size = new System.Drawing.Size(132, 27);
             this.txtNameBetMishpat.TabIndex = 3;
             this.txtNameBetMishpat.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNameBetMishpat_KeyPress);

@@ -67,6 +67,7 @@ namespace LawyerProject.GUI
             this.txtNameSugTik.Location = new System.Drawing.Point(294, 139);
             this.txtNameSugTik.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtNameSugTik.Name = "txtNameSugTik";
+            this.txtNameSugTik.MaxLength = 50;
             this.txtNameSugTik.Size = new System.Drawing.Size(132, 27);
             this.txtNameSugTik.TabIndex = 8;
             this.txtNameSugTik.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNameSugTik_KeyPress);

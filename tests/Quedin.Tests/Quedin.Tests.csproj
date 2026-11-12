@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Unit tests for the pure business rules of QUEDIN.
+    The rule classes have no UI or database dependencies, so they are linked
+    here directly and the tests run on any OS with `dotnet test`.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>disable</Nullable>
+    <RootNamespace>Quedin.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\LawyerProject\BLL\Validation.cs" Link="Linked\Validation.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\PasswordHasher.cs" Link="Linked\PasswordHasher.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\CaseScheduler.cs" Link="Linked\CaseScheduler.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\FeeCalculator.cs" Link="Linked\FeeCalculator.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\Constants.cs" Link="Linked\Constants.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
+  </ItemGroup>
+
+</Project>

@@ -124,8 +124,8 @@ namespace LawyerProject.GUI
             customer.Adress = txtAdress1.Text.Trim();
             customer.House = txtHouse.Text.Trim();
             customer.Mikud = string.IsNullOrWhiteSpace(txtMikud.Text) ? null : txtMikud.Text.Trim();
-            customer.Telephone = phone;
-            customer.SmartPhone = mobile.Length == 0 ? null : mobile;
+            customer.Telephone = phone.Replace("-", "");
+            customer.SmartPhone = mobile.Length == 0 ? null : mobile.Replace("-", "");
             customer.Mail = txtMail1.Text.Trim();
             customer.DateBirthday = birthDate;
             return true;

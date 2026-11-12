@@ -51,6 +51,11 @@ namespace LawyerProject.GUI
                 errorProvider1.SetError(txtNameTaalich, "יש להזין שם תהליך");
                 return;
             }
+            if (txtSugTaalich.Text.Trim().Length == 0)
+            {
+                errorProvider1.SetError(txtSugTaalich, "יש להזין סוג תהליך (לדוגמה: הגשה, דיון, חתימה)");
+                return;
+            }
             if (db.Taalichim_Letikim.Any(t => t.NameTaalich == name && t.IDTaalich != process.IDTaalich))
             {
                 errorProvider1.SetError(txtNameTaalich, "תהליך בשם זה כבר קיים");
@@ -60,7 +65,7 @@ namespace LawyerProject.GUI
             try
             {
                 process.NameTaalich = name;
-                process.SugTaalich = txtSugTaalich.Text.Trim().Length == 0 ? null : txtSugTaalich.Text.Trim();
+                process.SugTaalich = txtSugTaalich.Text.Trim();
                 process.MeshechZmanLetaalich = ((int)numericUpDown1.Value).ToString();
                 if (isNew) db.Taalichim_Letikim.Add(process);
                 db.SaveChanges();
