@@ -52,7 +52,8 @@ kept as the first commit of this repository so every change can be compared.
 - Courts offered for a case are filtered by the case type they handle.
 - Quick "add new" buttons for client, opposing party and opposing lawyer while opening a case.
 - `database/create-database.sql`: schema generated from the EDMX, constraints, indexes and demo data.
-- 57 unit tests and a GitHub Actions build.
+- 57 unit tests, 9 integration tests against the real database (rolled back after each test),
+  and a GitHub Actions pipeline that builds the app and runs the database script on SQL Server 2022.
 - Configurable VAT rate (18%) and "due soon" window in `App.config`.
 
 ## v1.0 — Final project (2024)

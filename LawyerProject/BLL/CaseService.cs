@@ -60,7 +60,7 @@ namespace LawyerProject.BLL
         public string CompleteStep(Tikim_Letipul_Orech_Din tik, int stepId, DateTime doneOn)
         {
             List<Tahalich_Tipul_Betik> entities = tik.Tahalich_Tipul_Betik.ToList();
-            Dictionary<int, ScheduledStep> map = entities.ToDictionary(e => e.IDTahalichTipulLetik, ToScheduled);
+            Dictionary<int, ScheduledStep> map = entities.ToDictionary(e => e.IDTahalichTipulLetik, e => ToScheduled(e));
 
             ScheduledStep target;
             if (!map.TryGetValue(stepId, out target)) return "התהליך שנבחר אינו שייך לתיק.";
@@ -120,13 +120,15 @@ namespace LawyerProject.BLL
             return int.TryParse(value, out days) && days > 0 ? days : 0;
         }
 
-        private static ScheduledStep ToScheduled(Tahalich_Tipul_Betik e)
+        private ScheduledStep ToScheduled(Tahalich_Tipul_Betik e)
         {
+            // The navigation property is null on a step created in this context before a reload.
+            Taalichim_Letikim process = e.Taalichim_Letikim ?? db.Taalichim_Letikim.Find(e.IDTahalich);
             return new ScheduledStep
             {
                 Id = e.IDTahalichTipulLetik,
                 ProcessId = e.IDTahalich,
-                DurationDays = e.Taalichim_Letikim != null ? ParseDays(e.Taalichim_Letikim.MeshechZmanLetaalich) : 0,
+                DurationDays = process != null ? ParseDays(process.MeshechZmanLetaalich) : 0,
                 EstimatedDate = e.TaharichMeshoar ?? DateTime.MaxValue.Date,
                 DoneDate = e.TaharichBizhua,
                 IsDone = e.Buzha == true

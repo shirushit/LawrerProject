@@ -8,7 +8,7 @@
 ![WinForms](https://img.shields.io/badge/UI-WinForms%20(RTL%20Hebrew)-blue)
 ![EF6](https://img.shields.io/badge/ORM-Entity%20Framework%206-6DB33F)
 ![SQL Server](https://img.shields.io/badge/DB-SQL%20Server%20LocalDB-CC2927)
-![tests](https://img.shields.io/badge/unit%20tests-57-brightgreen)
+![tests](https://img.shields.io/badge/tests-57%20unit%20%2B%209%20integration-brightgreen)
 
 **English** · [עברית](#עברית)
 
@@ -141,13 +141,14 @@ so some steps show as late and some as due soon right away.
 
 ## 🧪 Tests
 
-```powershell
-dotnet test tests/Quedin.Tests
-```
+| Suite | What it covers | Runs |
+|---|---|---|
+| [`Quedin.Tests`](tests/Quedin.Tests) — 57 unit tests | Timeline engine, fee/VAT math, password hashing, validation (Israeli ID check digit, phones, e-mail, dates) | anywhere: `dotnet test tests/Quedin.Tests` |
+| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 9 tests | The real data layer against QuedinDB: login and legacy-password upgrade, user management, opening a case, completing a step, balances | Windows + LocalDB, after running the database script. Each test is rolled back. |
+| CI `database` job | Runs `create-database.sql` twice on SQL Server 2022 and verifies the demo data | every push |
 
-57 tests cover the timeline engine, fee/VAT calculations, password hashing and input validation
-(Israeli ID check digit, phone numbers, e-mail, dates). CI builds the app and runs the tests on
-every push.
+In Visual Studio: **Test → Run All Tests**. Without the database, the integration tests are
+reported as *inconclusive* instead of failing.
 
 ## 📁 Project structure
 
@@ -158,7 +159,7 @@ LawyerProject/
 ├── GUI/          WinForms screens (Hebrew, right-to-left)
 └── App.config    connection string, VAT rate, "due soon" window
 database/         create-database.sql: schema + demo data
-tests/            MSTest unit tests (.NET 8)
+tests/            unit tests (.NET 8) and integration tests (.NET Framework + LocalDB)
 docs/             diagrams from the original project book
 ```
 

@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-test:
+    name: Build app + unit tests (Windows)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +29,18 @@ jobs:
       - name: Unit tests
         run: dotnet test tests/Quedin.Tests/Quedin.Tests.csproj -c Release --no-build --logger "console;verbosity=normal"
 
+      - name: Integration tests (only when LocalDB is installed on the runner)
+        shell: pwsh
+        run: |
+          if (-not (Get-Command sqllocaldb -ErrorAction SilentlyContinue) -or -not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
+            Write-Host "LocalDB or sqlcmd is not available on this runner - skipping integration tests."
+            exit 0
+          }
+          sqllocaldb start MSSQLLocalDB
+          sqlcmd -S "(localdb)\MSSQLLocalDB" -b -i database\create-database.sql
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test tests/Quedin.IntegrationTests/Quedin.IntegrationTests.csproj -c Release --no-build --logger "console;verbosity=normal"
+
       - name: Upload app
         uses: actions/upload-artifact@v4
         with:
@@ -37,3 +50,54 @@ jobs:
             LawyerProject/bin/Release/*.dll
             LawyerProject/bin/Release/*.config
             database/create-database.sql
+
+  database:
+    name: Database script on SQL Server 2022
+    runs-on: ubuntu-latest
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Ci-Passw0rd!"
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for SQL Server
+        run: |
+          CID=$(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest")
+          echo "CID=$CID" >> "$GITHUB_ENV"
+          for i in $(seq 1 60); do
+            if docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Ci-Passw0rd!' -Q "SELECT 1" >/dev/null 2>&1; then
+              echo "SQL Server is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "SQL Server did not start"; exit 1
+
+      - name: Run create-database.sql (twice, to prove it can be re-run)
+        run: |
+          docker cp database/create-database.sql "$CID":/tmp/create-database.sql
+          for run in 1 2; do
+            docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost -U sa -P 'Ci-Passw0rd!' -i /tmp/create-database.sql
+          done
+
+      - name: Verify demo data
+        run: |
+          docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
+            SET NOCOUNT ON;
+            IF (SELECT COUNT(*) FROM Users) <> 2 THROW 50001, 'Users', 1;
+            IF (SELECT COUNT(*) FROM Customers) <> 11 THROW 50002, 'Customers', 1;
+            IF (SELECT COUNT(*) FROM Tikim_Letipul_Orech_Din) <> 5 THROW 50003, 'Cases', 1;
+            IF (SELECT COUNT(*) FROM Tahalich_Tipul_Betik) <> 37 THROW 50004, 'Steps', 1;
+            IF (SELECT COUNT(*) FROM Tashlumim_Letik) <> 4 THROW 50005, 'Payments', 1;
+            IF EXISTS (SELECT 1 FROM Users WHERE PasswordWorker NOT LIKE 'pbkdf2$%') THROW 50006, 'Plain-text password', 1;
+            IF EXISTS (
+              SELECT 1 FROM Tikim_Letipul_Orech_Din t
+              CROSS APPLY (SELECT TOP 1 s.IDTahalich FROM Tahalich_Tipul_Betik s
+                           WHERE s.IDTik = t.IDTik AND s.Buzha = 0
+                           ORDER BY s.TaharichMeshoar, s.IDTahalichTipulLetik) nextStep
+              WHERE nextStep.IDTahalich <> t.StatusTik) THROW 50007, 'Case status does not match next step', 1;
+            PRINT 'Demo data verified.';"
