@@ -1,0 +1,39 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - uses: NuGet/setup-nuget@v2
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore packages
+        run: nuget restore LawyerProject.sln
+
+      - name: Build (WinForms app + tests)
+        run: msbuild LawyerProject.sln /p:Configuration=Release /m /v:minimal
+
+      - name: Unit tests
+        run: dotnet test tests/Quedin.Tests/Quedin.Tests.csproj -c Release --no-build --logger "console;verbosity=normal"
+
+      - name: Upload app
+        uses: actions/upload-artifact@v4
+        with:
+          name: QUEDIN-Release
+          path: |
+            LawyerProject/bin/Release/*.exe
+            LawyerProject/bin/Release/*.dll
+            LawyerProject/bin/Release/*.config
+            database/create-database.sql
