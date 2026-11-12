@@ -1,0 +1,827 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LawyerDBModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Bet_Mishpat">
+          <Key>
+            <PropertyRef Name="IDBetMishpat" />
+          </Key>
+          <Property Name="IDBetMishpat" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameBetMishpat" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customers">
+          <Key>
+            <PropertyRef Name="IDcustemer" />
+          </Key>
+          <Property Name="IDcustemer" Type="nvarchar" MaxLength="9" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Adress" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="House" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="Mikud" Type="nvarchar" MaxLength="50" />
+          <Property Name="Telephone" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="SmartPhone" Type="nvarchar" MaxLength="10" />
+          <Property Name="Mail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateBirthday" Type="date" />
+          <Property Name="CopyID" Type="nvarchar" MaxLength="50" />
+          <Property Name="SugPerson" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subjekt_Tik">
+          <Key>
+            <PropertyRef Name="IDSugTik" />
+          </Key>
+          <Property Name="IDSugTik" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameSugTik" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ScharTircha" Type="money" />
+          <Property Name="Agra" Type="money" />
+        </EntityType>
+        <EntityType Name="Subjekts_Shebet_Mishpat_Metapel">
+          <Key>
+            <PropertyRef Name="IDTable" />
+          </Key>
+          <Property Name="IDTable" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IDBetMishpat" Type="int" Nullable="false" />
+          <Property Name="IDSubjekt" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Taalichim_Kvuim_Batik">
+          <Key>
+            <PropertyRef Name="IDTaalichKavua" />
+          </Key>
+          <Property Name="IDTaalichKavua" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IDSubjektTik" Type="int" Nullable="false" />
+          <Property Name="IDTaalich" Type="int" Nullable="false" />
+          <Property Name="NumLevel" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Taalichim_Letikim">
+          <Key>
+            <PropertyRef Name="IDTaalich" />
+          </Key>
+          <Property Name="IDTaalich" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameTaalich" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MeshechZmanLetaalich" Type="nvarchar" MaxLength="50" />
+          <Property Name="SugTaalich" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tahalich_Tipul_Betik">
+          <Key>
+            <PropertyRef Name="IDTahalichTipulLetik" />
+          </Key>
+          <Property Name="IDTahalichTipulLetik" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IDTik" Type="int" Nullable="false" />
+          <Property Name="IDTahalich" Type="int" Nullable="false" />
+          <Property Name="TaharichMeshoar" Type="date" />
+          <Property Name="TaharichBizhua" Type="date" />
+          <Property Name="Buzha" Type="bit" />
+        </EntityType>
+        <EntityType Name="Tashlumim_Letik">
+          <Key>
+            <PropertyRef Name="IDTashlum" />
+          </Key>
+          <Property Name="IDTashlum" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IDTik" Type="int" Nullable="false" />
+          <Property Name="Itra" Type="money" Nullable="false" />
+          <Property Name="EmzhaeyTashlum" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="NumCartis" Type="nchar" MaxLength="16" />
+          <Property Name="Tokef" Type="nchar" MaxLength="7" />
+          <Property Name="ThreeNums" Type="nchar" MaxLength="3" />
+          <Property Name="NumTeudatZeut" Type="nchar" MaxLength="9" />
+          <Property Name="NumChek" Type="nchar" MaxLength="10" />
+          <Property Name="NumBank" Type="nchar" MaxLength="3" />
+          <Property Name="NumSnif" Type="nchar" MaxLength="3" />
+          <Property Name="NumCheshbon" Type="nvarchar" MaxLength="50" />
+          <Property Name="Schum" Type="money" Nullable="false" />
+          <Property Name="TaarichTashlum" Type="date" Nullable="false" />
+          <Property Name="Teur" Type="nvarchar" MaxLength="50" />
+          <Property Name="NumAsmachta" Type="nvarchar" MaxLength="50" />
+          <Property Name="TaarichLachek" Type="date" />
+        </EntityType>
+        <EntityType Name="Tikim_Letipul_Orech_Din">
+          <Key>
+            <PropertyRef Name="IDTik" />
+          </Key>
+          <Property Name="IDTik" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IDCostemer" Type="nvarchar" MaxLength="9" Nullable="false" />
+          <Property Name="IDSubjektTik" Type="int" Nullable="false" />
+          <Property Name="IsTheTikMenualInBETMishpat" Type="bit" />
+          <Property Name="IDBetMishpat" Type="int" />
+          <Property Name="StatusTik" Type="int" Nullable="false" />
+          <Property Name="IpuiKohach" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Shulam" Type="bit" Nullable="false" />
+          <Property Name="Mikdama" Type="money" Nullable="false" />
+          <Property Name="ShulamMikdama" Type="bit" />
+          <Property Name="Gush" Type="nvarchar" MaxLength="50" />
+          <Property Name="Chelka" Type="nvarchar" MaxLength="50" />
+          <Property Name="TatChelka" Type="nvarchar" MaxLength="50" />
+          <Property Name="AdressNeches" Type="nvarchar" MaxLength="50" />
+          <Property Name="SchumLetvia" Type="money" />
+          <Property Name="SchumShenitba" Type="money" />
+          <Property Name="AchuzRevachim" Type="float" />
+          <Property Name="KodOrechDinNegdi" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="KodLakoachNegdi" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Code" />
+          </Key>
+          <Property Name="Code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordWorker" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="KindWorker" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
+          <End Role="Bet_Mishpat" Type="Self.Bet_Mishpat" Multiplicity="1" />
+          <End Role="Subjekts_Shebet_Mishpat_Metapel" Type="Self.Subjekts_Shebet_Mishpat_Metapel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bet_Mishpat">
+              <PropertyRef Name="IDBetMishpat" />
+            </Principal>
+            <Dependent Role="Subjekts_Shebet_Mishpat_Metapel">
+              <PropertyRef Name="IDBetMishpat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Subjekts_Shebet_Mishpat_Metapel" Type="Self.Subjekts_Shebet_Mishpat_Metapel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Subjekts_Shebet_Mishpat_Metapel">
+              <PropertyRef Name="IDSubjekt" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Taalichim_Kvuim_Batik_ToTable">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Taalichim_Kvuim_Batik" Type="Self.Taalichim_Kvuim_Batik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Taalichim_Kvuim_Batik">
+              <PropertyRef Name="IDSubjektTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Taalichim_Kvuim_Batik_ToTable_1">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Taalichim_Kvuim_Batik" Type="Self.Taalichim_Kvuim_Batik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Taalichim_Kvuim_Batik">
+              <PropertyRef Name="IDTaalich" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tahalich_Tipul_Betik_ToTable">
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="1" />
+          <End Role="Tahalich_Tipul_Betik" Type="Self.Tahalich_Tipul_Betik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDTik" />
+            </Principal>
+            <Dependent Role="Tahalich_Tipul_Betik">
+              <PropertyRef Name="IDTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tahalich_Tipul_Betik_ToTable_1">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Tahalich_Tipul_Betik" Type="Self.Tahalich_Tipul_Betik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Tahalich_Tipul_Betik">
+              <PropertyRef Name="IDTahalich" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tashlumim_Letik_ToTable">
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="1" />
+          <End Role="Tashlumim_Letik" Type="Self.Tashlumim_Letik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDTik" />
+            </Principal>
+            <Dependent Role="Tashlumim_Letik">
+              <PropertyRef Name="IDTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_1">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDSubjektTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_2">
+          <End Role="Bet_Mishpat" Type="Self.Bet_Mishpat" Multiplicity="0..1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bet_Mishpat">
+              <PropertyRef Name="IDBetMishpat" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDBetMishpat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_3">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="StatusTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable3">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="IDcustemer" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDCostemer" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LawyerDBModel1StoreContainer">
+          <EntitySet Name="Bet_Mishpat" EntityType="Self.Bet_Mishpat" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subjekt_Tik" EntityType="Self.Subjekt_Tik" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subjekts_Shebet_Mishpat_Metapel" EntityType="Self.Subjekts_Shebet_Mishpat_Metapel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Taalichim_Kvuim_Batik" EntityType="Self.Taalichim_Kvuim_Batik" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Taalichim_Letikim" EntityType="Self.Taalichim_Letikim" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tahalich_Tipul_Betik" EntityType="Self.Tahalich_Tipul_Betik" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tashlumim_Letik" EntityType="Self.Tashlumim_Letik" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tikim_Letipul_Orech_Din" EntityType="Self.Tikim_Letipul_Orech_Din" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
+            <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
+            <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Taalichim_Kvuim_Batik_ToTable" Association="Self.FK_Taalichim_Kvuim_Batik_ToTable">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Taalichim_Kvuim_Batik" EntitySet="Taalichim_Kvuim_Batik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Taalichim_Kvuim_Batik_ToTable_1" Association="Self.FK_Taalichim_Kvuim_Batik_ToTable_1">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Taalichim_Kvuim_Batik" EntitySet="Taalichim_Kvuim_Batik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tahalich_Tipul_Betik_ToTable" Association="Self.FK_Tahalich_Tipul_Betik_ToTable">
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+            <End Role="Tahalich_Tipul_Betik" EntitySet="Tahalich_Tipul_Betik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tahalich_Tipul_Betik_ToTable_1" Association="Self.FK_Tahalich_Tipul_Betik_ToTable_1">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Tahalich_Tipul_Betik" EntitySet="Tahalich_Tipul_Betik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tashlumim_Letik_ToTable" Association="Self.FK_Tashlumim_Letik_ToTable">
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+            <End Role="Tashlumim_Letik" EntitySet="Tashlumim_Letik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_1" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_1">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_2" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_2">
+            <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_3" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_3">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable3" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable3">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LawyerDBModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Bet_Mishpat">
+          <Key>
+            <PropertyRef Name="IDBetMishpat" />
+          </Key>
+          <Property Name="IDBetMishpat" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameBetMishpat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Subjekts_Shebet_Mishpat_Metapel" Relationship="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" FromRole="Bet_Mishpat" ToRole="Subjekts_Shebet_Mishpat_Metapel" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_2" FromRole="Bet_Mishpat" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Customers">
+          <Key>
+            <PropertyRef Name="IDcustemer" />
+          </Key>
+          <Property Name="IDcustemer" Type="String" MaxLength="9" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Adress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="House" Type="String" MaxLength="5" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Mikud" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Telephone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SmartPhone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Mail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateBirthday" Type="DateTime" Precision="0" />
+          <Property Name="CopyID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SugPerson" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable3" FromRole="Customers" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Subjekt_Tik">
+          <Key>
+            <PropertyRef Name="IDSugTik" />
+          </Key>
+          <Property Name="IDSugTik" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameSugTik" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ScharTircha" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Agra" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="Subjekts_Shebet_Mishpat_Metapel" Relationship="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1" FromRole="Subjekt_Tik" ToRole="Subjekts_Shebet_Mishpat_Metapel" />
+          <NavigationProperty Name="Taalichim_Kvuim_Batik" Relationship="Self.FK_Taalichim_Kvuim_Batik_ToTable" FromRole="Subjekt_Tik" ToRole="Taalichim_Kvuim_Batik" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_1" FromRole="Subjekt_Tik" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Subjekts_Shebet_Mishpat_Metapel">
+          <Key>
+            <PropertyRef Name="IDTable" />
+          </Key>
+          <Property Name="IDTable" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDBetMishpat" Type="Int32" Nullable="false" />
+          <Property Name="IDSubjekt" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Bet_Mishpat" Relationship="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" FromRole="Subjekts_Shebet_Mishpat_Metapel" ToRole="Bet_Mishpat" />
+          <NavigationProperty Name="Subjekt_Tik" Relationship="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1" FromRole="Subjekts_Shebet_Mishpat_Metapel" ToRole="Subjekt_Tik" />
+        </EntityType>
+        <EntityType Name="Taalichim_Kvuim_Batik">
+          <Key>
+            <PropertyRef Name="IDTaalichKavua" />
+          </Key>
+          <Property Name="IDTaalichKavua" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDSubjektTik" Type="Int32" Nullable="false" />
+          <Property Name="IDTaalich" Type="Int32" Nullable="false" />
+          <Property Name="NumLevel" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Subjekt_Tik" Relationship="Self.FK_Taalichim_Kvuim_Batik_ToTable" FromRole="Taalichim_Kvuim_Batik" ToRole="Subjekt_Tik" />
+          <NavigationProperty Name="Taalichim_Letikim" Relationship="Self.FK_Taalichim_Kvuim_Batik_ToTable_1" FromRole="Taalichim_Kvuim_Batik" ToRole="Taalichim_Letikim" />
+        </EntityType>
+        <EntityType Name="Taalichim_Letikim">
+          <Key>
+            <PropertyRef Name="IDTaalich" />
+          </Key>
+          <Property Name="IDTaalich" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameTaalich" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MeshechZmanLetaalich" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SugTaalich" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Taalichim_Kvuim_Batik" Relationship="Self.FK_Taalichim_Kvuim_Batik_ToTable_1" FromRole="Taalichim_Letikim" ToRole="Taalichim_Kvuim_Batik" />
+          <NavigationProperty Name="Tahalich_Tipul_Betik" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable_1" FromRole="Taalichim_Letikim" ToRole="Tahalich_Tipul_Betik" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_3" FromRole="Taalichim_Letikim" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Tahalich_Tipul_Betik">
+          <Key>
+            <PropertyRef Name="IDTahalichTipulLetik" />
+          </Key>
+          <Property Name="IDTahalichTipulLetik" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDTik" Type="Int32" Nullable="false" />
+          <Property Name="IDTahalich" Type="Int32" Nullable="false" />
+          <Property Name="TaharichMeshoar" Type="DateTime" Precision="0" />
+          <Property Name="TaharichBizhua" Type="DateTime" Precision="0" />
+          <Property Name="Buzha" Type="Boolean" />
+          <NavigationProperty Name="Taalichim_Letikim" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable_1" FromRole="Tahalich_Tipul_Betik" ToRole="Taalichim_Letikim" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable" FromRole="Tahalich_Tipul_Betik" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Tashlumim_Letik">
+          <Key>
+            <PropertyRef Name="IDTashlum" />
+          </Key>
+          <Property Name="IDTashlum" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDTik" Type="Int32" Nullable="false" />
+          <Property Name="Itra" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="EmzhaeyTashlum" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NumCartis" Type="String" MaxLength="16" FixedLength="true" Unicode="true" />
+          <Property Name="Tokef" Type="String" MaxLength="7" FixedLength="true" Unicode="true" />
+          <Property Name="ThreeNums" Type="String" MaxLength="3" FixedLength="true" Unicode="true" />
+          <Property Name="NumTeudatZeut" Type="String" MaxLength="9" FixedLength="true" Unicode="true" />
+          <Property Name="NumChek" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="NumBank" Type="String" MaxLength="3" FixedLength="true" Unicode="true" />
+          <Property Name="NumSnif" Type="String" MaxLength="3" FixedLength="true" Unicode="true" />
+          <Property Name="NumCheshbon" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Schum" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="TaarichTashlum" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Teur" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NumAsmachta" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TaarichLachek" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tashlumim_Letik_ToTable" FromRole="Tashlumim_Letik" ToRole="Tikim_Letipul_Orech_Din" />
+        </EntityType>
+        <EntityType Name="Tikim_Letipul_Orech_Din">
+          <Key>
+            <PropertyRef Name="IDTik" />
+          </Key>
+          <Property Name="IDTik" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IDCostemer" Type="String" MaxLength="9" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IDSubjektTik" Type="Int32" Nullable="false" />
+          <Property Name="IsTheTikMenualInBETMishpat" Type="Boolean" />
+          <Property Name="IDBetMishpat" Type="Int32" />
+          <Property Name="StatusTik" Type="Int32" Nullable="false" />
+          <Property Name="IpuiKohach" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Shulam" Type="Boolean" Nullable="false" />
+          <Property Name="Mikdama" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="ShulamMikdama" Type="Boolean" />
+          <Property Name="Gush" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Chelka" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TatChelka" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AdressNeches" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SchumLetvia" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SchumShenitba" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="AchuzRevachim" Type="Double" />
+          <Property Name="KodOrechDinNegdi" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="KodLakoachNegdi" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Bet_Mishpat" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_2" FromRole="Tikim_Letipul_Orech_Din" ToRole="Bet_Mishpat" />
+          <NavigationProperty Name="Customers" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable3" FromRole="Tikim_Letipul_Orech_Din" ToRole="Customers" />
+          <NavigationProperty Name="Subjekt_Tik" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_1" FromRole="Tikim_Letipul_Orech_Din" ToRole="Subjekt_Tik" />
+          <NavigationProperty Name="Taalichim_Letikim" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_3" FromRole="Tikim_Letipul_Orech_Din" ToRole="Taalichim_Letikim" />
+          <NavigationProperty Name="Tahalich_Tipul_Betik" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable" FromRole="Tikim_Letipul_Orech_Din" ToRole="Tahalich_Tipul_Betik" />
+          <NavigationProperty Name="Tashlumim_Letik" Relationship="Self.FK_Tashlumim_Letik_ToTable" FromRole="Tikim_Letipul_Orech_Din" ToRole="Tashlumim_Letik" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Code" />
+          </Key>
+          <Property Name="Code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordWorker" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="KindWorker" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
+          <End Role="Bet_Mishpat" Type="Self.Bet_Mishpat" Multiplicity="1" />
+          <End Role="Subjekts_Shebet_Mishpat_Metapel" Type="Self.Subjekts_Shebet_Mishpat_Metapel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bet_Mishpat">
+              <PropertyRef Name="IDBetMishpat" />
+            </Principal>
+            <Dependent Role="Subjekts_Shebet_Mishpat_Metapel">
+              <PropertyRef Name="IDBetMishpat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_2">
+          <End Role="Bet_Mishpat" Type="Self.Bet_Mishpat" Multiplicity="0..1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bet_Mishpat">
+              <PropertyRef Name="IDBetMishpat" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDBetMishpat" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable3">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="IDcustemer" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDCostemer" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Subjekts_Shebet_Mishpat_Metapel" Type="Self.Subjekts_Shebet_Mishpat_Metapel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Subjekts_Shebet_Mishpat_Metapel">
+              <PropertyRef Name="IDSubjekt" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Taalichim_Kvuim_Batik_ToTable">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Taalichim_Kvuim_Batik" Type="Self.Taalichim_Kvuim_Batik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Taalichim_Kvuim_Batik">
+              <PropertyRef Name="IDSubjektTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_1">
+          <End Role="Subjekt_Tik" Type="Self.Subjekt_Tik" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subjekt_Tik">
+              <PropertyRef Name="IDSugTik" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDSubjektTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Taalichim_Kvuim_Batik_ToTable_1">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Taalichim_Kvuim_Batik" Type="Self.Taalichim_Kvuim_Batik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Taalichim_Kvuim_Batik">
+              <PropertyRef Name="IDTaalich" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tahalich_Tipul_Betik_ToTable_1">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Tahalich_Tipul_Betik" Type="Self.Tahalich_Tipul_Betik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Tahalich_Tipul_Betik">
+              <PropertyRef Name="IDTahalich" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tikim_Letipul_Orech_Din_ToTable_3">
+          <End Role="Taalichim_Letikim" Type="Self.Taalichim_Letikim" Multiplicity="1" />
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Taalichim_Letikim">
+              <PropertyRef Name="IDTaalich" />
+            </Principal>
+            <Dependent Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="StatusTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tahalich_Tipul_Betik_ToTable">
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="1" />
+          <End Role="Tahalich_Tipul_Betik" Type="Self.Tahalich_Tipul_Betik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDTik" />
+            </Principal>
+            <Dependent Role="Tahalich_Tipul_Betik">
+              <PropertyRef Name="IDTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tashlumim_Letik_ToTable">
+          <End Role="Tikim_Letipul_Orech_Din" Type="Self.Tikim_Letipul_Orech_Din" Multiplicity="1" />
+          <End Role="Tashlumim_Letik" Type="Self.Tashlumim_Letik" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tikim_Letipul_Orech_Din">
+              <PropertyRef Name="IDTik" />
+            </Principal>
+            <Dependent Role="Tashlumim_Letik">
+              <PropertyRef Name="IDTik" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LawyerDBEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Bet_Mishpat" EntityType="Self.Bet_Mishpat" />
+          <EntitySet Name="Customers" EntityType="Self.Customers" />
+          <EntitySet Name="Subjekt_Tik" EntityType="Self.Subjekt_Tik" />
+          <EntitySet Name="Subjekts_Shebet_Mishpat_Metapel" EntityType="Self.Subjekts_Shebet_Mishpat_Metapel" />
+          <EntitySet Name="Taalichim_Kvuim_Batik" EntityType="Self.Taalichim_Kvuim_Batik" />
+          <EntitySet Name="Taalichim_Letikim" EntityType="Self.Taalichim_Letikim" />
+          <EntitySet Name="Tahalich_Tipul_Betik" EntityType="Self.Tahalich_Tipul_Betik" />
+          <EntitySet Name="Tashlumim_Letik" EntityType="Self.Tashlumim_Letik" />
+          <EntitySet Name="Tikim_Letipul_Orech_Din" EntityType="Self.Tikim_Letipul_Orech_Din" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
+            <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
+            <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_2" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_2">
+            <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable3" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable3">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable_1">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Taalichim_Kvuim_Batik_ToTable" Association="Self.FK_Taalichim_Kvuim_Batik_ToTable">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Taalichim_Kvuim_Batik" EntitySet="Taalichim_Kvuim_Batik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_1" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_1">
+            <End Role="Subjekt_Tik" EntitySet="Subjekt_Tik" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Taalichim_Kvuim_Batik_ToTable_1" Association="Self.FK_Taalichim_Kvuim_Batik_ToTable_1">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Taalichim_Kvuim_Batik" EntitySet="Taalichim_Kvuim_Batik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tahalich_Tipul_Betik_ToTable_1" Association="Self.FK_Tahalich_Tipul_Betik_ToTable_1">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Tahalich_Tipul_Betik" EntitySet="Tahalich_Tipul_Betik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tikim_Letipul_Orech_Din_ToTable_3" Association="Self.FK_Tikim_Letipul_Orech_Din_ToTable_3">
+            <End Role="Taalichim_Letikim" EntitySet="Taalichim_Letikim" />
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tahalich_Tipul_Betik_ToTable" Association="Self.FK_Tahalich_Tipul_Betik_ToTable">
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+            <End Role="Tahalich_Tipul_Betik" EntitySet="Tahalich_Tipul_Betik" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tashlumim_Letik_ToTable" Association="Self.FK_Tashlumim_Letik_ToTable">
+            <End Role="Tikim_Letipul_Orech_Din" EntitySet="Tikim_Letipul_Orech_Din" />
+            <End Role="Tashlumim_Letik" EntitySet="Tashlumim_Letik" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LawyerDBModel1StoreContainer" CdmEntityContainer="LawyerDBEntities1">
+          <EntitySetMapping Name="Bet_Mishpat">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Bet_Mishpat">
+              <MappingFragment StoreEntitySet="Bet_Mishpat">
+                <ScalarProperty Name="IDBetMishpat" ColumnName="IDBetMishpat" />
+                <ScalarProperty Name="NameBetMishpat" ColumnName="NameBetMishpat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Customers">
+              <MappingFragment StoreEntitySet="Customers">
+                <ScalarProperty Name="IDcustemer" ColumnName="IDcustemer" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Adress" ColumnName="Adress" />
+                <ScalarProperty Name="House" ColumnName="House" />
+                <ScalarProperty Name="Mikud" ColumnName="Mikud" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="SmartPhone" ColumnName="SmartPhone" />
+                <ScalarProperty Name="Mail" ColumnName="Mail" />
+                <ScalarProperty Name="DateBirthday" ColumnName="DateBirthday" />
+                <ScalarProperty Name="CopyID" ColumnName="CopyID" />
+                <ScalarProperty Name="SugPerson" ColumnName="SugPerson" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subjekt_Tik">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Subjekt_Tik">
+              <MappingFragment StoreEntitySet="Subjekt_Tik">
+                <ScalarProperty Name="IDSugTik" ColumnName="IDSugTik" />
+                <ScalarProperty Name="NameSugTik" ColumnName="NameSugTik" />
+                <ScalarProperty Name="ScharTircha" ColumnName="ScharTircha" />
+                <ScalarProperty Name="Agra" ColumnName="Agra" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subjekts_Shebet_Mishpat_Metapel">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Subjekts_Shebet_Mishpat_Metapel">
+              <MappingFragment StoreEntitySet="Subjekts_Shebet_Mishpat_Metapel">
+                <ScalarProperty Name="IDTable" ColumnName="IDTable" />
+                <ScalarProperty Name="IDBetMishpat" ColumnName="IDBetMishpat" />
+                <ScalarProperty Name="IDSubjekt" ColumnName="IDSubjekt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Taalichim_Kvuim_Batik">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Taalichim_Kvuim_Batik">
+              <MappingFragment StoreEntitySet="Taalichim_Kvuim_Batik">
+                <ScalarProperty Name="IDTaalichKavua" ColumnName="IDTaalichKavua" />
+                <ScalarProperty Name="IDSubjektTik" ColumnName="IDSubjektTik" />
+                <ScalarProperty Name="IDTaalich" ColumnName="IDTaalich" />
+                <ScalarProperty Name="NumLevel" ColumnName="NumLevel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Taalichim_Letikim">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Taalichim_Letikim">
+              <MappingFragment StoreEntitySet="Taalichim_Letikim">
+                <ScalarProperty Name="IDTaalich" ColumnName="IDTaalich" />
+                <ScalarProperty Name="NameTaalich" ColumnName="NameTaalich" />
+                <ScalarProperty Name="MeshechZmanLetaalich" ColumnName="MeshechZmanLetaalich" />
+                <ScalarProperty Name="SugTaalich" ColumnName="SugTaalich" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tahalich_Tipul_Betik">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Tahalich_Tipul_Betik">
+              <MappingFragment StoreEntitySet="Tahalich_Tipul_Betik">
+                <ScalarProperty Name="IDTahalichTipulLetik" ColumnName="IDTahalichTipulLetik" />
+                <ScalarProperty Name="IDTik" ColumnName="IDTik" />
+                <ScalarProperty Name="IDTahalich" ColumnName="IDTahalich" />
+                <ScalarProperty Name="TaharichMeshoar" ColumnName="TaharichMeshoar" />
+                <ScalarProperty Name="TaharichBizhua" ColumnName="TaharichBizhua" />
+                <ScalarProperty Name="Buzha" ColumnName="Buzha" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tashlumim_Letik">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Tashlumim_Letik">
+              <MappingFragment StoreEntitySet="Tashlumim_Letik">
+                <ScalarProperty Name="IDTashlum" ColumnName="IDTashlum" />
+                <ScalarProperty Name="IDTik" ColumnName="IDTik" />
+                <ScalarProperty Name="Itra" ColumnName="Itra" />
+                <ScalarProperty Name="EmzhaeyTashlum" ColumnName="EmzhaeyTashlum" />
+                <ScalarProperty Name="NumCartis" ColumnName="NumCartis" />
+                <ScalarProperty Name="Tokef" ColumnName="Tokef" />
+                <ScalarProperty Name="ThreeNums" ColumnName="ThreeNums" />
+                <ScalarProperty Name="NumTeudatZeut" ColumnName="NumTeudatZeut" />
+                <ScalarProperty Name="NumChek" ColumnName="NumChek" />
+                <ScalarProperty Name="NumBank" ColumnName="NumBank" />
+                <ScalarProperty Name="NumSnif" ColumnName="NumSnif" />
+                <ScalarProperty Name="NumCheshbon" ColumnName="NumCheshbon" />
+                <ScalarProperty Name="Schum" ColumnName="Schum" />
+                <ScalarProperty Name="TaarichTashlum" ColumnName="TaarichTashlum" />
+                <ScalarProperty Name="Teur" ColumnName="Teur" />
+                <ScalarProperty Name="NumAsmachta" ColumnName="NumAsmachta" />
+                <ScalarProperty Name="TaarichLachek" ColumnName="TaarichLachek" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tikim_Letipul_Orech_Din">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Tikim_Letipul_Orech_Din">
+              <MappingFragment StoreEntitySet="Tikim_Letipul_Orech_Din">
+                <ScalarProperty Name="IDTik" ColumnName="IDTik" />
+                <ScalarProperty Name="IDCostemer" ColumnName="IDCostemer" />
+                <ScalarProperty Name="IDSubjektTik" ColumnName="IDSubjektTik" />
+                <ScalarProperty Name="IsTheTikMenualInBETMishpat" ColumnName="IsTheTikMenualInBETMishpat" />
+                <ScalarProperty Name="IDBetMishpat" ColumnName="IDBetMishpat" />
+                <ScalarProperty Name="StatusTik" ColumnName="StatusTik" />
+                <ScalarProperty Name="IpuiKohach" ColumnName="IpuiKohach" />
+                <ScalarProperty Name="Shulam" ColumnName="Shulam" />
+                <ScalarProperty Name="Mikdama" ColumnName="Mikdama" />
+                <ScalarProperty Name="ShulamMikdama" ColumnName="ShulamMikdama" />
+                <ScalarProperty Name="Gush" ColumnName="Gush" />
+                <ScalarProperty Name="Chelka" ColumnName="Chelka" />
+                <ScalarProperty Name="TatChelka" ColumnName="TatChelka" />
+                <ScalarProperty Name="AdressNeches" ColumnName="AdressNeches" />
+                <ScalarProperty Name="SchumLetvia" ColumnName="SchumLetvia" />
+                <ScalarProperty Name="SchumShenitba" ColumnName="SchumShenitba" />
+                <ScalarProperty Name="AchuzRevachim" ColumnName="AchuzRevachim" />
+                <ScalarProperty Name="KodOrechDinNegdi" ColumnName="KodOrechDinNegdi" />
+                <ScalarProperty Name="KodLakoachNegdi" ColumnName="KodLakoachNegdi" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="PasswordWorker" ColumnName="PasswordWorker" />
+                <ScalarProperty Name="KindWorker" ColumnName="KindWorker" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
