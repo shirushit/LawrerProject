@@ -1,288 +1,168 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LawyerProject.DB;
-using LawyerProject.GUI;
 using LawyerProject.BLL;
-   
+using LawyerProject.DB;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Add or edit a person: client, opposing party or opposing lawyer.</summary>
     public partial class frmAddCostemer : Form
     {
-        DB.LawyerDBEntities1 d;
-        string state;
-        Customers C;
-        public frmAddCostemer()
+        private readonly LawyerDBEntities1 db = new LawyerDBEntities1();
+        private readonly bool isNew;
+        private readonly Customers customer;
+
+        /// <summary>The ID of the saved person, so a calling screen can select it.</summary>
+        public string SavedId { get; private set; }
+
+        public frmAddCostemer() : this((string)null, PersonTypes.Client)
+        {
+        }
+
+        /// <summary>New person of a given type (used by the case screen's "add opposing lawyer" etc.).</summary>
+        public frmAddCostemer(string personType) : this(null, personType)
+        {
+        }
+
+        private frmAddCostemer(string id, string personType)
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            state = "Add";
-            C = new Customers();
-        }
-        public frmAddCostemer(string ID)
-        {
-            //הצגת הפקדים בטופס
-            InitializeComponent();
-            state = "UpDate";
-            d = new DB.LawyerDBEntities1();
-            C = d.Customers.FirstOrDefault(x => x.IDcustemer == ID);
-        }
-        public void FillTextBox()
-        {
-            txtIDcostemer1.Text = C.IDcustemer.ToString();
-            txtName1.Text = C.FirstName.ToString();
-            txtLastName1.Text = C.LastName.ToString();
-            txtAdress1.Text = C.Adress.ToString();
-            maskTWOPhone1.Text = C.Telephone.ToString();
-            maskTWOPhone1.Text = C.SmartPhone.ToString();
-            txtMail1.Text = C.Mail.ToString();
-            mackBirthDay1.Text = C.DateBirthday.ToString();
-        }
-       public bool check()
-        {
-            bool OK = true;
-            errorProvider1.Clear();
-            try
-            {
-                //אם הכניסו תעודת זהות
-                if (txtIDcostemer1.Text != "")
-                    if ((d.Customers.ToList().FirstOrDefault(x => x.IDcustemer == txtIDcostemer1.Text) == null))
-                        //אם תעודת הזהות תקינה
-                        if (Validation.IsLegalId(txtIDcostemer1.Text))
-                            //שמירת תעודת הזהות
-                            C.IDcustemer = txtIDcostemer1.Text;
-                        //אם התעודת זהות לא תקינה, מציג הוגעה שגיאה
-                        else
-                            errorProvider1.SetError(txtIDcostemer1, "תעודת זהות לא תקינה");
-                   //אם תעודת הזהות כבר קיימת
-                    else
-                        errorProvider1.SetError(txtIDcostemer1, "תעודת זהות קיימת במערכת");
-         //אם תעודת זהות לא הוכנסה
-                else
-                    errorProvider1.SetError(txtIDcostemer1, "לא הוכנס תעודת זהות");
+            cmbSugPerson.Items.AddRange(PersonTypes.All);
 
-                if (d.Customers.ToList().FirstOrDefault(x => x.IDcustemer == txtIDcostemer1.Text) == null)
-                    C.IDcustemer = txtIDcostemer1.Text;
-                else
-                {
-                    errorProvider1.SetError(txtIDcostemer1, "לקוח קיים במערכת");
-                    OK = false;
-                }
-            }
-           //בכל שגיאה אחרת
-            catch (Exception ex)
+            if (id == null)
             {
-                //הצגת הודעת שגיאה למשתמש
-                errorProvider1.SetError(txtIDcostemer1, ex.Message);
-                //המשתנה אוקיי = שלילי
-                OK = false;
+                isNew = true;
+                customer = new Customers();
+                cmbSugPerson.SelectedItem = personType ?? PersonTypes.Client;
+                Text = "הוספת " + cmbSugPerson.SelectedItem;
             }
-            try
-            {
-                //אם הכניסו שם פרטי
-                if (txtName1.Text != "")
-                    C.FirstName = txtName1.Text;
-                else
-                    errorProvider1.SetError(txtName1, "לא הוכנס שם פרטי");
-
-            }
-            //במקרה ולא הכניסו
-            catch (Exception ex)
-            {
-                //הצגת הודעה למשתמש
-                errorProvider1.SetError(txtName1, ex.Message);
-                OK = false;
-            }
-            try
-            {
-                //אם הכניסו שם משפחה
-                if (txtLastName1.Text != "")
-                    C.LastName = txtLastName1.Text;
-                else
-                    errorProvider1.SetError(txtLastName1, "לא הוכנס שם משפחה");
-            }
-            //במקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtLastName1, ex.Message);
-                OK = false;
-            }
-            try
-            {//אם הכניסו כתובת
-                if (txtAdress1.Text != "")
-                    C.Adress = txtAdress1.Text;
-                else
-                    errorProvider1.SetError(txtAdress1, "לא הוכנס כתובת");
-            }
-            //במקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtAdress1, ex.Message);
-                OK = false;
-            }
-            try
-            {
-                //אם הכניסו מספר טלפון
-                if (maskONEPhone1.Text != "")
-                    //אם מספר הטלפון או נייד או נייח תקין באחד מהם
-                    if (Validation.IsTelephone(maskONEPhone1.Text)|| Validation.IsCellPhone(maskONEPhone1.Text))
-                        //שמירת מספר הטלפון
-                        C.Telephone = maskONEPhone1.Text;
-                    //אם מספר הטלפון לא תקין, מציג הודעה שגיאה
-                    else
-                        errorProvider1.SetError(maskONEPhone1, "טלפון לא תקין");
-                // אם המספר לא הוכנס, מציג שגיאה
-                else
-                    errorProvider1.SetError(maskONEPhone1, "לא הוכנס טלפון" ); 
-            }
-            //בכל מקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(maskONEPhone1, ex.Message);
-                OK = false;
-            }
-            try
-            {
-                //אם הכניסו מספר טלפון
-               if (maskTWOPhone1.Text != "")
-                    //אם מספר הטלפון או נייד או נייח תקין באחד מהם
-                    if (Validation.IsTelephone(maskTWOPhone1.Text) || Validation.IsCellPhone(maskTWOPhone1.Text))
-                        //שמירת מספר הטלפון
-                      C.SmartPhone = maskTWOPhone1.Text;
-                    //אם מספר הטלפון לא תקין, מציג הודעה שגיאה
-                    else
-                        errorProvider1.SetError(maskTWOPhone1, "טלפון לא תקין");
-                // אם לא הוכנס טלפון, מציג שגיאה
-              else
-                    errorProvider1.SetError(maskTWOPhone1, "לא הוכנס טלפון");        
-            }
-            //בכל מקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(maskTWOPhone1, ex.Message);
-                OK = false;
-            }
-            //בדיקת תקינות למייל
-            try
-            {
-                //אם הכניסו מייל
-                if (txtMail1.Text != "")
-                //אם המייל תקין 
-                if (Validation.CheackMail(txtMail1.Text))
-                    //שמירת המייל
-                    C.Mail = txtMail1.Text;
-                //אם המייל לא תקין, מציג הודעה שגיאה
-                else
-                    errorProvider1.SetError(txtMail1, "מייל לא תקין");
-            // אם לא הוכנס מייל, מציג שגיאה
             else
-                errorProvider1.SetError(txtMail1, "לא הוכנס מייל" );
+            {
+                customer = db.Customers.FirstOrDefault(c => c.IDcustemer == id);
+                if (customer == null) throw new ArgumentException("Customer not found: " + id);
+                FillControls();
+                txtIDcostemer1.ReadOnly = true; // the ID number is the primary key
+                Text = "עדכון פרטי " + customer.SugPerson;
+            }
         }
-            //בכל מקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtMail1, ex.Message);
-                OK = false;
-            }
-            //בדיקת תקינות לתאריך לידה
-            try
-            {
-                //הגדרת מערך מסוג מחרוזת באורך 3
-                string[] t = new string[3];
-                // חיתוך הלוכסנים מהתאריך והכנסת התאריך לידה שנקלט מהמשתמש לתוך המשתנה במערך 
-                t = mackBirthDay1.Text.Split('/');
-                //אם התאריך מוגדר בפורמט תקין כלומר הימים הם בין1-31 וגם החודשים בין 1-12 והשנים הם בין השנה הנוכחית לזמננינו
-                if (Convert.ToInt32(t[0]) >= 1 && Convert.ToInt32(t[0]) <= 31 && Convert.ToInt32(t[1]) >= 1 && Convert.ToInt32(t[1]) <= 12 && Convert.ToInt32(t[2]) >= 1900 && Convert.ToInt32(t[2]) <= DateTime.Today.Year + 102)
-                    //אם גיל הלקוח הוא בין 18 ל 127
-                    if (Validation.GetAge(Convert.ToDateTime(mackBirthDay1.Text)) < 18 || Validation.GetAge(Convert.ToDateTime(mackBirthDay1.Text)) > 127)
-                        //שמירת שנת הלידה
-                        C.DateBirthday = Convert.ToDateTime(mackBirthDay1.Text);
-                    //אם התאריך לא בין 18 ל 127, מציג הודעה שגיאה
-                    else
-                        errorProvider1.SetError(mackBirthDay1, "גיל לקוח לא תקין");
-                //אם התאריך לא הגיוני, מציג שגיאה
-                else
-                    errorProvider1.SetError(mackBirthDay1, "תאריך לא הגיוני" );
-            }
-            //בכל מקרה אחר
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(mackBirthDay1, ex.Message);
-                OK = false;
-            }
-            //בדיקת תקינות שבודקת האם קיים לקוח דומה במערכת
-            try
-            {
-                if (d.Customers.ToList().FirstOrDefault(x => x.IDcustemer == txtIDcostemer1.Text) == null)
-                    C.IDcustemer = txtIDcostemer1.Text;
-                else
-                {
-                    errorProvider1.SetError(txtIDcostemer1, "לקוח קיים במערכת");
-                    OK = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtIDcostemer1, ex.Message);
-            }
-            //שמירת קובץ
-            return OK;
+
+        /// <summary>Edit an existing person.</summary>
+        public static frmAddCostemer ForEdit(string id)
+        {
+            return new frmAddCostemer(id, null);
         }
+
+        private void FillControls()
+        {
+            txtIDcostemer1.Text = customer.IDcustemer;
+            cmbSugPerson.SelectedItem = customer.SugPerson;
+            txtName1.Text = customer.FirstName;
+            txtLastName1.Text = customer.LastName;
+            txtCity.Text = customer.City;
+            txtAdress1.Text = customer.Adress;
+            txtHouse.Text = customer.House;
+            txtMikud.Text = customer.Mikud;
+            maskONEPhone1.Text = customer.Telephone;
+            maskTWOPhone1.Text = customer.SmartPhone;
+            txtMail1.Text = customer.Mail;
+            mackBirthDay1.Text = customer.DateBirthday.HasValue ? customer.DateBirthday.Value.ToString("dd/MM/yyyy") : "";
+        }
+
+        private static string Digits(string text)
+        {
+            return new string((text ?? "").Where(char.IsDigit).ToArray());
+        }
+
+        /// <summary>Validates every field, shows all errors at once and copies valid values into the entity.</summary>
+        private bool ValidateAndCopy()
+        {
+            errorProvider1.Clear();
+            bool ok = true;
+            Action<Control, string> fail = (control, message) => { errorProvider1.SetError(control, message); ok = false; };
+
+            string id = Digits(txtIDcostemer1.Text);
+            if (isNew)
+            {
+                if (!Validation.IsLegalId(id)) fail(txtIDcostemer1, "מספר תעודת זהות לא תקין");
+                else if (db.Customers.Any(c => c.IDcustemer == id)) fail(txtIDcostemer1, "תעודת זהות זו כבר קיימת במערכת");
+            }
+
+            string personType = cmbSugPerson.SelectedItem as string;
+            if (personType == null) fail(cmbSugPerson, "יש לבחור סוג");
+
+            if (!Validation.IsName(txtName1.Text)) fail(txtName1, "יש להזין שם פרטי");
+            if (!Validation.IsName(txtLastName1.Text)) fail(txtLastName1, "יש להזין שם משפחה");
+            if (!Validation.IsName(txtCity.Text)) fail(txtCity, "יש להזין עיר");
+            if (string.IsNullOrWhiteSpace(txtAdress1.Text)) fail(txtAdress1, "יש להזין רחוב");
+            if (string.IsNullOrWhiteSpace(txtHouse.Text)) fail(txtHouse, "יש להזין מספר בית");
+
+            string phone = maskONEPhone1.Text.Trim();
+            if (!Validation.IsPhone(phone)) fail(maskONEPhone1, "מספר טלפון לא תקין (לדוגמה 02-6543210 או 050-1234567)");
+
+            string mobile = maskTWOPhone1.Text.Trim();
+            if (mobile.Length > 0 && !Validation.IsCellPhone(mobile)) fail(maskTWOPhone1, "מספר נייד לא תקין");
+
+            if (!Validation.IsEmail(txtMail1.Text)) fail(txtMail1, "כתובת מייל לא תקינה");
+
+            DateTime? birthDate = null;
+            if (Digits(mackBirthDay1.Text).Length > 0)
+            {
+                DateTime parsed;
+                if (!Validation.TryParseDate(mackBirthDay1.Text, out parsed)) fail(mackBirthDay1, "תאריך לא תקין");
+                else if (personType == PersonTypes.Client && !Validation.IsAdultBirthDate(parsed, DateTime.Today)) fail(mackBirthDay1, "לקוח חייב להיות בן 18 ומעלה");
+                else birthDate = parsed;
+            }
+
+            if (!ok) return false;
+
+            if (isNew) customer.IDcustemer = id;
+            customer.SugPerson = personType;
+            customer.FirstName = txtName1.Text.Trim();
+            customer.LastName = txtLastName1.Text.Trim();
+            customer.City = txtCity.Text.Trim();
+            customer.Adress = txtAdress1.Text.Trim();
+            customer.House = txtHouse.Text.Trim();
+            customer.Mikud = string.IsNullOrWhiteSpace(txtMikud.Text) ? null : txtMikud.Text.Trim();
+            customer.Telephone = phone;
+            customer.SmartPhone = mobile.Length == 0 ? null : mobile;
+            customer.Mail = txtMail1.Text.Trim();
+            customer.DateBirthday = birthDate;
+            return true;
+        }
+
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (check())
+            if (!ValidateAndCopy()) return;
+            try
             {
-                if (state == "Add")
-                {
-                    try
-                    {
-                        d.Customers.Add(C);
-                        d.SaveChanges();
-                        MessageBox.Show("נשמר בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("שגיאה! לא נשמר");
-                    }
-
-                }
-                if (state == "UpDate")
-                {
-                    try
-                    {
-                        d.SaveChanges();
-                        MessageBox.Show(" עודכן בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("שגיאה! לא עודכן");
-                    }
-                }
+                if (isNew) db.Customers.Add(customer);
+                db.SaveChanges();
+                SavedId = customer.IDcustemer;
+                Ui.Info(isNew ? "נשמר בהצלחה." : "עודכן בהצלחה.");
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("שגיאה! הנתונים לא נשמרו.", ex);
             }
         }
-        private void txtLastName1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.bdikat_text(e.KeyChar);
-        }
+
         private void txtName1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            e.Handled = !Validation.bdikat_text(e.KeyChar);
+            e.Handled = !Validation.IsNameKey(e.KeyChar);
         }
-        //פעולה לפתיחת נתיב להוספת קבצי תעודת זהות
-        private void btnAddDock_Click(object sender, EventArgs e)
-        {
 
+        private void Digits_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !Validation.IsDigitKey(e.KeyChar);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            db.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }

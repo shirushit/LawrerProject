@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class frmAllTikimLetipulOrechDin
     {
@@ -63,7 +63,7 @@
             this.btnUpDate.TabIndex = 11;
             this.btnUpDate.Text = "עדכון";
             this.btnUpDate.UseVisualStyleBackColor = false;
-            this.btnUpDate.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnUpDate.Click += new System.EventHandler(this.btnUpDate_Click);
             // 
             // btnAdd
             // 
@@ -92,7 +92,6 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(1125, 520);
             this.dataGridView1.TabIndex = 9;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // groupBox2
             // 

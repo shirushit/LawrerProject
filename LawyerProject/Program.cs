@@ -1,8 +1,4 @@
-﻿using LawyerProject.GUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
 
 namespace LawyerProject
@@ -17,7 +13,8 @@ namespace LawyerProject
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GUI.Nivot());
+            Application.ThreadException += (s, e) => GUI.Ui.Error("אירעה שגיאה לא צפויה.", e.Exception);
+            Application.Run(new GUI.FrmUsers());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class frmAllCostemers
     {
@@ -78,7 +78,6 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(1065, 503);
             this.dataGridView1.TabIndex = 5;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // groupBox1
             // 
@@ -95,7 +94,6 @@
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "חיפוש לקוח";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // label1
             // 
@@ -117,7 +115,6 @@
             this.txtIDCostemer.Size = new System.Drawing.Size(132, 27);
             this.txtIDCostemer.TabIndex = 0;
             this.txtIDCostemer.TextChanged += new System.EventHandler(this.txtIDCostemer_TextChanged);
-            this.txtIDCostemer.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtIDCostemer_KeyPress);
             // 
             // frmAllCostemers
             // 

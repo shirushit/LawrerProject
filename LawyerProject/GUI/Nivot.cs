@@ -1,53 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LawyerProject.BLL;
-using LawyerProject.DB;
-using LawyerProject.GUI;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Home screen. Management screens are shown to managers only.</summary>
     public partial class Nivot : Form
     {
         public Nivot()
         {
             InitializeComponent();
-        } 
-        //פעולה לפתיחת טופס אודות
-private void btnAbout_Click(object sender, EventArgs e)
-        {
-            FrmAbout A = new FrmAbout(); 
-            A.Show();
+
+            bool manager = Session.IsManager;
+            btnCourts.Visible = manager;
+            btnCaseTypes.Visible = manager;
+            btnProcesses.Visible = manager;
+            btnUsers.Visible = manager;
+
+            if (Session.CurrentUser != null)
+                lblWelcome.Text = "שלום " + Session.CurrentUser.UserName + " (" + Session.CurrentUser.KindWorker + ")";
         }
-        //פעולה לפתיחת טופס לקוחות
-        private void btnCustomers_Click(object sender, EventArgs e)
+
+        private static void Open(Form form)
         {
-            frmAllCostemers C = new frmAllCostemers();
-            C.Show();
+            using (form)
+                form.ShowDialog();
         }
-        //פעולה לפתיחת טופס תיקים בטיפול העו"ד
-        private void btnTikim_Click(object sender, EventArgs e)
-        {
-            frmAllTikimLetipulOrechDin  T = new frmAllTikimLetipulOrechDin();
-            T.Show();
-        }
-        //פעולה לפתיחת טופס עיסקאות
-        private void btnIskaot_Click(object sender, EventArgs e)
-        {
-            frmAllIskaot I = new frmAllIskaot();
-            I.Show();
-        }
-        //פעולה לפתיחת טופס קבלות
-        private void btnKabalot_Click(object sender, EventArgs e)
-        {
-            //frmKabala C = new frmKabala();
-            //C.Show();
-        }
+
+        private void btnAbout_Click(object sender, EventArgs e) { Open(new FrmAbout()); }
+
+        private void btnCustomers_Click(object sender, EventArgs e) { Open(new frmAllCostemers()); }
+
+        private void btnTikim_Click(object sender, EventArgs e) { Open(new frmAllTikimLetipulOrechDin()); }
+
+        private void btnIskaot_Click(object sender, EventArgs e) { Open(new frmAllIskaot()); }
+
+        private void btnKabalot_Click(object sender, EventArgs e) { Open(new FrmAllPayments()); }
+
+        private void btnCourts_Click(object sender, EventArgs e) { Open(new frmAllBetMishpat()); }
+
+        private void btnCaseTypes_Click(object sender, EventArgs e) { Open(new frmAllSubjektTik()); }
+
+        private void btnProcesses_Click(object sender, EventArgs e) { Open(new FrmAllTaalichimLetik()); }
+
+        private void btnUsers_Click(object sender, EventArgs e) { Open(new FrmManageUsers()); }
+
+        private void btnLogout_Click(object sender, EventArgs e) { Close(); }
     }
 }

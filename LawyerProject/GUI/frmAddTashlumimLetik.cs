@@ -1,404 +1,151 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LawyerProject.BLL;
 using LawyerProject.DB;
-using LawyerProject.GUI;
-using static System.Windows.Forms.AxHost;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>
+    /// Records a payment for a case and updates its open balance.
+    /// Card payments keep only the last 4 digits (no full number, expiry or CVV).
+    /// </summary>
     public partial class frmAddTashlumimLetik : Form
     {
-        DB.LawyerDBEntities1 d;
-        string state;
-        Tashlumim_Letik T;
-        Tikim_Letipul_Orech_Din tlod;
-        //פעולה בונה למצב הוספה 
-        public frmAddTashlumimLetik(Tikim_Letipul_Orech_Din t)
+        private readonly LawyerDBEntities1 db = new LawyerDBEntities1();
+        private readonly Tikim_Letipul_Orech_Din tik;
+        private readonly decimal openBalance;
+
+        public frmAddTashlumimLetik(int tikId)
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            state = "Add";
-            T = new Tashlumim_Letik();
-            lblCodTik.Text = t.IDTik.ToString();
-            tlod = new Tikim_Letipul_Orech_Din();
-            lblIDTashlum.Text = GetNewKey(d.Tashlumim_Letik.ToList()).ToString();
-            lblCodTik.Text = GetNewKey1(d.Tikim_Letipul_Orech_Din.ToList()).ToString();
-        }
-        //פעולה בונה למצב עדכון
-        public frmAddTashlumimLetik(int ID)
-        {
-            //הצגת הפקדים בטופס
-            InitializeComponent();
-            state = "UpDate";
-            d = new DB.LawyerDBEntities1();
-            T = d.Tashlumim_Letik.FirstOrDefault(x => x.IDTashlum == ID);
-        }
-        private double ChishuvItra()
-        {
-            double Itra =Convert.ToDouble(tlod.SchumLetvia) * Convert.ToDouble(tlod.AchuzRevachim) / 100+ Convert.ToDouble(tlod.Subjekt_Tik.Agra);
-            if (d.Tashlumim_Letik.Any(x=>x.Tikim_Letipul_Orech_Din==tlod) )
+            tik = db.Tikim_Letipul_Orech_Din.FirstOrDefault(t => t.IDTik == tikId);
+            if (tik == null) throw new ArgumentException("Case not found: " + tikId);
+
+            openBalance = CaseService.OpenBalance(tik);
+            lblTik.Text = tik.IDTik + " - " + (tik.Customers != null ? tik.Customers.ToString() : "");
+            lblBalance.Text = Ui.FormatMoney(openBalance);
+
+            cmbEmzhaeyTashlum.Items.AddRange(new object[]
             {
-                Itra =Convert.ToDouble( d.Tashlumim_Letik.LastOrDefault(x => x.Tikim_Letipul_Orech_Din == tlod).Itra);
-            }
-            return Itra;
-        }
-        //פעולה מחזירה את הקוד של התלום לתיק 
-        public int GetNewKey(List<DB.Tashlumim_Letik> l)
-        {
-            if (l.Count == 0)
+                PaymentMethods.Cash, PaymentMethods.CreditCard, PaymentMethods.BankTransfer, PaymentMethods.Check
+            });
+            cmbEmzhaeyTashlum.SelectedItem = PaymentMethods.Cash;
+            dateTimePickerTashlum.Value = DateTime.Today;
+            dateTimePickerTashlum.MaxDate = DateTime.Today;
+            dateTimePickerDateChek.Value = DateTime.Today;
+
+            if (openBalance <= 0)
             {
-                return 1;
-            }
-            return Convert.ToInt32(l[l.Count - 1].IDTashlum) + 1;
-        }
-        //פעולה מחזירה את הקוד תיק 
-        public int GetNewKey1(List<DB.Tikim_Letipul_Orech_Din> l)
-        {
-            if (l.Count == 0)
-            {
-                return 1;
-            }
-            return Convert.ToInt32(l[l.Count - 1].IDTik) + 1;
-        }
-        public void FillTextBox()
-        {
-            //שמירת אמצעי תשלום 
-            comboBoxEmzhaeiTashlum.SelectedText = T.EmzhaeyTashlum.ToString();
-            txtSum.Text = T.Schum.ToString();
-            richTextBoxTeur.Text = T.Teur.ToString();
-            dateTimePickerDateTashlum.Text = DateTime.Now.ToString();
-            txtitra.Text = T.Itra.ToString();
-            //פרטי כרטיס אשראי
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 1)
-            {
-                maskedTextBoxNumCartis.Text = T.NumCartis.ToString();
-                maskedTextBoxTokef.Text = T.Tokef.ToString();
-                maskedTextBoxID.Text = T.NumTeudatZeut.ToString();
-                maskedTextBoxtreedigits.Text = T.ThreeNums.ToString();
-            }
-            //פרטי העברה בנקאית
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 2)
-                txtNumAsmachta.Text = T.NumAsmachta.ToString();
-            //פרטי צ'ק
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 3)
-            {
-                txtnumaccount.Text = T.NumCheshbon.ToString();
-                txtNumBank.Text = T.NumBank.ToString();
-                txtnumchek.Text = T.NumChek.ToString();
-                txtNumSnif.Text = T.NumSnif.ToString();
-                dateTimePickerDateChek.Text = DateTime.Now.ToString();
+                Ui.Info("התיק שולם במלואו. אין יתרה לתשלום.");
+                btnOK.Enabled = false;
             }
         }
-        public bool check()
+
+        private string Method
         {
-            bool OK = true;
+            get { return cmbEmzhaeyTashlum.SelectedItem as string; }
+        }
+
+        private void cmbEmzhaeyTashlum_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            groupBoxCartisAshray.Visible = Method == PaymentMethods.CreditCard;
+            groupBoxAavaraBankait.Visible = Method == PaymentMethods.BankTransfer;
+            groupBoxChek.Visible = Method == PaymentMethods.Check;
+        }
+
+        private void txtSchum_TextChanged(object sender, EventArgs e)
+        {
+            decimal amount;
+            lblItraAfter.Text = Validation.TryParseMoney(txtSchum.Text, out amount) && amount > 0 && amount <= openBalance
+                ? Ui.FormatMoney(openBalance - amount)
+                : "-";
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
             errorProvider1.Clear();
-            txtSum.Text = T.Schum.ToString();
-            //תשלום מזומן
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 0)
-                comboBoxEmzhaeiTashlum.SelectedText = T.EmzhaeyTashlum.ToString();
-            //פרטי כרטיס אשראי
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 1)
+            bool ok = true;
+            Action<Control, string> fail = (control, message) => { errorProvider1.SetError(control, message); ok = false; };
+
+            decimal amount;
+            if (!Validation.TryParseMoney(txtSchum.Text, out amount) || amount <= 0) fail(txtSchum, "יש להזין סכום");
+            else if (amount > openBalance) fail(txtSchum, "הסכום גבוה מהיתרה (" + Ui.FormatMoney(openBalance) + ")");
+
+            if (Method == null) fail(cmbEmzhaeyTashlum, "יש לבחור אמצעי תשלום");
+            else if (Method == PaymentMethods.CreditCard)
             {
-                //בדיקת מספר כרטיס אשראי תקין
-                try
-                {
-                    //אם הכניסו מספר כרטיס 
-                    if (maskedTextBoxID.Text != "")
-                        //אם מספר כרטיס  תקין
-                        if (Validation.IsLegalId(maskedTextBoxID.Text))
-                            //שמירת מספר אשראי
-                            T.NumTeudatZeut = maskedTextBoxID.Text;
-                        //אם מספר אשראי לא תקין, מציג הודעת שגיאה
-                        else
-                            errorProvider1.SetError(maskedTextBoxID, "תעודת זהות לא תקינה");
-                    // אם מספר אשראי לא הוזן, מציג שגיאה
-                    else
-                        errorProvider1.SetError(maskedTextBoxID, "לא הוכנס תעודת זהות");
-                }
-                //בכל שגיאה אחרת
-                catch (Exception ex)
-                {
-                    //הצגת הודעת שגיאה למשתמש
-                    errorProvider1.SetError(maskedTextBoxID, ex.Message);
-                    //המשתנה אוקיי = שלילי
-                    OK = false;
-                }
-                maskedTextBoxNumCartis.Text = T.NumCartis.ToString();
-                maskedTextBoxTokef.Text = T.Tokef.ToString();
-                //בדיקת תעודת זהות לבעל הכרטיס
-                try
-                {
-                    //אם הכניסו תעודת זהות
-                    if (maskedTextBoxID.Text != "")
-                        //אם תעודת הזהות תקינה
-                        if (Validation.IsLegalId(maskedTextBoxID.Text))
-                                //שמירת תעודת הזהות
-                                T.NumTeudatZeut = maskedTextBoxID.Text;
-                        //אם התעודת זהות לא תקינה, מציג הוגעה שגיאה
-                        else
-                            errorProvider1.SetError(maskedTextBoxID, "תעודת זהות לא תקינה");
-                    // אם התעודה לא הוזנה, מציג שגיאה
-                    else
-                        errorProvider1.SetError(maskedTextBoxID, "לא הוכנס תעודת זהות");
-                }
-                //בכל שגיאה אחרת
-                catch (Exception ex)
-                {
-                    //הצגת הודעת שגיאה למשתמש
-                    errorProvider1.SetError(maskedTextBoxID, ex.Message);
-                    //המשתנה אוקיי = שלילי
-                    OK = false;
-                }
-                maskedTextBoxtreedigits.Text = T.ThreeNums.ToString();
+                if (txtCardLast4.Text.Trim().Length != 4) fail(txtCardLast4, "יש להזין 4 ספרות");
             }
-            //פרטי העברה בנקאית
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 2)
-                txtNumAsmachta.Text = T.NumAsmachta.ToString();
-            //פרטי צ'ק
-            if (comboBoxEmzhaeiTashlum.SelectedIndex == 3)
+            else if (Method == PaymentMethods.BankTransfer)
             {
-                //בדיקת מספר חשבון בנק
-                try
-                {
-                   // אם הכניסו מספר חשבון
-                    if (txtNumBank.Text != "")
-                            T.NumBank = txtNumBank.Text;
-                    // אם החשבון לא הוזן, מציג שגיאה
-                    else
-                        errorProvider1.SetError(txtNumBank, "לא הוכנס מספר בנק");
-                }
-                //בכל שגיאה אחרת
-                catch (Exception ex)
-                {
-                    //הצגת הודעת שגיאה למשתמש
-                    errorProvider1.SetError(txtNumBank, ex.Message);
-                    OK = false;
-                }
-                //בדיקת מספר חשבון 
-                try
-                {
-                    // אם הכניסו מספר חשבון
-                    if (txtnumaccount.Text != "")
-                        T.NumCheshbon = txtnumaccount.Text;
-                    // אם החשבון לא הוזן, מציג שגיאה
-                    else
-                        errorProvider1.SetError(txtNumBank, "לא הוכנס מספר חשבון");
-                }
-                //בכל שגיאה אחרת
-                catch (Exception ex)
-                {
-                    //הצגת הודעת שגיאה למשתמש
-                    errorProvider1.SetError(txtnumaccount, ex.Message);
-                    OK = false;
-                }
-                //בדיקת מספר סניף 
-                try
-                {
-                    // אם הכניסו מספר סניף
-                    if (txtNumSnif.Text != "")
-                        T.NumCheshbon = txtNumSnif.Text;
-                    // אם החשבון לא הוזן, מציג שגיאה
-                    else
-                        errorProvider1.SetError(txtNumSnif, "לא הוכנס מספר סניף");
-                }
-                //בכל שגיאה אחרת
-                catch (Exception ex)
-                {
-                    //הצגת הודעת שגיאה למשתמש
-                    errorProvider1.SetError(txtNumSnif, ex.Message);
-                    OK = false;
-                }
-                //שמירת התאריך לצ'ק  
-                dateTimePickerDateChek.Text = DateTime.Now.ToString();
+                if (txtNumAsmachta.Text.Trim().Length == 0) fail(txtNumAsmachta, "יש להזין מספר אסמכתא");
             }
-            //בדיקה לסכום לתשלום
+            else if (Method == PaymentMethods.Check)
+            {
+                if (txtnumchek.Text.Trim().Length == 0) fail(txtnumchek, "יש להזין מספר צ'ק");
+                if (txtNumBank.Text.Trim().Length == 0) fail(txtNumBank, "יש להזין מספר בנק");
+                if (txtNumSnif.Text.Trim().Length == 0) fail(txtNumSnif, "יש להזין מספר סניף");
+                if (txtnumaccount.Text.Trim().Length == 0) fail(txtnumaccount, "יש להזין מספר חשבון");
+            }
+            if (!ok) return;
+
+            var payment = new Tashlumim_Letik
+            {
+                IDTik = tik.IDTik,
+                Schum = FeeCalculator.Round(amount),
+                Itra = FeeCalculator.BalanceAfterPayment(openBalance, amount),
+                TaarichTashlum = dateTimePickerTashlum.Value.Date,
+                EmzhaeyTashlum = Method,
+                Teur = txtTeur.Text.Trim().Length == 0 ? null : txtTeur.Text.Trim()
+            };
+
+            if (Method == PaymentMethods.CreditCard)
+                payment.NumCartis = "****" + txtCardLast4.Text.Trim();
+            else if (Method == PaymentMethods.BankTransfer)
+                payment.NumAsmachta = txtNumAsmachta.Text.Trim();
+            else if (Method == PaymentMethods.Check)
+            {
+                payment.NumChek = txtnumchek.Text.Trim();
+                payment.NumBank = txtNumBank.Text.Trim();
+                payment.NumSnif = txtNumSnif.Text.Trim();
+                payment.NumCheshbon = txtnumaccount.Text.Trim();
+                payment.TaarichLachek = dateTimePickerDateChek.Value.Date;
+            }
+
             try
             {
-                // אם הכניסו סכום
-                if (Convert.ToDecimal( txtSum.Text) != 0)
-                    T.Schum =Convert.ToDecimal( txtSum.Text);
-                // אם סכום לא הוזן, מציג שגיאה
-                else
-                    errorProvider1.SetError(txtSum, "לא הוכנס סכום לתשלום");
-            }
-            //בכל שגיאה אחרת
-            catch (Exception ex)
-            {
-                //הצגת הודעת שגיאה למשתמש
-                errorProvider1.SetError(txtSum, ex.Message);
-                OK = false;
-            }
-            //בדיקה לתיאור תשלום
-            try
-            {
-                // אם הכניסו תאור
-                if (richTextBoxTeur.Text != " ")
-                    T.Teur = richTextBoxTeur.Text;
-                // אם תאור לא הוזן, מציג שגיאה
-                else
-                    errorProvider1.SetError(richTextBoxTeur, "לא הוכנס תאור לתשלום");
-            }
-            //בכל שגיאה אחרת
-            catch (Exception ex)
-            {
-                //הצגת הודעת שגיאה למשתמש
-                errorProvider1.SetError(richTextBoxTeur, ex.Message);
-                OK = false;
-            }
-            T.IDTashlum = tlod.IDTik;
-            T.IDTik = Convert.ToInt32( lblCodTik.Text);    
-           //שמירת היתרה לתשלום
-            try
-            {
-             T.Itra=Convert.ToDecimal( Convert.ToDouble( txtitra.Text) - Convert.ToDouble( txtSum.Text) ) ;
+                db.Tashlumim_Letik.Add(payment);
+                if (payment.Itra == 0) tik.Shulam = true;
+                db.SaveChanges();
+
+                if (Ui.Confirm("התשלום נשמר. להציג קבלה?"))
+                    using (var receipt = new frmKabala(payment.IDTashlum))
+                        receipt.ShowDialog();
+
+                DialogResult = DialogResult.OK;
+                Close();
             }
             catch (Exception ex)
             {
-                //הצגת הודעת שגיאה למשתמש
-                errorProvider1.SetError(txtitra, ex.Message);
-                //המשתנה אוקיי = שלילי
-                OK = false;
-            }
-            //שמירת קובץ
-            return OK;
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (check())
-            {
-                if (state == "Add")
-                {
-                    try
-                    {
-                        d.Tashlumim_Letik.Add(T);
-                        d.SaveChanges();
-                        MessageBox.Show("נשמר בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("שגיאה! לא נשמר");
-                    }
-
-                }
-                if (state == "UpDate")
-                {
-                    try
-                    {
-                        d.SaveChanges();
-                        MessageBox.Show(" עודכן בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("שגיאה! לא עודכן");
-                    }
-                }
+                Ui.Error("שגיאה! התשלום לא נשמר.", ex);
             }
         }
-        //פעולה שמציגה אמצעי תשלום מתאימים לפי בחירת המשתמש
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void Money_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //אתחול האמצאי תשלום
-            groupBoxCartisAshray.Visible = false;
-            groupBoxChek.Visible = false;
-            groupBoxAavaraBankait.Visible = false;
-            if (comboBoxEmzhaeiTashlum.Text == "כרטיס אשראי")
-            {
-                groupBoxCartisAshray.Visible = true;
-                groupBoxChek.Visible = false;
-                groupBoxAavaraBankait.Visible = false;
-            }
-            if (comboBoxEmzhaeiTashlum.Text == "מזומן")
-            {
-                groupBoxChek.Visible = true;
-                groupBoxCartisAshray.Visible = false;
-                groupBoxAavaraBankait.Visible = false;
-            }
-            if (comboBoxEmzhaeiTashlum.Text == "העברה בנקאית")
-            {
-                groupBoxAavaraBankait.Visible = true;
-                groupBoxChek.Visible = false;
-                groupBoxCartisAshray.Visible = false;
-            }
-        }
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            //מחשבת את היתרה שנשארה
-            txtitra.Text = (Convert.ToDouble(txtitra.Text) - Convert.ToDouble(txtSum.Text)).ToString();
-        }
-        //בדיקת תקינות לפקדים מסוג טקסט. מאפשר רק מספרים
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-        //בדיקת תקינות לפקדים מסוג טקסט. מאפשר רק מספרים
-        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-        //בדיקת תקינות לפקדים מסוג טקסט. מאפשר רק מספרים
-        private void txtnumchek_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-        //בדיקת תקינות לפקדים מסוג טקסט. מאפשר רק מספרים
-        private void txtnumaccount_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-        //פתיחת טופס הדפסת חשבונית
-        private void btnAddKabala_Click(object sender, EventArgs e)
-        {
-            
+            e.Handled = !Validation.IsMoneyKey(e.KeyChar);
         }
 
-        private void txtnumchek_KeyPress_1(object sender, KeyPressEventArgs e)
+        private void Digits_KeyPress(object sender, KeyPressEventArgs e)
         {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
+            e.Handled = !Validation.IsDigitKey(e.KeyChar);
         }
 
-        private void txtNumBank_KeyPress(object sender, KeyPressEventArgs e)
+        protected override void OnFormClosed(FormClosedEventArgs e)
         {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-
-        private void txtNumSnif_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-
-        private void txtnumaccount_KeyPress_1(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-
-        private void txtNumAsmachta_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-
-        private void txtSum_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
-        }
-
-        private void frmAddTashlumimLetik_Load(object sender, EventArgs e)
-        {
-
+            db.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }

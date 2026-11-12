@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class frmKabala
     {
@@ -28,346 +28,420 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.lblNameLawyer = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblsignature = new System.Windows.Forms.Label();
-            this.lblnameC = new System.Windows.Forms.Label();
+            this.components = new System.ComponentModel.Container();
+            this.panelReceipt = new System.Windows.Forms.Panel();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.lblOffice = new System.Windows.Forms.Label();
+            this.lblDateTitle = new System.Windows.Forms.Label();
             this.lblDate = new System.Windows.Forms.Label();
-            this.lblphone = new System.Windows.Forms.Label();
-            this.lblDate111 = new System.Windows.Forms.Label();
-            this.lblNumPosition = new System.Windows.Forms.Label();
-            this.lblPosition = new System.Windows.Forms.Label();
-            this.lblSumWith = new System.Windows.Forms.Label();
-            this.lblNumMaam = new System.Windows.Forms.Label();
-            this.lblNumMostMaam = new System.Windows.Forms.Label();
-            this.lblsumWhithMaam = new System.Windows.Forms.Label();
-            this.lblMaam = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblPay = new System.Windows.Forms.Label();
-            this.lblsum = new System.Windows.Forms.Label();
-            this.lbldescrib = new System.Windows.Forms.Label();
-            this.lblCode = new System.Windows.Forms.Label();
-            this.lblNumberPay = new System.Windows.Forms.Label();
-            this.lblMostMaam = new System.Windows.Forms.Label();
-            this.lblTel = new System.Windows.Forms.Label();
-            this.lbCustomer = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.lblCustomerTitle = new System.Windows.Forms.Label();
+            this.lblCustomer = new System.Windows.Forms.Label();
+            this.lblPhoneTitle = new System.Windows.Forms.Label();
+            this.lblPhone = new System.Windows.Forms.Label();
+            this.lblTikTitle = new System.Windows.Forms.Label();
+            this.lblTik = new System.Windows.Forms.Label();
+            this.lblMethodTitle = new System.Windows.Forms.Label();
+            this.lblMethod = new System.Windows.Forms.Label();
+            this.lblDescTitle = new System.Windows.Forms.Label();
+            this.lblDesc = new System.Windows.Forms.Label();
+            this.lineTop = new System.Windows.Forms.Label();
+            this.lblNetTitle = new System.Windows.Forms.Label();
+            this.lblNet = new System.Windows.Forms.Label();
+            this.lblVatTitle = new System.Windows.Forms.Label();
+            this.lblVat = new System.Windows.Forms.Label();
+            this.lblTotalTitle = new System.Windows.Forms.Label();
+            this.lblTotal = new System.Windows.Forms.Label();
+            this.lblBalanceTitle = new System.Windows.Forms.Label();
+            this.lblBalance = new System.Windows.Forms.Label();
+            this.lblSignLawyer = new System.Windows.Forms.Label();
+            this.lblSignClient = new System.Windows.Forms.Label();
+            this.btnPrint = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
+            this.panelReceipt.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // panelReceipt
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Controls.Add(this.dateTimePicker1);
-            this.panel1.Controls.Add(this.lblNameLawyer);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.lblsignature);
-            this.panel1.Controls.Add(this.lblnameC);
-            this.panel1.Controls.Add(this.lblDate);
-            this.panel1.Controls.Add(this.lblphone);
-            this.panel1.Controls.Add(this.lblDate111);
-            this.panel1.Controls.Add(this.lblNumPosition);
-            this.panel1.Controls.Add(this.lblPosition);
-            this.panel1.Controls.Add(this.lblSumWith);
-            this.panel1.Controls.Add(this.lblNumMaam);
-            this.panel1.Controls.Add(this.lblNumMostMaam);
-            this.panel1.Controls.Add(this.lblsumWhithMaam);
-            this.panel1.Controls.Add(this.lblMaam);
-            this.panel1.Controls.Add(this.tableLayoutPanel1);
-            this.panel1.Controls.Add(this.lblPay);
-            this.panel1.Controls.Add(this.lblsum);
-            this.panel1.Controls.Add(this.lbldescrib);
-            this.panel1.Controls.Add(this.lblCode);
-            this.panel1.Controls.Add(this.lblNumberPay);
-            this.panel1.Controls.Add(this.lblMostMaam);
-            this.panel1.Controls.Add(this.lblTel);
-            this.panel1.Controls.Add(this.lbCustomer);
-            this.panel1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
-            this.panel1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.panel1.Location = new System.Drawing.Point(76, 37);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(437, 680);
-            this.panel1.TabIndex = 1;
+            this.panelReceipt.Controls.Add(this.pictureBoxLogo);
+            this.panelReceipt.Controls.Add(this.lblTitle);
+            this.panelReceipt.Controls.Add(this.lblOffice);
+            this.panelReceipt.Controls.Add(this.lblDateTitle);
+            this.panelReceipt.Controls.Add(this.lblDate);
+            this.panelReceipt.Controls.Add(this.lblCustomerTitle);
+            this.panelReceipt.Controls.Add(this.lblCustomer);
+            this.panelReceipt.Controls.Add(this.lblPhoneTitle);
+            this.panelReceipt.Controls.Add(this.lblPhone);
+            this.panelReceipt.Controls.Add(this.lblTikTitle);
+            this.panelReceipt.Controls.Add(this.lblTik);
+            this.panelReceipt.Controls.Add(this.lblMethodTitle);
+            this.panelReceipt.Controls.Add(this.lblMethod);
+            this.panelReceipt.Controls.Add(this.lblDescTitle);
+            this.panelReceipt.Controls.Add(this.lblDesc);
+            this.panelReceipt.Controls.Add(this.lineTop);
+            this.panelReceipt.Controls.Add(this.lblNetTitle);
+            this.panelReceipt.Controls.Add(this.lblNet);
+            this.panelReceipt.Controls.Add(this.lblVatTitle);
+            this.panelReceipt.Controls.Add(this.lblVat);
+            this.panelReceipt.Controls.Add(this.lblTotalTitle);
+            this.panelReceipt.Controls.Add(this.lblTotal);
+            this.panelReceipt.Controls.Add(this.lblBalanceTitle);
+            this.panelReceipt.Controls.Add(this.lblBalance);
+            this.panelReceipt.Controls.Add(this.lblSignLawyer);
+            this.panelReceipt.Controls.Add(this.lblSignClient);
+            this.panelReceipt.Location = new System.Drawing.Point(20, 15);
+            this.panelReceipt.Name = "panelReceipt";
+            this.panelReceipt.Size = new System.Drawing.Size(560, 600);
+            this.panelReceipt.TabIndex = 0;
+            this.panelReceipt.BackColor = System.Drawing.Color.White;
+            this.panelReceipt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             // 
-            // lblNameLawyer
+            // pictureBoxLogo
             // 
-            this.lblNameLawyer.AutoSize = true;
-            this.lblNameLawyer.Location = new System.Drawing.Point(254, 572);
-            this.lblNameLawyer.Name = "lblNameLawyer";
-            this.lblNameLawyer.Size = new System.Drawing.Size(0, 19);
-            this.lblNameLawyer.TabIndex = 27;
+            this.pictureBoxLogo.Location = new System.Drawing.Point(20, 15);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(160, 80);
+            this.pictureBoxLogo.TabIndex = 1;
+            this.pictureBoxLogo.Image = global::LawyerProject.Properties.Resources.לוגו;
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxLogo.TabStop = false;
             // 
-            // label1
+            // lblTitle
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(108, 622);
-            this.label1.Name = "label1";
-            this.label1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.label1.Size = new System.Drawing.Size(88, 19);
-            this.label1.TabIndex = 26;
-            this.label1.Text = "חתימת לקוח:";
+            this.lblTitle.Location = new System.Drawing.Point(494, 25);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(46, 23);
+            this.lblTitle.TabIndex = 2;
+            this.lblTitle.AutoSize = false;
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTitle.Text = "קבלה";
+            this.lblTitle.Font = new System.Drawing.Font("Calibri", 20F, System.Drawing.FontStyle.Bold);
             // 
-            // lblsignature
+            // lblOffice
             // 
-            this.lblsignature.AutoSize = true;
-            this.lblsignature.Location = new System.Drawing.Point(108, 572);
-            this.lblsignature.Name = "lblsignature";
-            this.lblsignature.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblsignature.Size = new System.Drawing.Size(104, 19);
-            this.lblsignature.TabIndex = 25;
-            this.lblsignature.Text = "חתימת עורך דין:";
+            this.lblOffice.Location = new System.Drawing.Point(419, 65);
+            this.lblOffice.Name = "lblOffice";
+            this.lblOffice.Size = new System.Drawing.Size(121, 23);
+            this.lblOffice.TabIndex = 3;
+            this.lblOffice.AutoSize = false;
+            this.lblOffice.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblOffice.Text = "משרד עורכי דין";
+            this.lblOffice.ForeColor = System.Drawing.SystemColors.GrayText;
             // 
-            // lblnameC
+            // lblDateTitle
             // 
-            this.lblnameC.AutoSize = true;
-            this.lblnameC.Location = new System.Drawing.Point(304, 82);
-            this.lblnameC.Name = "lblnameC";
-            this.lblnameC.Size = new System.Drawing.Size(0, 19);
-            this.lblnameC.TabIndex = 24;
+            this.lblDateTitle.Location = new System.Drawing.Point(479, 120);
+            this.lblDateTitle.Name = "lblDateTitle";
+            this.lblDateTitle.Size = new System.Drawing.Size(61, 23);
+            this.lblDateTitle.TabIndex = 4;
+            this.lblDateTitle.AutoSize = false;
+            this.lblDateTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDateTitle.Text = "תאריך:";
             // 
             // lblDate
             // 
-            this.lblDate.AutoSize = true;
-            this.lblDate.Location = new System.Drawing.Point(298, 34);
+            this.lblDate.Location = new System.Drawing.Point(130, 120);
             this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(0, 19);
-            this.lblDate.TabIndex = 23;
+            this.lblDate.Size = new System.Drawing.Size(260, 23);
+            this.lblDate.TabIndex = 5;
+            this.lblDate.AutoSize = false;
+            this.lblDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDate.Text = "-";
+            this.lblDate.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblphone
+            // lblCustomerTitle
             // 
-            this.lblphone.AutoSize = true;
-            this.lblphone.Location = new System.Drawing.Point(298, 133);
-            this.lblphone.Name = "lblphone";
-            this.lblphone.Size = new System.Drawing.Size(0, 19);
-            this.lblphone.TabIndex = 22;
+            this.lblCustomerTitle.Location = new System.Drawing.Point(472, 155);
+            this.lblCustomerTitle.Name = "lblCustomerTitle";
+            this.lblCustomerTitle.Size = new System.Drawing.Size(68, 23);
+            this.lblCustomerTitle.TabIndex = 6;
+            this.lblCustomerTitle.AutoSize = false;
+            this.lblCustomerTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblCustomerTitle.Text = "לקוח/ה:";
             // 
-            // lblDate111
+            // lblCustomer
             // 
-            this.lblDate111.AutoSize = true;
-            this.lblDate111.Location = new System.Drawing.Point(369, 34);
-            this.lblDate111.Name = "lblDate111";
-            this.lblDate111.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblDate111.Size = new System.Drawing.Size(50, 19);
-            this.lblDate111.TabIndex = 21;
-            this.lblDate111.Text = "תאריך:";
+            this.lblCustomer.Location = new System.Drawing.Point(130, 155);
+            this.lblCustomer.Name = "lblCustomer";
+            this.lblCustomer.Size = new System.Drawing.Size(260, 23);
+            this.lblCustomer.TabIndex = 7;
+            this.lblCustomer.AutoSize = false;
+            this.lblCustomer.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblCustomer.Text = "-";
+            this.lblCustomer.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblNumPosition
+            // lblPhoneTitle
             // 
-            this.lblNumPosition.AutoSize = true;
-            this.lblNumPosition.Location = new System.Drawing.Point(309, 537);
-            this.lblNumPosition.Name = "lblNumPosition";
-            this.lblNumPosition.Size = new System.Drawing.Size(0, 19);
-            this.lblNumPosition.TabIndex = 18;
+            this.lblPhoneTitle.Location = new System.Drawing.Point(479, 190);
+            this.lblPhoneTitle.Name = "lblPhoneTitle";
+            this.lblPhoneTitle.Size = new System.Drawing.Size(61, 23);
+            this.lblPhoneTitle.TabIndex = 8;
+            this.lblPhoneTitle.AutoSize = false;
+            this.lblPhoneTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblPhoneTitle.Text = "טלפון:";
             // 
-            // lblPosition
+            // lblPhone
             // 
-            this.lblPosition.AutoSize = true;
-            this.lblPosition.Location = new System.Drawing.Point(313, 572);
-            this.lblPosition.Name = "lblPosition";
-            this.lblPosition.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblPosition.Size = new System.Drawing.Size(83, 19);
-            this.lblPosition.TabIndex = 17;
-            this.lblPosition.Text = "שם עורך דין:";
+            this.lblPhone.Location = new System.Drawing.Point(130, 190);
+            this.lblPhone.Name = "lblPhone";
+            this.lblPhone.Size = new System.Drawing.Size(260, 23);
+            this.lblPhone.TabIndex = 9;
+            this.lblPhone.AutoSize = false;
+            this.lblPhone.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblPhone.Text = "-";
+            this.lblPhone.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblSumWith
+            // lblTikTitle
             // 
-            this.lblSumWith.AutoSize = true;
-            this.lblSumWith.Location = new System.Drawing.Point(207, 419);
-            this.lblSumWith.Name = "lblSumWith";
-            this.lblSumWith.Size = new System.Drawing.Size(0, 19);
-            this.lblSumWith.TabIndex = 16;
+            this.lblTikTitle.Location = new System.Drawing.Point(457, 225);
+            this.lblTikTitle.Name = "lblTikTitle";
+            this.lblTikTitle.Size = new System.Drawing.Size(83, 23);
+            this.lblTikTitle.TabIndex = 10;
+            this.lblTikTitle.AutoSize = false;
+            this.lblTikTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTikTitle.Text = "מספר תיק:";
             // 
-            // lblNumMaam
+            // lblTik
             // 
-            this.lblNumMaam.AutoSize = true;
-            this.lblNumMaam.Location = new System.Drawing.Point(207, 395);
-            this.lblNumMaam.Name = "lblNumMaam";
-            this.lblNumMaam.Size = new System.Drawing.Size(0, 19);
-            this.lblNumMaam.TabIndex = 15;
+            this.lblTik.Location = new System.Drawing.Point(130, 225);
+            this.lblTik.Name = "lblTik";
+            this.lblTik.Size = new System.Drawing.Size(260, 23);
+            this.lblTik.TabIndex = 11;
+            this.lblTik.AutoSize = false;
+            this.lblTik.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTik.Text = "-";
+            this.lblTik.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblNumMostMaam
+            // lblMethodTitle
             // 
-            this.lblNumMostMaam.AutoSize = true;
-            this.lblNumMostMaam.Location = new System.Drawing.Point(207, 366);
-            this.lblNumMostMaam.Name = "lblNumMostMaam";
-            this.lblNumMostMaam.Size = new System.Drawing.Size(0, 19);
-            this.lblNumMostMaam.TabIndex = 14;
+            this.lblMethodTitle.Location = new System.Drawing.Point(434, 260);
+            this.lblMethodTitle.Name = "lblMethodTitle";
+            this.lblMethodTitle.Size = new System.Drawing.Size(106, 23);
+            this.lblMethodTitle.TabIndex = 12;
+            this.lblMethodTitle.AutoSize = false;
+            this.lblMethodTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblMethodTitle.Text = "אמצעי תשלום:";
             // 
-            // lblsumWhithMaam
+            // lblMethod
             // 
-            this.lblsumWhithMaam.AutoSize = true;
-            this.lblsumWhithMaam.Location = new System.Drawing.Point(266, 419);
-            this.lblsumWhithMaam.Name = "lblsumWhithMaam";
-            this.lblsumWhithMaam.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblsumWhithMaam.Size = new System.Drawing.Size(104, 19);
-            this.lblsumWhithMaam.TabIndex = 13;
-            this.lblsumWhithMaam.Text = "סכום כול מע\"מ:";
+            this.lblMethod.Location = new System.Drawing.Point(130, 260);
+            this.lblMethod.Name = "lblMethod";
+            this.lblMethod.Size = new System.Drawing.Size(260, 23);
+            this.lblMethod.TabIndex = 13;
+            this.lblMethod.AutoSize = false;
+            this.lblMethod.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblMethod.Text = "-";
+            this.lblMethod.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblMaam
+            // lblDescTitle
             // 
-            this.lblMaam.AutoSize = true;
-            this.lblMaam.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.lblMaam.Location = new System.Drawing.Point(266, 395);
-            this.lblMaam.Name = "lblMaam";
-            this.lblMaam.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblMaam.Size = new System.Drawing.Size(47, 19);
-            this.lblMaam.TabIndex = 12;
-            this.lblMaam.Text = "מע\"מ:";
+            this.lblDescTitle.Location = new System.Drawing.Point(479, 295);
+            this.lblDescTitle.Name = "lblDescTitle";
+            this.lblDescTitle.Size = new System.Drawing.Size(61, 23);
+            this.lblDescTitle.TabIndex = 14;
+            this.lblDescTitle.AutoSize = false;
+            this.lblDescTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDescTitle.Text = "תיאור:";
             // 
-            // tableLayoutPanel1
+            // lblDesc
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.54633F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 41.90751F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.56647F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(68, 232);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 94.66666F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(346, 88);
-            this.tableLayoutPanel1.TabIndex = 11;
+            this.lblDesc.Location = new System.Drawing.Point(130, 295);
+            this.lblDesc.Name = "lblDesc";
+            this.lblDesc.Size = new System.Drawing.Size(260, 23);
+            this.lblDesc.TabIndex = 15;
+            this.lblDesc.AutoSize = false;
+            this.lblDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDesc.Text = "-";
+            this.lblDesc.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblPay
+            // lineTop
             // 
-            this.lblPay.AutoSize = true;
-            this.lblPay.Location = new System.Drawing.Point(105, 465);
-            this.lblPay.Name = "lblPay";
-            this.lblPay.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblPay.Size = new System.Drawing.Size(62, 19);
-            this.lblPay.TabIndex = 9;
-            this.lblPay.Text = "לתשלום:";
+            this.lineTop.Location = new System.Drawing.Point(20, 345);
+            this.lineTop.Name = "lineTop";
+            this.lineTop.Size = new System.Drawing.Size(520, 2);
+            this.lineTop.TabIndex = 16;
+            this.lineTop.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lineTop.AutoSize = false;
             // 
-            // lblsum
+            // lblNetTitle
             // 
-            this.lblsum.AutoSize = true;
-            this.lblsum.Location = new System.Drawing.Point(148, 206);
-            this.lblsum.Name = "lblsum";
-            this.lblsum.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblsum.Size = new System.Drawing.Size(43, 19);
-            this.lblsum.TabIndex = 8;
-            this.lblsum.Text = "סכום:";
+            this.lblNetTitle.Location = new System.Drawing.Point(404, 360);
+            this.lblNetTitle.Name = "lblNetTitle";
+            this.lblNetTitle.Size = new System.Drawing.Size(136, 23);
+            this.lblNetTitle.TabIndex = 17;
+            this.lblNetTitle.AutoSize = false;
+            this.lblNetTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblNetTitle.Text = "סכום לפני מע\"מ:";
             // 
-            // lbldescrib
+            // lblNet
             // 
-            this.lbldescrib.AutoSize = true;
-            this.lbldescrib.Location = new System.Drawing.Point(239, 206);
-            this.lbldescrib.Name = "lbldescrib";
-            this.lbldescrib.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lbldescrib.Size = new System.Drawing.Size(89, 19);
-            this.lbldescrib.TabIndex = 7;
-            this.lbldescrib.Text = "תאור תשלום:";
+            this.lblNet.Location = new System.Drawing.Point(130, 360);
+            this.lblNet.Name = "lblNet";
+            this.lblNet.Size = new System.Drawing.Size(260, 23);
+            this.lblNet.TabIndex = 18;
+            this.lblNet.AutoSize = false;
+            this.lblNet.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblNet.Text = "-";
+            this.lblNet.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblCode
+            // lblVatTitle
             // 
-            this.lblCode.AutoSize = true;
-            this.lblCode.Location = new System.Drawing.Point(334, 206);
-            this.lblCode.Name = "lblCode";
-            this.lblCode.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblCode.Size = new System.Drawing.Size(79, 19);
-            this.lblCode.TabIndex = 5;
-            this.lblCode.Text = "קוד תשלום:";
+            this.lblVatTitle.Location = new System.Drawing.Point(479, 395);
+            this.lblVatTitle.Name = "lblVatTitle";
+            this.lblVatTitle.Size = new System.Drawing.Size(61, 23);
+            this.lblVatTitle.TabIndex = 19;
+            this.lblVatTitle.AutoSize = false;
+            this.lblVatTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblVatTitle.Text = "מע\"מ:";
             // 
-            // lblNumberPay
+            // lblVat
             // 
-            this.lblNumberPay.AutoSize = true;
-            this.lblNumberPay.Location = new System.Drawing.Point(72, 465);
-            this.lblNumberPay.Name = "lblNumberPay";
-            this.lblNumberPay.Size = new System.Drawing.Size(0, 19);
-            this.lblNumberPay.TabIndex = 4;
+            this.lblVat.Location = new System.Drawing.Point(130, 395);
+            this.lblVat.Name = "lblVat";
+            this.lblVat.Size = new System.Drawing.Size(260, 23);
+            this.lblVat.TabIndex = 20;
+            this.lblVat.AutoSize = false;
+            this.lblVat.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblVat.Text = "-";
+            this.lblVat.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lblMostMaam
+            // lblTotalTitle
             // 
-            this.lblMostMaam.AutoSize = true;
-            this.lblMostMaam.Location = new System.Drawing.Point(266, 366);
-            this.lblMostMaam.Name = "lblMostMaam";
-            this.lblMostMaam.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblMostMaam.Size = new System.Drawing.Size(150, 19);
-            this.lblMostMaam.TabIndex = 3;
-            this.lblMostMaam.Text = "סכום חייב במע\"מ 17%:";
+            this.lblTotalTitle.Location = new System.Drawing.Point(442, 430);
+            this.lblTotalTitle.Name = "lblTotalTitle";
+            this.lblTotalTitle.Size = new System.Drawing.Size(98, 23);
+            this.lblTotalTitle.TabIndex = 21;
+            this.lblTotalTitle.AutoSize = false;
+            this.lblTotalTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTotalTitle.Text = "סה\"כ שולם:";
             // 
-            // lblTel
+            // lblTotal
             // 
-            this.lblTel.AutoSize = true;
-            this.lblTel.Location = new System.Drawing.Point(388, 133);
-            this.lblTel.Name = "lblTel";
-            this.lblTel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lblTel.Size = new System.Drawing.Size(29, 19);
-            this.lblTel.TabIndex = 2;
-            this.lblTel.Text = "טל:";
+            this.lblTotal.Location = new System.Drawing.Point(130, 430);
+            this.lblTotal.Name = "lblTotal";
+            this.lblTotal.Size = new System.Drawing.Size(260, 23);
+            this.lblTotal.TabIndex = 22;
+            this.lblTotal.AutoSize = false;
+            this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblTotal.Text = "-";
+            this.lblTotal.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // lbCustomer
+            // lblBalanceTitle
             // 
-            this.lbCustomer.AutoSize = true;
-            this.lbCustomer.Location = new System.Drawing.Point(364, 82);
-            this.lbCustomer.Name = "lbCustomer";
-            this.lbCustomer.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.lbCustomer.Size = new System.Drawing.Size(58, 19);
-            this.lbCustomer.TabIndex = 1;
-            this.lbCustomer.Text = "לקוח\\ה:";
+            this.lblBalanceTitle.Location = new System.Drawing.Point(449, 465);
+            this.lblBalanceTitle.Name = "lblBalanceTitle";
+            this.lblBalanceTitle.Size = new System.Drawing.Size(91, 23);
+            this.lblBalanceTitle.TabIndex = 23;
+            this.lblBalanceTitle.AutoSize = false;
+            this.lblBalanceTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblBalanceTitle.Text = "יתרה בתיק:";
             // 
-            // dateTimePicker1
+            // lblBalance
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(134, 149);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 27);
-            this.dateTimePicker1.TabIndex = 29;
+            this.lblBalance.Location = new System.Drawing.Point(130, 465);
+            this.lblBalance.Name = "lblBalance";
+            this.lblBalance.Size = new System.Drawing.Size(260, 23);
+            this.lblBalance.TabIndex = 24;
+            this.lblBalance.AutoSize = false;
+            this.lblBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblBalance.Text = "-";
+            this.lblBalance.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             // 
-            // pictureBox1
+            // lblSignLawyer
             // 
-            this.pictureBox1.Image = global::LawyerProject.Properties.Resources.אייקון__2_;
-            this.pictureBox1.Location = new System.Drawing.Point(37, 16);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(171, 118);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 30;
-            this.pictureBox1.TabStop = false;
+            this.lblSignLawyer.Location = new System.Drawing.Point(307, 540);
+            this.lblSignLawyer.Name = "lblSignLawyer";
+            this.lblSignLawyer.Size = new System.Drawing.Size(233, 23);
+            this.lblSignLawyer.TabIndex = 25;
+            this.lblSignLawyer.AutoSize = false;
+            this.lblSignLawyer.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblSignLawyer.Text = "חתימת עורך הדין: ____________";
+            // 
+            // lblSignClient
+            // 
+            this.lblSignClient.Location = new System.Drawing.Point(57, 540);
+            this.lblSignClient.Name = "lblSignClient";
+            this.lblSignClient.Size = new System.Drawing.Size(203, 23);
+            this.lblSignClient.TabIndex = 26;
+            this.lblSignClient.AutoSize = false;
+            this.lblSignClient.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblSignClient.Text = "חתימת הלקוח: ____________";
+            // 
+            // btnPrint
+            // 
+            this.btnPrint.Location = new System.Drawing.Point(460, 630);
+            this.btnPrint.Name = "btnPrint";
+            this.btnPrint.Size = new System.Drawing.Size(120, 38);
+            this.btnPrint.TabIndex = 27;
+            this.btnPrint.Text = "הדפסה";
+            this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            // 
+            // btnClose
+            // 
+            this.btnClose.Location = new System.Drawing.Point(330, 630);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(120, 38);
+            this.btnClose.TabIndex = 28;
+            this.btnClose.Text = "סגירה";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // frmKabala
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 768);
-            this.Controls.Add(this.panel1);
+            this.ClientSize = new System.Drawing.Size(600, 685);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnPrint);
+            this.Controls.Add(this.panelReceipt);
+            this.Font = new System.Drawing.Font("Calibri", 12F);
             this.Name = "frmKabala";
-            this.Text = "חשבונית";
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = true;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "קבלה";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
+            this.panelReceipt.ResumeLayout(false);
+            this.panelReceipt.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label lblsignature;
-        private System.Windows.Forms.Label lblnameC;
+        private System.Windows.Forms.Panel panelReceipt;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
+        private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblOffice;
+        private System.Windows.Forms.Label lblDateTitle;
         private System.Windows.Forms.Label lblDate;
-        private System.Windows.Forms.Label lblphone;
-        private System.Windows.Forms.Label lblDate111;
-        private System.Windows.Forms.Label lblNumPosition;
-        private System.Windows.Forms.Label lblPosition;
-        private System.Windows.Forms.Label lblSumWith;
-        private System.Windows.Forms.Label lblNumMaam;
-        private System.Windows.Forms.Label lblNumMostMaam;
-        private System.Windows.Forms.Label lblsumWhithMaam;
-        private System.Windows.Forms.Label lblMaam;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label lblPay;
-        private System.Windows.Forms.Label lblsum;
-        private System.Windows.Forms.Label lbldescrib;
-        private System.Windows.Forms.Label lblCode;
-        private System.Windows.Forms.Label lblNumberPay;
-        private System.Windows.Forms.Label lblMostMaam;
-        private System.Windows.Forms.Label lblTel;
-        private System.Windows.Forms.Label lbCustomer;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblNameLawyer;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label lblCustomerTitle;
+        private System.Windows.Forms.Label lblCustomer;
+        private System.Windows.Forms.Label lblPhoneTitle;
+        private System.Windows.Forms.Label lblPhone;
+        private System.Windows.Forms.Label lblTikTitle;
+        private System.Windows.Forms.Label lblTik;
+        private System.Windows.Forms.Label lblMethodTitle;
+        private System.Windows.Forms.Label lblMethod;
+        private System.Windows.Forms.Label lblDescTitle;
+        private System.Windows.Forms.Label lblDesc;
+        private System.Windows.Forms.Label lineTop;
+        private System.Windows.Forms.Label lblNetTitle;
+        private System.Windows.Forms.Label lblNet;
+        private System.Windows.Forms.Label lblVatTitle;
+        private System.Windows.Forms.Label lblVat;
+        private System.Windows.Forms.Label lblTotalTitle;
+        private System.Windows.Forms.Label lblTotal;
+        private System.Windows.Forms.Label lblBalanceTitle;
+        private System.Windows.Forms.Label lblBalance;
+        private System.Windows.Forms.Label lblSignLawyer;
+        private System.Windows.Forms.Label lblSignClient;
+        private System.Windows.Forms.Button btnPrint;
+        private System.Windows.Forms.Button btnClose;
     }
 }

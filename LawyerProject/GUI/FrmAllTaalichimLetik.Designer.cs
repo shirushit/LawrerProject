@@ -1,6 +1,6 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
-    partial class frmAddTaalichLetik
+    partial class FrmAllTaalichimLetik
     {
         /// <summary>
         /// Required designer variable.
@@ -63,7 +63,6 @@
             this.btnAdd.Text = "הוספה";
             this.btnAdd.UseVisualStyleBackColor = false;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            this.btnAdd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.btnAdd_KeyPress);
             // 
             // dataGridView1
             // 
@@ -128,7 +127,7 @@
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             this.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "frmAddTaalichLetik";
+            this.Name = "FrmAllTaalichimLetik";
             this.Text = "כל התהליכים לתיקים";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);

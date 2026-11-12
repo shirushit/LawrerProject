@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class frmAddSubjektTik
     {
@@ -115,7 +115,6 @@
             this.txtSharTircha.Name = "txtSharTircha";
             this.txtSharTircha.Size = new System.Drawing.Size(132, 27);
             this.txtSharTircha.TabIndex = 11;
-            this.txtSharTircha.TextChanged += new System.EventHandler(this.txtSharTircha_TextChanged);
             this.txtSharTircha.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSharTircha_KeyPress);
             // 
             // label3

@@ -1,101 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LawyerProject.DB;
-using LawyerProject.GUI;
-using LawyerProject.BLL;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Clients, opposing parties and opposing lawyers.</summary>
     public partial class frmAllCostemers : Form
     {
+        private List<Customers> all = new List<Customers>();
 
-        Customers C;
-        DB.LawyerDBEntities1 d;
-        IEnumerable<DB.Customers> fillter;
         public frmAllCostemers()
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            fillter = d.Customers.ToList();
-            filldatagridview();
-        }
-        private void filldatagridview()
-        {
-            d = new LawyerDBEntities1();
-            dataGridView1.DataSource = d.Customers.ToList().Select(y => new { y.IDcustemer, y.FirstName,y.LastName, y.City, y.Adress, y.House, y.Mikud, y.Telephone, y.SmartPhone, y.Mail, y.DateBirthday, y.CopyID }).ToList();
-            changeheaders();
-        }
-        public void changeheaders()
-        {
-            dataGridView1.Columns["IDcustemer"].HeaderText = "ת.ז. לקוח";
-            dataGridView1.Columns["FirstName"].HeaderText = "שם פרטי";
-            dataGridView1.Columns["LastName"].HeaderText = "שם משפחה";
-            dataGridView1.Columns["City"].HeaderText = "עיר";
-            dataGridView1.Columns["Adress"].HeaderText = "כתובת";
-            dataGridView1.Columns["House"].HeaderText = "מספר בית";
-            dataGridView1.Columns["Mikud"].HeaderText = "מיקוד";
-            dataGridView1.Columns["Telephone"].HeaderText = "טלפון";
-            dataGridView1.Columns["SmartPhone"].HeaderText = "סמארטפון נייד";
-            dataGridView1.Columns["Mail"].HeaderText = "מייל";
-            dataGridView1.Columns["DateBirthday"].HeaderText = "תאריך לידה";
-            dataGridView1.Columns["CopyID"].HeaderText = "צילום ת.ז";
+            LoadCustomers();
         }
 
-        private void filldgvFILLTER()
+        private void LoadCustomers()
         {
-            dataGridView1.DataSource = fillter.ToList().Select(y => new { y.IDcustemer, y.FirstName, y.City, y.Adress ,y.House, y.Mikud, y.Telephone, y.SmartPhone, y.Mail, y.DateBirthday, y.CopyID }).ToList();
+            using (var db = new LawyerDBEntities1())
+                all = db.Customers.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ToList();
+            ApplyFilter();
         }
 
-
-
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void ApplyFilter()
         {
-            GUI.frmAddCostemer f = new GUI.frmAddCostemer();
-            f.ShowDialog();
-            filldatagridview();
-        }
+            string text = txtIDCostemer.Text.Trim();
+            IEnumerable<Customers> rows = all;
+            if (text.Length > 0)
+                rows = rows.Where(c => c.IDcustemer.StartsWith(text)
+                                    || (c.FirstName + " " + c.LastName).Contains(text)
+                                    || (c.LastName + " " + c.FirstName).Contains(text));
 
-        private void btnUpDate_Click(object sender, EventArgs e)
-        {
-            string ID = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
-            frmAddCostemer c = new frmAddCostemer(ID);
-            c.ShowDialog();
-            filldatagridview();
-        }
+            dataGridView1.DataSource = rows.Select(c => new
+            {
+                c.IDcustemer,
+                c.FirstName,
+                c.LastName,
+                c.SugPerson,
+                c.City,
+                Address = c.Adress + " " + c.House,
+                c.Telephone,
+                c.SmartPhone,
+                c.Mail,
+                BirthDate = Ui.FormatDate(c.DateBirthday)
+            }).ToList();
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            {
+                { "IDcustemer", "ת.ז." },
+                { "FirstName", "שם פרטי" },
+                { "LastName", "שם משפחה" },
+                { "SugPerson", "סוג" },
+                { "City", "עיר" },
+                { "Address", "כתובת" },
+                { "Telephone", "טלפון" },
+                { "SmartPhone", "נייד" },
+                { "Mail", "מייל" },
+                { "BirthDate", "תאריך לידה" }
+            });
         }
 
         private void txtIDCostemer_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                fillter = fillter.Where(x => x.IDcustemer.StartsWith(txtIDCostemer.Text));
-                filldgvFILLTER();
-            }
-            catch
-            {
-
-            }
+            ApplyFilter();
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
-
+            using (var form = new frmAddCostemer())
+                form.ShowDialog();
+            LoadCustomers();
         }
 
-        private void txtIDCostemer_KeyPress(object sender, KeyPressEventArgs e)
+        private void btnUpDate_Click(object sender, EventArgs e)
         {
-            e.Handled = !Validation.IsNumber(e.KeyChar.ToString());
+            object id = Ui.SelectedValue(dataGridView1, "IDcustemer");
+            if (id == null)
+            {
+                Ui.Error("יש לבחור לקוח מהרשימה.");
+                return;
+            }
+            using (var form = frmAddCostemer.ForEdit(id.ToString()))
+                form.ShowDialog();
+            LoadCustomers();
         }
     }
 }

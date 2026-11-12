@@ -1,422 +1,454 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LawyerProject.DB;
 using LawyerProject.BLL;
-using LawyerProject.GUI;
-using static System.Windows.Forms.AxHost;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Data.SqlClient;
-using System.Diagnostics.Eventing.Reader;
+using LawyerProject.DB;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>
+    /// Open a new case or manage an existing one: details, opposing side, fees,
+    /// the step timeline (with automatic date updates) and payments.
+    /// </summary>
     public partial class frmAddTikLetipulOrechDin : Form
     {
-        DB.LawyerDBEntities1 d;
-        string state;
-        Tikim_Letipul_Orech_Din T;
-        List<Tahalich_Tipul_Betik> taalicim = new List<Tahalich_Tipul_Betik>();
-        List<Tashlumim_Letik> tashlumim = new List<Tashlumim_Letik>();
-        public frmAddTikLetipulOrechDin()
+        private LawyerDBEntities1 db;
+        private Tikim_Letipul_Orech_Din tik;
+        private bool isNew;
+        private bool loading;
+
+        /// <summary>New court case.</summary>
+        public frmAddTikLetipulOrechDin() : this(false)
+        {
+        }
+
+        /// <summary>New case; <paramref name="isDeal"/> = property transaction instead of a court case.</summary>
+        public frmAddTikLetipulOrechDin(bool isDeal)
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            state = "Add";
-            T = new Tikim_Letipul_Orech_Din();
-            lblStatusTik.Text = GetNewKey1(d.Tikim_Letipul_Orech_Din.ToList()).ToString();
-            lblCodeTik.Text = GetNewKey(d.Tikim_Letipul_Orech_Din.ToList()).ToString();
-            cmbBetMishpat.DataSource = d.Bet_Mishpat.ToList();
-            List<Customers> lstCustomers = new List<Customers>();
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "לקוח").ToList();
-            comboBox3.DataSource = lstCustomers;
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "לקוח נגדי").ToList();
-            cmbCustemerNegdi.DataSource = lstCustomers;
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "עורך דין נגדי").ToList();
-            cmbOrechDinNegdi.DataSource = lstCustomers;
-            comboBox1.DataSource = d.Subjekt_Tik.ToList();
-            checkBoxTikMenoal.Checked = true;
+            isNew = true;
+            db = new LawyerDBEntities1();
+            tik = new Tikim_Letipul_Orech_Din();
+            LoadLists();
+            rbDeal.Checked = isDeal;
+            rbCourt.Checked = !isDeal;
+            UpdateMode();
         }
-        public frmAddTikLetipulOrechDin(int ID)
+
+        /// <summary>Existing case.</summary>
+        public frmAddTikLetipulOrechDin(int id)
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            state = "Update";
-            T = new Tikim_Letipul_Orech_Din();
-            lblCodeTik.Text = GetNewKey(d.Tikim_Letipul_Orech_Din.ToList()).ToString();
-            cmbBetMishpat.DataSource = d.Bet_Mishpat.ToList();
-            lblStatusTik.Text = GetNewKey1(d.Tikim_Letipul_Orech_Din.ToList()).ToString();
-            List<Customers> lstCustomers = new List<Customers>();
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "לקוח").ToList();
-            comboBox3.DataSource = lstCustomers;
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "לקוח נגדי").ToList();
-            cmbCustemerNegdi.DataSource = lstCustomers;
-            lstCustomers = d.Customers.Where(x => x.SugPerson == "עורך דין נגדי").ToList();
-            cmbOrechDinNegdi.DataSource = lstCustomers;
-            comboBox1.DataSource = d.Subjekt_Tik.ToList();
-            taalicim = d.Tahalich_Tipul_Betik.ToList();
-            tashlumim = d.Tashlumim_Letik.ToList();
-            T = d.Tikim_Letipul_Orech_Din.FirstOrDefault(x => x.IDTik == ID);
-            cmbStatusTik.DataSource = d.Taalichim_Letikim.ToString();
+            LoadCase(id);
         }
-        //פעולה מחזירה את הקוד של התיק לטיפול העורך דין
-        public int GetNewKey(List<DB.Tikim_Letipul_Orech_Din> l)
+
+        // ------------------------------------------------------------------ loading
+
+        private void LoadCase(int id)
         {
-            if (l.Count == 0)
+            if (db != null) db.Dispose();
+            db = new LawyerDBEntities1();
+            tik = db.Tikim_Letipul_Orech_Din.FirstOrDefault(t => t.IDTik == id);
+            if (tik == null) throw new ArgumentException("Case not found: " + id);
+            isNew = false;
+            LoadLists();
+            FillControls();
+            FillSteps();
+            FillPayments();
+            UpdateMode();
+        }
+
+        private void LoadLists()
+        {
+            loading = true;
+            List<Customers> people = db.Customers.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ToList();
+            cmbCustomer.DataSource = people.Where(c => c.SugPerson == PersonTypes.Client).ToList();
+            cmbCustemerNegdi.DataSource = people.Where(c => c.SugPerson == PersonTypes.OpposingClient).ToList();
+            cmbOrechDinNegdi.DataSource = people.Where(c => c.SugPerson == PersonTypes.OpposingLawyer).ToList();
+            cmbSubjektTik.DataSource = db.Subjekt_Tik.OrderBy(s => s.NameSugTik).ToList();
+            cmbCustomer.SelectedIndex = cmbCustemerNegdi.SelectedIndex = cmbOrechDinNegdi.SelectedIndex = -1;
+            if (isNew) cmbSubjektTik.SelectedIndex = -1;
+            loading = false;
+            cmbSubjektTik.SelectedIndexChanged -= cmbSubjektTik_SelectedIndexChanged;
+            cmbSubjektTik.SelectedIndexChanged += cmbSubjektTik_SelectedIndexChanged;
+            LoadCourts();
+        }
+
+        /// <summary>Courts that handle the selected case type; all courts if none is linked yet.</summary>
+        private void LoadCourts()
+        {
+            var subject = cmbSubjektTik.SelectedItem as Subjekt_Tik;
+            List<Bet_Mishpat> courts = null;
+            if (subject != null)
+                courts = db.Subjekts_Shebet_Mishpat_Metapel
+                    .Where(s => s.IDSubjekt == subject.IDSugTik)
+                    .Select(s => s.Bet_Mishpat)
+                    .Distinct()
+                    .OrderBy(b => b.NameBetMishpat)
+                    .ToList();
+            if (courts == null || courts.Count == 0)
+                courts = db.Bet_Mishpat.OrderBy(b => b.NameBetMishpat).ToList();
+
+            object previous = cmbBetMishpat.SelectedItem;
+            cmbBetMishpat.DataSource = courts;
+            cmbBetMishpat.SelectedItem = previous;
+            if (cmbBetMishpat.SelectedItem == null) cmbBetMishpat.SelectedIndex = -1;
+        }
+
+        private static void Select(ComboBox combo, Func<object, bool> match)
+        {
+            foreach (object item in combo.Items)
+                if (match(item)) { combo.SelectedItem = item; return; }
+            combo.SelectedIndex = -1;
+        }
+
+        private void FillControls()
+        {
+            loading = true;
+            Text = "תיק מספר " + tik.IDTik;
+            lblCodeTik.Text = tik.IDTik.ToString();
+            Select(cmbCustomer, o => ((Customers)o).IDcustemer == tik.IDCostemer);
+            Select(cmbSubjektTik, o => ((Subjekt_Tik)o).IDSugTik == tik.IDSubjektTik);
+            Select(cmbCustemerNegdi, o => ((Customers)o).IDcustemer == tik.KodLakoachNegdi);
+            Select(cmbOrechDinNegdi, o => ((Customers)o).IDcustemer == tik.KodOrechDinNegdi);
+            loading = false;
+            LoadCourts();
+            Select(cmbBetMishpat, o => ((Bet_Mishpat)o).IDBetMishpat == tik.IDBetMishpat);
+
+            rbCourt.Checked = tik.IsCourtCase;
+            rbDeal.Checked = !tik.IsCourtCase;
+            txtIPuy.Text = tik.IpuiKohach;
+
+            string money = tik.SchumLetvia.HasValue ? tik.SchumLetvia.Value.ToString("0.##", CultureInfo.InvariantCulture) : "";
+            txtSchumKetvia.Text = tik.IsCourtCase ? money : "";
+            txtPropertyValue.Text = tik.IsCourtCase ? "" : money;
+            txtSchumShenitba.Text = tik.SchumShenitba.HasValue ? tik.SchumShenitba.Value.ToString("0.##", CultureInfo.InvariantCulture) : "";
+            txtAdressNeches.Text = tik.AdressNeches;
+            txtGush.Text = tik.Gush;
+            txtChelka.Text = tik.Chelka;
+            txtTatChelka.Text = tik.TatChelka;
+
+            txtAchuzRevachim.Text = tik.AchuzRevachim.HasValue ? tik.AchuzRevachim.Value.ToString(CultureInfo.InvariantCulture) : "";
+            txtMikdama.Text = tik.Mikdama.ToString("0.##", CultureInfo.InvariantCulture);
+            checkBoxShulamMikdama.Checked = tik.ShulamMikdama == true;
+            checkBoxShulam.Checked = tik.Shulam;
+
+            lblStatusTik.Text = CaseService.IsFinished(tik)
+                ? "הסתיים"
+                : (tik.Taalichim_Letikim != null ? tik.Taalichim_Letikim.NameTaalich : "-");
+            UpdateMoney();
+        }
+
+        private void FillSteps()
+        {
+            listView1.Items.Clear();
+            DateTime today = DateTime.Today;
+            Tahalich_Tipul_Betik next = CaseService.OrderedSteps(tik).FirstOrDefault(s => s.Buzha != true);
+            int number = 1;
+            foreach (Tahalich_Tipul_Betik step in CaseService.OrderedSteps(tik))
             {
-                return 1;
-            }
-            return Convert.ToInt32(l[l.Count - 1].IDTik) + 1;
-        }
-        //פעולה מחזירה את הסטטוס של התיק לטיפול העורך דין
-        public int GetNewKey1(List<DB.Tikim_Letipul_Orech_Din> l)
-        {
-            return (l[l.Count - 1].StatusTik);
-        }
-        //פעולה שאחראית למלא את התשלומים והתהליכים ששיכים לכל תיק
-        public void fillTaalicim()
-        {
-            //לולאה  שעוברת על כל התהליכים ועבוד כל תהליך מייצרת שורה בליסט שבתצוגה
-            for (int i = 0; i < taalicim.Count; i++)
-            {
-                //בניית שורה בודדה בליטס
-                ListViewItem item = new ListViewItem(new string[] { taalicim[i].IDTahalich.ToString(), taalicim[i].Taalichim_Letikim.NameTaalich, taalicim[i].Taalichim_Letikim.NameTaalich, });
-                //הוספת השורה לפקד בטופס
+                bool done = step.Buzha == true;
+                bool late = !done && step.TaharichMeshoar.HasValue && step.TaharichMeshoar.Value.Date < today;
+                string status = done ? "בוצע" : late ? "באיחור" : (step == next ? "השלב הבא" : "ממתין");
+
+                var item = new ListViewItem(new[]
+                {
+                    number.ToString(),
+                    step.Taalichim_Letikim != null ? step.Taalichim_Letikim.NameTaalich : step.IDTahalich.ToString(),
+                    Ui.FormatDate(step.TaharichMeshoar),
+                    done ? Ui.FormatDate(step.TaharichBizhua) : "",
+                    status
+                });
+                item.Tag = step.IDTahalichTipulLetik;
+                if (done) item.ForeColor = SystemColors.GrayText;
+                else if (late) item.BackColor = Color.MistyRose;
+                if (step == next) item.Font = new Font(listView1.Font, FontStyle.Bold);
                 listView1.Items.Add(item);
+                number++;
             }
+            btnCompleteStep.Enabled = next != null;
         }
-        public void fillTashlumim()
+
+        private void FillPayments()
         {
-            //לולאה  שעוברת על כל התשלומים ועבוד כל תשלום מייצרת שורה בליסט שבתצוגה
-            for (int i = 0; i < taalicim.Count; i++)
+            listView2.Items.Clear();
+            foreach (Tashlumim_Letik p in tik.Tashlumim_Letik.OrderBy(p => p.IDTashlum))
             {
-                //בניית שורה בודדה בליטס
-                ListViewItem item = new ListViewItem(new string[] { tashlumim[i].Itra.ToString(), tashlumim[i].Schum.ToString(), tashlumim[i].TaarichTashlum.ToString(), tashlumim[i].Teur });
-                //הוספת השורה לפקד בטופס
+                var item = new ListViewItem(new[]
+                {
+                    p.IDTashlum.ToString(),
+                    Ui.FormatDate(p.TaarichTashlum),
+                    p.EmzhaeyTashlum,
+                    Ui.FormatMoney(p.Schum),
+                    Ui.FormatMoney(p.Itra),
+                    p.Teur
+                });
+                item.Tag = p.IDTashlum;
                 listView2.Items.Add(item);
-         }   }     
-        //פעולה שקןראת את כל הנתונים שהמשתמש הזין 
-        public void FillTextBox()
-        {
-            lblCodeTik.Text = T.IDTik.ToString();
-            comboBox3.DataSource = d.Customers.ToString();
-            comboBox1.DataSource = d.Subjekt_Tik.ToString();
-            checkBoxTikMenoal.Checked = Convert.ToBoolean(T.IsTheTikMenualInBETMishpat);
-            textBox1.Text = T.IDBetMishpat.ToString();
-            checkBoxTikMenoal.Checked = Convert.ToBoolean(T.IsTheTikMenualInBETMishpat);
-            checkBoxShulam.Checked = T.Shulam;
-            checkBoxShulamMikdama.Checked = Convert.ToBoolean(T.ShulamMikdama);
-            txtIPuy.Text = T.IpuiKohach;
-            cmbBetMishpat.Text = T.Bet_Mishpat.ToString();
-            cmbStatusTik.Text = T.StatusTik.ToString();
-            List<Customers> lst = new List<Customers>();
-            lst = d.Customers.ToList();
-            Customers c=lst.FirstOrDefault(x => x.IDcustemer == T.getCustomerNegdi().IDcustemer.ToString());
-            cmbCustemerNegdi.Text = c.ToString();
-            cmbOrechDinNegdi.Text = T.KodOrechDinNegdi.ToString();
-            txtAdressNeches.Text = T.AdressNeches.ToString();
-            txtAchuzRevachim.Text = T.AchuzRevachim.ToString();
-            txtChelka.Text = T.Chelka.ToString();
-            txtGush.Text = T.Gush.ToString();
-            txtSchumKetvia.Text = T.SchumLetvia.ToString();
-            txtSchumShenitba.Text = T.SchumShenitba.ToString();
-            txtTatChelka.Text = T.TatChelka.ToString();
+            }
+            btnReceipt.Enabled = listView2.Items.Count > 0;
         }
 
-        //פעולה שבודקת האם הנתונים נכונים
-        public bool check()
+        // ------------------------------------------------------------------ UI state
+
+        private void UpdateMode()
         {
-            //הגדרת משתנה מסוג בוליאני
-            bool OK = true;
-            //אתחול הפקד errorProvider1
+            bool court = rbCourt.Checked;
+            groupBoxBetMishpat.Visible = court;
+            groupBoxIska.Visible = !court;
+
+            // The fixed steps come from the case type, so it is chosen once, when the case is opened.
+            cmbSubjektTik.Enabled = isNew;
+            tabControl1.Enabled = !isNew;
+            lblSaveHint.Visible = isNew;
+            if (isNew) Text = court ? "פתיחת תיק חדש" : "עסקת נכס חדשה";
+            UpdateMoney();
+        }
+
+        private decimal? ReadMoney(TextBox box)
+        {
+            decimal value;
+            return Validation.TryParseMoney(box.Text, out value) ? value : (decimal?)null;
+        }
+
+        private double? ReadPercent()
+        {
+            double value;
+            return double.TryParse(txtAchuzRevachim.Text.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out value)
+                ? value : (double?)null;
+        }
+
+        /// <summary>Recalculates the case total and the open balance shown on screen.</summary>
+        private void UpdateMoney()
+        {
+            if (loading) return;
+            decimal? amount = ReadMoney(rbCourt.Checked ? txtSchumKetvia : txtPropertyValue);
+            double? percent = ReadPercent();
+            var subject = cmbSubjektTik.SelectedItem as Subjekt_Tik;
+
+            if (amount == null || percent == null || !Validation.IsPercent(percent.Value))
+            {
+                lblTotal.Text = "-";
+                lblBalance.Text = "-";
+                return;
+            }
+
+            decimal total = FeeCalculator.CaseTotal(amount.Value, percent.Value, subject != null ? (subject.Agra ?? 0m) : 0m);
+            lblTotal.Text = Ui.FormatMoney(total);
+            decimal balance = !isNew && tik.Tashlumim_Letik.Count > 0 ? CaseService.OpenBalance(tik) : total;
+            lblBalance.Text = Ui.FormatMoney(balance);
+        }
+
+        private void CaseType_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateMode();
+        }
+
+        private void cmbSubjektTik_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (loading) return;
+            LoadCourts();
+            UpdateMoney();
+        }
+
+        private void Money_TextChanged(object sender, EventArgs e)
+        {
+            UpdateMoney();
+        }
+
+        private void Money_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !Validation.IsMoneyKey(e.KeyChar);
+        }
+
+        private void Registry_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !Validation.IsRegistryKey(e.KeyChar);
+        }
+
+        // ------------------------------------------------------------------ saving
+
+        private bool ValidateAndCopy()
+        {
             errorProvider1.Clear();
-            //מילוי בפקד comboBox את הרשימה של כל הבתי משפט
-            T.IDBetMishpat = ((Bet_Mishpat)(cmbBetMishpat.SelectedItem)).IDBetMishpat;
-            //קליטה האם התיק מנוהל בבית משפט
-            T.IsTheTikMenualInBETMishpat = checkBoxTikMenoal.Checked;
-            //קליטה הייפוי כוח
-            T.IpuiKohach = txtIPuy.Text;
-            //קליטה האם שולם התשלום לתיק 
-            T.Shulam = checkBoxShulam.Checked;
-            //קליטה האם שולם מקדמה
-            T.ShulamMikdama = checkBoxShulamMikdama.Checked;
-            //אם הנתונים של הגוש תקינים אז תקלוט אותו
-            try
+            bool ok = true;
+            Action<Control, string> fail = (control, message) => { errorProvider1.SetError(control, message); ok = false; };
+
+            var client = cmbCustomer.SelectedItem as Customers;
+            var subject = cmbSubjektTik.SelectedItem as Subjekt_Tik;
+            var opposingClient = cmbCustemerNegdi.SelectedItem as Customers;
+            var opposingLawyer = cmbOrechDinNegdi.SelectedItem as Customers;
+            var court = cmbBetMishpat.SelectedItem as Bet_Mishpat;
+            bool isCourt = rbCourt.Checked;
+
+            if (client == null) fail(cmbCustomer, "יש לבחור לקוח");
+            if (subject == null) fail(cmbSubjektTik, "יש לבחור נושא תיק");
+            if (opposingClient == null) fail(cmbCustemerNegdi, "יש לבחור לקוח נגדי");
+            if (opposingLawyer == null) fail(cmbOrechDinNegdi, "יש לבחור עורך דין נגדי");
+            if (string.IsNullOrWhiteSpace(txtIPuy.Text)) fail(txtIPuy, "יש להזין ייפוי כוח");
+
+            decimal? claim = null, awarded = null, propertyValue = null;
+            if (isCourt)
             {
-                T.Gush = txtGush.Text;
-            }
-            //אם לא הצלחת לקלוט את הנתונים
-            catch (Exception ex)
-            {
-                //תציג הודעה משתמש ליד הפקד של הגוש
-                errorProvider1.SetError(txtGush, ex.Message);
-                //שינוי המשתנה לשלילי
-                OK = false;
-            }
-            //חלקה
-            try
-            {
-                T.Chelka = txtChelka.Text;
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtChelka, ex.Message);
-                OK = false;
-            }
-            //
-            try
-            {
-                T.TatChelka = txtTatChelka.Text;
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtTatChelka, ex.Message);
-                OK = false;
-            }
-            try
-            {
-                T.AdressNeches = txtAdressNeches.Text;
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtAdressNeches, ex.Message);
-                OK = false;
-            }
-            try
-            {
-                T.SchumLetvia = Convert.ToInt32(txtSchumKetvia.Text);
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtSchumKetvia, ex.Message);
-                OK = false;
-            }
-            try
-            {
-               T.SchumShenitba = Convert.ToInt32(txtSchumShenitba.Text);
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtSchumShenitba, ex.Message);
-                OK = false;
-            }
-            try
-            {
-               T.AchuzRevachim = Convert.ToInt32(txtAchuzRevachim.Text);
-            }
-            catch (Exception ex)
-            {
-                errorProvider1.SetError(txtAchuzRevachim, ex.Message);
-                OK = false;
-            }
-          
-            return OK;
-        }
-      private void btnOK_Click(object sender, EventArgs e)
-        {
-            if (check())
-            {
-                if (state == "Add")
+                if (court == null) fail(cmbBetMishpat, "יש לבחור בית משפט");
+                claim = ReadMoney(txtSchumKetvia);
+                if (claim == null || claim <= 0) fail(txtSchumKetvia, "יש להזין סכום תביעה");
+                if (txtSchumShenitba.Text.Trim().Length > 0)
                 {
-                    try
-                    {
-                        d.Tikim_Letipul_Orech_Din.Add(T);
-                        d.SaveChanges();
-                        MessageBox.Show("נשמר בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("שגיאה! לא נשמר");
-                    }
-
+                    awarded = ReadMoney(txtSchumShenitba);
+                    if (awarded == null) fail(txtSchumShenitba, "סכום לא תקין");
                 }
-                if (state == "UpDate")
-                {
-                    try
-                    {
-                        d.SaveChanges();
-                        MessageBox.Show(" עודכן בהצלחה");
-                        this.Close();
-                    }
-                    catch
-                    {
-
-                        MessageBox.Show("שגיאה! לא עודכן");
-                    }
-                }
-            }
-        }
-        void AddTahalicim()
-        {
-            DateTime dt = new DateTime();
-            dt=DateTime.Now;
-            foreach (Taalichim_Kvuim_Batik taalichim in d.Taalichim_Kvuim_Batik.Where(x=>x.Subjekt_Tik==comboBox1.SelectedItem).OrderBy(x=>x.NumLevel))
-            {
-                dt = dt.AddDays(Convert.ToInt32(taalichim.Taalichim_Letikim.MeshechZmanLetaalich));
-                Tahalich_Tipul_Betik ttb = new Tahalich_Tipul_Betik();
-                ttb.IDTahalich = taalichim.IDTaalich;
-                ttb.TaharichBizhua = dt;
-                ttb.TaharichMeshoar = dt;
-                ttb.IDTik = T.IDTik;
-                ttb.Buzha = false;
-                d.Tahalich_Tipul_Betik.Add(ttb);
-                d.SaveChanges();   
-            }
-        }
-       //להוסיף בדיקת תקינות וגוש חלקה ותת חלקה
-        private void txtGush_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumberAndProchent(e.KeyChar);
-        }
-
-        private void txtSchumKetvia_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.bdikat_mispar(e.KeyChar);
-        }
-
-        private void txtSchumShenitba_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.bdikat_mispar(e.KeyChar);
-        }
-
-        private void txtAchuzRevachim_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.ChekNumAchuz(e.KeyChar);
-            e.Handled = !Validation.bdikat_mispar(e.KeyChar);
-        }
-
-        private void checkBoxTikMenoal_CheckedChanged(object sender, EventArgs e)
-        {
-            if(checkBoxTikMenoal.Checked == true)
-            {
-                groupBoxBetMishpat.Visible = true;
-                groupBoxIska.Visible=false;
             }
             else
             {
-                groupBoxBetMishpat.Visible = false;
-                groupBoxIska.Visible = true;
+                if (string.IsNullOrWhiteSpace(txtAdressNeches.Text)) fail(txtAdressNeches, "יש להזין כתובת נכס");
+                if (string.IsNullOrWhiteSpace(txtGush.Text)) fail(txtGush, "יש להזין גוש");
+                if (string.IsNullOrWhiteSpace(txtChelka.Text)) fail(txtChelka, "יש להזין חלקה");
+                propertyValue = ReadMoney(txtPropertyValue);
+                if (propertyValue == null || propertyValue <= 0) fail(txtPropertyValue, "יש להזין שווי נכס");
             }
-        }
-        private void txtChelka_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumberAndProchent(e.KeyChar);
-        }
 
-        private void txtTatChelka_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = !Validation.IsNumberAndProchent(e.KeyChar);
-        }
+            double? percent = ReadPercent();
+            if (percent == null || !Validation.IsPercent(percent.Value)) fail(txtAchuzRevachim, "אחוז בין 0 ל-100");
 
-        private void label21_Click(object sender, EventArgs e)
-        {
-
-        }
-        //פעולה שפותחת את הטופס הוספת לקוח חדש
-        private void button2_Click(object sender, EventArgs e)
-        {
-            frmAllCostemers allCostemers = new frmAllCostemers();
-            allCostemers.ShowDialog();
-            comboBox3.DataSource = d.Customers.ToList();
-        }
-
-        private void btnAddSubjektTik_Click(object sender, EventArgs e)
-        {
-            frmAllSubjektTik allSubjektTik = new frmAllSubjektTik();
-            allSubjektTik.ShowDialog();
-            comboBox1.DataSource = d.Subjekt_Tik.ToList();
-        }
-
-        private void btnAddLawyer_Click(object sender, EventArgs e)
-        {
-            frmAllCostemers allCostemers = new frmAllCostemers();
-            allCostemers.ShowDialog();
-            cmbOrechDinNegdi.DataSource = d.Customers.ToList();
-        }
-
-        private void btnAddCustemerNegdi_Click(object sender, EventArgs e)
-        {
-            frmAllCostemers allCostemers = new frmAllCostemers();
-            allCostemers.ShowDialog();
-            cmbCustemerNegdi.DataSource = d.Customers.ToList();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            frmAddBetMishpat AddBetMishpat = new frmAddBetMishpat();
-            AddBetMishpat.ShowDialog();
-            cmbBetMishpat.DataSource = d.Bet_Mishpat.ToList();
-        }
-
-        private void cmbBetMishpat_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-        //פעולה שמעדכנת את התהליכים לתיק
-        private void button3_Click(object sender, EventArgs e)
-        {
-            bool f = false;
-            DateTime dt = new DateTime();
-            dt = DateTime.Now;
-            if (listView1.CheckedItems.Count > 0)
+            decimal mikdama = 0m;
+            if (txtMikdama.Text.Trim().Length > 0)
             {
-                Tahalich_Tipul_Betik ttb = new Tahalich_Tipul_Betik();
-                ttb = d.Tahalich_Tipul_Betik.First(x => Convert.ToInt32(listView1.SelectedItems[0].SubItems[7]) == x.IDTahalichTipulLetik);
-                foreach(Tahalich_Tipul_Betik t in T.Tahalich_Tipul_Betik.OrderBy(x=>x.TaharichMeshoar))
-                {
-                    if(t.Buzha==false)
-                    {
-                        if(t!=ttb)
-                        {
-                            MessageBox.Show("לא ניתן לדלג על שלבים");
-                            break;
-                        }
-                        else
-                        {
-                            //התהליך בוצע
-                            f = true;
-                            ttb.Buzha = true;
-                            ttb.TaharichBizhua = dt;
-                            d.SaveChanges();
-                           
-                        } 
-                        if(f)
-                        {
-                            //עדכון תאריכים לתהליכים הבאים
-                            dt =  dt.AddDays(Convert.ToInt32(t.Taalichim_Letikim.MeshechZmanLetaalich));
-                            t.TaharichMeshoar = dt;
-                            t.TaharichBizhua = dt;
-                            d.SaveChanges();
-                        }
-                    
-                    }
-                }
+                decimal? m = ReadMoney(txtMikdama);
+                if (m == null) fail(txtMikdama, "סכום לא תקין");
+                else mikdama = m.Value;
             }
-           
-            
-        }
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
+            if (!ok) return false;
+
+            tik.IDCostemer = client.IDcustemer;
+            tik.IDSubjektTik = subject.IDSugTik;
+            tik.KodLakoachNegdi = opposingClient.IDcustemer;
+            tik.KodOrechDinNegdi = opposingLawyer.IDcustemer;
+            tik.IpuiKohach = txtIPuy.Text.Trim();
+            tik.IsTheTikMenualInBETMishpat = isCourt;
+            tik.IDBetMishpat = isCourt ? court.IDBetMishpat : (int?)null;
+            tik.SchumLetvia = isCourt ? claim : propertyValue;
+            tik.SchumShenitba = isCourt ? awarded : null;
+            tik.AdressNeches = isCourt ? null : txtAdressNeches.Text.Trim();
+            tik.Gush = isCourt ? null : txtGush.Text.Trim();
+            tik.Chelka = isCourt ? null : txtChelka.Text.Trim();
+            tik.TatChelka = isCourt || txtTatChelka.Text.Trim().Length == 0 ? null : txtTatChelka.Text.Trim();
+            tik.AchuzRevachim = percent;
+            tik.Mikdama = mikdama;
+            tik.ShulamMikdama = checkBoxShulamMikdama.Checked;
+            tik.Shulam = checkBoxShulam.Checked;
+            return true;
         }
-        private void button2_Click_1(object sender, EventArgs e)
+
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            frmAddTashlumimLetik TashlumimLetik = new frmAddTashlumimLetik(T);
-            TashlumimLetik.ShowDialog();
-            fillTaalicim();
+            if (!ValidateAndCopy()) return;
+            try
+            {
+                if (isNew)
+                {
+                    string error = new CaseService(db).CreatePlan(tik, DateTime.Today);
+                    if (error != null)
+                    {
+                        Ui.Error(error);
+                        return;
+                    }
+                    db.Tikim_Letipul_Orech_Din.Add(tik);
+                }
+                db.SaveChanges();
+                Ui.Info(isNew ? "התיק נפתח. מספר תיק: " + tik.IDTik : "התיק עודכן בהצלחה.");
+                LoadCase(tik.IDTik);
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("שגיאה! התיק לא נשמר.", ex);
+            }
         }
-    }    
+
+        // ------------------------------------------------------------------ steps & payments
+
+        private void btnCompleteStep_Click(object sender, EventArgs e)
+        {
+            Tahalich_Tipul_Betik next = CaseService.OrderedSteps(tik).FirstOrDefault(s => s.Buzha != true);
+            if (next == null) return;
+
+            string name = next.Taalichim_Letikim != null ? next.Taalichim_Letikim.NameTaalich : "";
+            if (!Ui.Confirm("לסמן את השלב \"" + name + "\" כבוצע היום?\nהמועדים של כל השלבים הבאים יעודכנו בהתאם.")) return;
+
+            try
+            {
+                string error = new CaseService(db).CompleteStep(tik, next.IDTahalichTipulLetik, DateTime.Today);
+                if (error != null)
+                {
+                    Ui.Error(error);
+                    return;
+                }
+                LoadCase(tik.IDTik);
+                tabControl1.SelectedTab = tabSteps;
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("שגיאה בעדכון השלב.", ex);
+            }
+        }
+
+        private void btnAddPayment_Click(object sender, EventArgs e)
+        {
+            using (var form = new frmAddTashlumimLetik(tik.IDTik))
+                form.ShowDialog();
+            LoadCase(tik.IDTik);
+            tabControl1.SelectedTab = tabPayments;
+        }
+
+        private void btnReceipt_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0)
+            {
+                Ui.Error("יש לבחור תשלום מהרשימה.");
+                return;
+            }
+            using (var form = new frmKabala((int)listView2.SelectedItems[0].Tag))
+                form.ShowDialog();
+        }
+
+        // ------------------------------------------------------------------ quick-add people
+
+        private void AddPerson(string personType, ComboBox target)
+        {
+            using (var form = new frmAddCostemer(personType))
+            {
+                if (form.ShowDialog() != DialogResult.OK) return;
+                string id = form.SavedId;
+                object[] keep = { cmbCustomer.SelectedItem, cmbCustemerNegdi.SelectedItem, cmbOrechDinNegdi.SelectedItem };
+                var subject = cmbSubjektTik.SelectedItem as Subjekt_Tik;
+                var court = cmbBetMishpat.SelectedItem as Bet_Mishpat;
+                LoadLists();
+                loading = true;
+                Select(cmbSubjektTik, o => subject != null && ((Subjekt_Tik)o).IDSugTik == subject.IDSugTik);
+                loading = false;
+                LoadCourts();
+                Select(cmbBetMishpat, o => court != null && ((Bet_Mishpat)o).IDBetMishpat == court.IDBetMishpat);
+                Select(cmbCustomer, o => keep[0] != null && ((Customers)o).IDcustemer == ((Customers)keep[0]).IDcustemer);
+                Select(cmbCustemerNegdi, o => keep[1] != null && ((Customers)o).IDcustemer == ((Customers)keep[1]).IDcustemer);
+                Select(cmbOrechDinNegdi, o => keep[2] != null && ((Customers)o).IDcustemer == ((Customers)keep[2]).IDcustemer);
+                Select(target, o => ((Customers)o).IDcustemer == id);
+            }
+        }
+
+        private void btnAddCustemer_Click(object sender, EventArgs e) { AddPerson(PersonTypes.Client, cmbCustomer); }
+
+        private void btnAddCustemerNegdi_Click(object sender, EventArgs e) { AddPerson(PersonTypes.OpposingClient, cmbCustemerNegdi); }
+
+        private void btnAddLawyer_Click(object sender, EventArgs e) { AddPerson(PersonTypes.OpposingLawyer, cmbOrechDinNegdi); }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (db != null) db.Dispose();
+            base.OnFormClosed(e);
+        }
+    }
 }

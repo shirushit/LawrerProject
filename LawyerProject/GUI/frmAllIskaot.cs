@@ -1,139 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LawyerProject.BLL;
 using LawyerProject.DB;
-using LawyerProject.GUI;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Property transactions: cases that are not managed in court.</summary>
     public partial class frmAllIskaot : Form
     {
-        Tikim_Letipul_Orech_Din T;
-        DB.LawyerDBEntities1 d;
-        IEnumerable<DB.Tikim_Letipul_Orech_Din> fillter;
+        private class DealRow
+        {
+            public int IDTik { get; set; }
+            public string Client { get; set; }
+            public string AdressNeches { get; set; }
+            public string Gush { get; set; }
+            public string Chelka { get; set; }
+            public string TatChelka { get; set; }
+            public decimal? PropertyValue { get; set; }
+            public decimal Balance { get; set; }
+        }
+
+        private List<DealRow> all = new List<DealRow>();
+
         public frmAllIskaot()
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            fillter = d.Tikim_Letipul_Orech_Din.ToList();
-            filldatagridview();
-        }
-        public frmAllIskaot(int id)
-        {
-            InitializeComponent();
-            T = d.Tikim_Letipul_Orech_Din.FirstOrDefault(x => x.IDTik == id);
-            d = new LawyerDBEntities1();
-            fillter = d.Tikim_Letipul_Orech_Din.ToList();
-            filldatagridview();
-        }
-        //פעולה שממלאה את הדאטה גריביו בכל הנתונים של העיסקאות
-        private void filldatagridview()
-        {
-            d = new LawyerDBEntities1();
-            dataGridView1.DataSource = d.Tikim_Letipul_Orech_Din.ToList().Select(y => new {  y.AdressNeches, y.Gush, y.Chelka, y.TatChelka,y.IsTheTikMenualInBETMishpat }).Where(x=>x.IsTheTikMenualInBETMishpat==false).ToList();
-            changeheaders();
-        }
-        public void changeheaders()
-        {
-            dataGridView1.Columns["AdressNeches"].HeaderText = "כתובת נכס";
-            dataGridView1.Columns["Gush"].HeaderText = "גוש";
-            dataGridView1.Columns["Chelka"].HeaderText = "חלקה";
-            dataGridView1.Columns["TatChelka"].HeaderText = "תת חלקה";
-            dataGridView1.Columns["IsTheTikMenualInBETMishpat"].Visible = false;
-        }
-        private void filldgvFILLTER()
-        {
-            dataGridView1.DataSource = fillter.ToList().Select(y => new { y.AdressNeches, y.Gush, y.Chelka, y.TatChelka, y.IsTheTikMenualInBETMishpat }).Where(x => x.IsTheTikMenualInBETMishpat == false).ToList();
-        }
-       
-        private void btnAdd_Click(object sender, EventArgs e)
-        {
-
-            GUI.frmAddTikLetipulOrechDin f = new GUI.frmAddTikLetipulOrechDin();
-            f.ShowDialog();
-            filldatagridview();
-        }
-        private void btnUpDate_Click(object sender, EventArgs e)
-        {
-
-            int ID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            frmAddTikLetipulOrechDin bt = new frmAddTikLetipulOrechDin(ID);
-            bt.ShowDialog();
-            filldatagridview();
+            LoadDeals();
         }
 
-        private void txtAdress_TextChanged(object sender, EventArgs e)
+        private void LoadDeals()
         {
-            try
+            using (var db = new LawyerDBEntities1())
             {
-                fillter = fillter.Where(x => x.AdressNeches.StartsWith(txtAdress.Text));
-                filldgvFILLTER();
+                all = db.Tikim_Letipul_Orech_Din
+                    .Include(t => t.Customers)
+                    .Include(t => t.Subjekt_Tik)
+                    .Include(t => t.Tashlumim_Letik)
+                    .Where(t => t.IsTheTikMenualInBETMishpat == false)
+                    .ToList()
+                    .Select(t => new DealRow
+                    {
+                        IDTik = t.IDTik,
+                        Client = t.Customers != null ? t.Customers.ToString() : "",
+                        AdressNeches = t.AdressNeches,
+                        Gush = t.Gush,
+                        Chelka = t.Chelka,
+                        TatChelka = t.TatChelka,
+                        PropertyValue = t.SchumLetvia,
+                        Balance = CaseService.OpenBalance(t)
+                    })
+                    .OrderByDescending(r => r.IDTik)
+                    .ToList();
             }
-            catch
-            {
-
-            }
+            ApplyFilter();
         }
 
-        private void txtGush_TextChanged(object sender, EventArgs e)
+        private static bool Matches(string value, TextBox box)
         {
-            try
-            {
-                fillter = fillter.Where(x => x.Gush.StartsWith(txtGush.Text));
-                filldgvFILLTER();
-            }
-            catch
-            {
-
-            }
+            string text = box.Text.Trim();
+            return text.Length == 0 || (value ?? "").StartsWith(text);
         }
 
-        private void txtChelka_TextChanged(object sender, EventArgs e)
+        private void ApplyFilter()
         {
-            try
+            dataGridView1.DataSource = all
+                .Where(r => (txtAdress.Text.Trim().Length == 0 || (r.AdressNeches ?? "").Contains(txtAdress.Text.Trim()))
+                         && Matches(r.Gush, txtGush)
+                         && Matches(r.Chelka, txtChelka)
+                         && Matches(r.TatChelka, txtTatChelka))
+                .ToList();
+            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
             {
-                fillter = fillter.Where(x => x.TatChelka.StartsWith(txtTatChelka.Text));
-                filldgvFILLTER();
-            }
-            catch
-            {
-
-            }
+                { "IDTik", "מספר תיק" },
+                { "Client", "לקוח" },
+                { "AdressNeches", "כתובת נכס" },
+                { "Gush", "גוש" },
+                { "Chelka", "חלקה" },
+                { "TatChelka", "תת חלקה" },
+                { "PropertyValue", "שווי נכס" },
+                { "Balance", "יתרה לתשלום" }
+            });
         }
 
-        private void txtTatChelka_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                fillter = fillter.Where(x => x.Chelka.StartsWith(txtChelka.Text));
-                filldgvFILLTER();
-            }
-            catch
-            {
+        private void txtAdress_TextChanged(object sender, EventArgs e) { ApplyFilter(); }
 
-            }
-        }
+        private void txtGush_TextChanged(object sender, EventArgs e) { ApplyFilter(); }
+
+        private void txtChelka_TextChanged(object sender, EventArgs e) { ApplyFilter(); }
+
+        private void txtTatChelka_TextChanged(object sender, EventArgs e) { ApplyFilter(); }
 
         private void btnAdd_Click_1(object sender, EventArgs e)
         {
-            GUI.frmAddTikLetipulOrechDin f = new GUI.frmAddTikLetipulOrechDin();
-            f.ShowDialog();
-            filldatagridview();
+            using (var form = new frmAddTikLetipulOrechDin(isDeal: true))
+                form.ShowDialog();
+            LoadDeals();
         }
 
         private void btnUpDate_Click_1(object sender, EventArgs e)
         {
-            int ID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            frmAddSubjektShebetMishpatMetapel bt = new frmAddSubjektShebetMishpatMetapel(ID);
-            bt.ShowDialog();
-            filldatagridview();
+            int? id = Ui.SelectedInt(dataGridView1, "IDTik");
+            if (id == null)
+            {
+                Ui.Error("יש לבחור עסקה מהרשימה.");
+                return;
+            }
+            using (var form = new frmAddTikLetipulOrechDin(id.Value))
+                form.ShowDialog();
+            LoadDeals();
         }
     }
 }

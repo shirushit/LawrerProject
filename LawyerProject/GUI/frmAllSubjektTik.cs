@@ -1,81 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LawyerProject.DB;
-using LawyerProject.GUI;
 using LawyerProject.BLL;
+using LawyerProject.DB;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Case types (e.g. "civil claim"), their fees and fixed steps.</summary>
     public partial class frmAllSubjektTik : Form
     {
-        Subjekt_Tik S;
-        DB.LawyerDBEntities1 d;
-        IEnumerable<DB.Subjekt_Tik> fillter;
+        private List<Subjekt_Tik> all = new List<Subjekt_Tik>();
+
         public frmAllSubjektTik()
         {
             InitializeComponent();
-            d = new LawyerDBEntities1();
-            fillter = d.Subjekt_Tik.ToList();
-            filldatagridview();
+            LoadTypes();
         }
-        private void filldatagridview()
+
+        private void LoadTypes()
         {
-            d = new LawyerDBEntities1();
-            dataGridView1.DataSource = d.Subjekt_Tik.ToList().Select(y => new { y.IDSugTik, y.NameSugTik, y.Agra, y.ScharTircha }).ToList();
-            changeheaders();
+            using (var db = new LawyerDBEntities1())
+                all = db.Subjekt_Tik.OrderBy(s => s.NameSugTik).ToList();
+            ApplyFilter();
         }
-        public void changeheaders()
+
+        private void ApplyFilter()
         {
-            dataGridView1.Columns["IDSugTik"].HeaderText = "קוד סוג תיק";
-            dataGridView1.Columns["NameSugTik"].HeaderText = "שם סוג תיק";
-            dataGridView1.Columns["ScharTircha"].HeaderText = "שכר טירחה";
-            dataGridView1.Columns["Agra"].HeaderText = "אגרה";
-        }
-        private void filldgvFILLTER()
-        {
-            dataGridView1.DataSource = fillter.ToList().Select(y => new { y.IDSugTik, y.NameSugTik, y.Agra, y.ScharTircha }).ToList();
+            string text = txtNameSubjektTik.Text.Trim();
+            dataGridView1.DataSource = all
+                .Where(s => text.Length == 0 || s.NameSugTik.Contains(text))
+                .Select(s => new { s.IDSugTik, s.NameSugTik, s.ScharTircha, s.Agra })
+                .ToList();
+            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            {
+                { "IDSugTik", "קוד" },
+                { "NameSugTik", "נושא תיק" },
+                { "ScharTircha", "שכר טרחה" },
+                { "Agra", "אגרה" }
+            });
         }
 
         private void txtNameSubjektTik_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                fillter = fillter.Where(x => x.NameSugTik.StartsWith(txtNameSubjektTik.Text));
-                filldgvFILLTER();
-            }
-            catch
-            {
-
-            }
-        }
-
-        private void btnAdd_Click_1(object sender, EventArgs e)
-        {
-
-            GUI.frmAddSubjektTik f = new GUI.frmAddSubjektTik();
-            f.ShowDialog();
-            filldatagridview();
-        }
-
-        private void btnUpDate_Click_1(object sender, EventArgs e)
-        {
-
-            int ID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
-            frmAddSubjektTik bt = new frmAddSubjektTik(ID);
-            bt.ShowDialog();
-            filldatagridview();
+            ApplyFilter();
         }
 
         private void txtNameSubjektTik_KeyPress(object sender, KeyPressEventArgs e)
         {
-            e.Handled = !Validation.bdikat_text(e.KeyChar);
+            e.Handled = !Validation.IsNameKey(e.KeyChar);
+        }
+
+        private void btnAdd_Click_1(object sender, EventArgs e)
+        {
+            using (var form = new frmAddSubjektTik())
+                form.ShowDialog();
+            LoadTypes();
+        }
+
+        private void btnUpDate_Click_1(object sender, EventArgs e)
+        {
+            int? id = Ui.SelectedInt(dataGridView1, "IDSugTik");
+            if (id == null)
+            {
+                Ui.Error("יש לבחור נושא תיק מהרשימה.");
+                return;
+            }
+            using (var form = new frmAddSubjektTik(id.Value))
+                form.ShowDialog();
+            LoadTypes();
         }
     }
 }

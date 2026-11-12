@@ -1,98 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LawyerProject.BLL;
 using LawyerProject.DB;
-using LawyerProject.GUI;
 
 namespace LawyerProject.GUI
 {
+    /// <summary>Links a case type to a court ("this court handles civil claims").</summary>
     public partial class frmAddSubjektShebetMishpatMetapel : Form
     {
-        DB.LawyerDBEntities1 d;
-        string state;
-        Subjekts_Shebet_Mishpat_Metapel S;
-        public frmAddSubjektShebetMishpatMetapel(Bet_Mishpat b)
-        {
-            InitializeComponent();
-            d = new LawyerDBEntities1();
-            state = "Add";
-            S = new Subjekts_Shebet_Mishpat_Metapel();
-            lblIdBetMishpat.Text = b.IDBetMishpat.ToString();
-            lblIdSubjektLebetMishpat.Text = GetNewKey(d.Subjekts_Shebet_Mishpat_Metapel.ToList()).ToString();
-        }
-        //פעולה בונה למצב עדכון
-        public frmAddSubjektShebetMishpatMetapel(int b)
-        {
-            InitializeComponent();
-            state = "UpDate";
-            d = new DB.LawyerDBEntities1();
-            S = d.Subjekts_Shebet_Mishpat_Metapel.FirstOrDefault(x => x.IDBetMishpat == b);
-            Filltextbox();
-        }
-        //פעולה שממלאה את הקומבובוקס
-        public void Filltextbox()
-        {
-            lblIdSubjektLebetMishpat.Text = S.IDTable.ToString();
-            lblIdBetMishpat.Text = S.IDBetMishpat.ToString();
-            cmbNameSubjectBetMishpat.Text = S.Bet_Mishpat.ToString();
-        }
-        public int GetNewKey(List<DB.Subjekts_Shebet_Mishpat_Metapel> l)
-        {
-            if (l.Count == 0)
-            {
-                return 1;
-            }
-            return Convert.ToInt32(l[l.Count - 1].IDTable) + 1;
-        }
-        public bool check()
-        {
-            bool ok = true;
-            errorProvider1.Clear();
+        private readonly LawyerDBEntities1 db = new LawyerDBEntities1();
+        private readonly int courtId;
 
-            S.IDTable = Convert.ToInt32(lblIdSubjektLebetMishpat.Text);
-            S.IDBetMishpat = Convert.ToInt32(lblIdBetMishpat.Text);
-            S.IDSubjekt = ((Subjekt_Tik)cmbNameSubjectBetMishpat.SelectedItem).IDSugTik;
-            return ok;
+        public frmAddSubjektShebetMishpatMetapel(int courtId)
+        {
+            InitializeComponent();
+            this.courtId = courtId;
+
+            Bet_Mishpat court = db.Bet_Mishpat.Find(courtId);
+            lblIdBetMishpat.Text = court != null ? court.NameBetMishpat : courtId.ToString();
+            lblIdSubjektLebetMishpat.Text = "(חדש)";
+
+            // Only case types that are not linked to this court yet.
+            var linked = db.Subjekts_Shebet_Mishpat_Metapel.Where(s => s.IDBetMishpat == courtId).Select(s => s.IDSubjekt);
+            cmbNameSubjectBetMishpat.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbNameSubjectBetMishpat.DataSource = db.Subjekt_Tik
+                .Where(s => !linked.Contains(s.IDSugTik))
+                .OrderBy(s => s.NameSugTik)
+                .ToList();
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            if (check())
+            var subject = cmbNameSubjectBetMishpat.SelectedItem as Subjekt_Tik;
+            if (subject == null)
             {
-                if (state == "Add")
-                {
-                    try
-                    {
-                        d.Subjekts_Shebet_Mishpat_Metapel.Add(S);
-                        d.SaveChanges();
-                        MessageBox.Show(" נשמר בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show(" לא נשמר");
-                    }
-                }
-                if (state == "Update")
-                {
-                    try
-                    {
-                        d.SaveChanges();
-                        MessageBox.Show(" עודכן בהצלחה");
-                        this.Close();
-                    }
-                    catch (Exception e1)
-                    {
-                        MessageBox.Show(" לא נשמר");
-                    }
-                }
+                Ui.Error("יש לבחור נושא תיק.");
+                return;
             }
+            try
+            {
+                db.Subjekts_Shebet_Mishpat_Metapel.Add(new Subjekts_Shebet_Mishpat_Metapel
+                {
+                    IDBetMishpat = courtId,
+                    IDSubjekt = subject.IDSugTik
+                });
+                db.SaveChanges();
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("שגיאה! לא נשמר.", ex);
+            }
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            db.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }

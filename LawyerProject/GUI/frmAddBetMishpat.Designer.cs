@@ -1,4 +1,4 @@
-﻿namespace LawyerProject.GUI
+namespace LawyerProject.GUI
 {
     partial class frmAddBetMishpat
     {
@@ -121,7 +121,6 @@
             this.BtnUpDateSubjekt.TabIndex = 95;
             this.BtnUpDateSubjekt.Text = "עידכון";
             this.BtnUpDateSubjekt.UseVisualStyleBackColor = false;
-            this.BtnUpDateSubjekt.Click += new System.EventHandler(this.BtnUpDateSubjekt_Click);
             // 
             // btnAddSubjekt
             // 
