@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -16,19 +16,20 @@
           <Key>
             <PropertyRef Name="IDcustemer" />
           </Key>
-          <Property Name="IDcustemer" Type="nvarchar" MaxLength="9" Nullable="false" />
+          <Property Name="IDcustemer" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="25" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="25" Nullable="false" />
-          <Property Name="City" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Adress" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="House" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="Adress" Type="nvarchar" MaxLength="50" />
+          <Property Name="House" Type="nvarchar" MaxLength="5" />
           <Property Name="Mikud" Type="nvarchar" MaxLength="50" />
-          <Property Name="Telephone" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="SmartPhone" Type="nvarchar" MaxLength="10" />
-          <Property Name="Mail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Telephone" Type="nvarchar" MaxLength="20" />
+          <Property Name="SmartPhone" Type="nvarchar" MaxLength="20" />
+          <Property Name="Mail" Type="nvarchar" MaxLength="50" />
           <Property Name="DateBirthday" Type="date" />
           <Property Name="CopyID" Type="nvarchar" MaxLength="50" />
           <Property Name="SugPerson" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SugMezahe" Type="nvarchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="Subjekt_Tik">
           <Key>
@@ -75,6 +76,8 @@
           <Property Name="TaharichMeshoar" Type="date" />
           <Property Name="TaharichBizhua" Type="date" />
           <Property Name="Buzha" Type="bit" />
+          <Property Name="Hearot" Type="nvarchar" MaxLength="200" />
+          <Property Name="MeshechYamim" Type="int" />
         </EntityType>
         <EntityType Name="Tashlumim_Letik">
           <Key>
@@ -97,13 +100,17 @@
           <Property Name="Teur" Type="nvarchar" MaxLength="50" />
           <Property Name="NumAsmachta" Type="nvarchar" MaxLength="50" />
           <Property Name="TaarichLachek" Type="date" />
+          <Property Name="SugTashlum" Type="nvarchar" MaxLength="20" />
+          <Property Name="VatRate" Type="decimal" Precision="5" Scale="4" />
+          <Property Name="Mevutal" Type="bit" Nullable="false" />
+          <Property Name="MevatelTashlum" Type="int" />
         </EntityType>
         <EntityType Name="Tikim_Letipul_Orech_Din">
           <Key>
             <PropertyRef Name="IDTik" />
           </Key>
           <Property Name="IDTik" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IDCostemer" Type="nvarchar" MaxLength="9" Nullable="false" />
+          <Property Name="IDCostemer" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="IDSubjektTik" Type="int" Nullable="false" />
           <Property Name="IsTheTikMenualInBETMishpat" Type="bit" />
           <Property Name="IDBetMishpat" Type="int" />
@@ -121,6 +128,19 @@
           <Property Name="AchuzRevachim" Type="float" />
           <Property Name="KodOrechDinNegdi" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="KodLakoachNegdi" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RowVersion" Type="rowversion" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Yoman">
+          <Key>
+            <PropertyRef Name="IDYoman" />
+          </Key>
+          <Property Name="IDYoman" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Taarich" Type="datetime" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Peula" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Yeshut" Type="nvarchar" MaxLength="50" />
+          <Property Name="KodYeshut" Type="nvarchar" MaxLength="50" />
+          <Property Name="Pratim" Type="nvarchar" MaxLength="400" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -274,6 +294,7 @@
           <EntitySet Name="Tashlumim_Letik" EntityType="Self.Tashlumim_Letik" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tikim_Letipul_Orech_Din" EntityType="Self.Tikim_Letipul_Orech_Din" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Yoman" EntityType="Self.Yoman" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
             <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
             <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
@@ -336,19 +357,20 @@
           <Key>
             <PropertyRef Name="IDcustemer" />
           </Key>
-          <Property Name="IDcustemer" Type="String" MaxLength="9" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IDcustemer" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="FirstName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Adress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="House" Type="String" MaxLength="5" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Adress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="House" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="Mikud" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Telephone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SmartPhone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Mail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Telephone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="SmartPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Mail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DateBirthday" Type="DateTime" Precision="0" />
           <Property Name="CopyID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SugPerson" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SugMezahe" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable3" FromRole="Customers" ToRole="Tikim_Letipul_Orech_Din" />
         </EntityType>
         <EntityType Name="Subjekt_Tik">
@@ -406,6 +428,8 @@
           <Property Name="TaharichMeshoar" Type="DateTime" Precision="0" />
           <Property Name="TaharichBizhua" Type="DateTime" Precision="0" />
           <Property Name="Buzha" Type="Boolean" />
+          <Property Name="Hearot" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MeshechYamim" Type="Int32" />
           <NavigationProperty Name="Taalichim_Letikim" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable_1" FromRole="Tahalich_Tipul_Betik" ToRole="Taalichim_Letikim" />
           <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable" FromRole="Tahalich_Tipul_Betik" ToRole="Tikim_Letipul_Orech_Din" />
         </EntityType>
@@ -430,6 +454,10 @@
           <Property Name="Teur" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="NumAsmachta" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="TaarichLachek" Type="DateTime" Precision="0" />
+          <Property Name="SugTashlum" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="VatRate" Type="Decimal" Precision="5" Scale="4" />
+          <Property Name="Mevutal" Type="Boolean" Nullable="false" />
+          <Property Name="MevatelTashlum" Type="Int32" />
           <NavigationProperty Name="Tikim_Letipul_Orech_Din" Relationship="Self.FK_Tashlumim_Letik_ToTable" FromRole="Tashlumim_Letik" ToRole="Tikim_Letipul_Orech_Din" />
         </EntityType>
         <EntityType Name="Tikim_Letipul_Orech_Din">
@@ -437,7 +465,7 @@
             <PropertyRef Name="IDTik" />
           </Key>
           <Property Name="IDTik" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="IDCostemer" Type="String" MaxLength="9" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IDCostemer" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IDSubjektTik" Type="Int32" Nullable="false" />
           <Property Name="IsTheTikMenualInBETMishpat" Type="Boolean" />
           <Property Name="IDBetMishpat" Type="Int32" />
@@ -455,12 +483,25 @@
           <Property Name="AchuzRevachim" Type="Double" />
           <Property Name="KodOrechDinNegdi" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="KodLakoachNegdi" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
           <NavigationProperty Name="Bet_Mishpat" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_2" FromRole="Tikim_Letipul_Orech_Din" ToRole="Bet_Mishpat" />
           <NavigationProperty Name="Customers" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable3" FromRole="Tikim_Letipul_Orech_Din" ToRole="Customers" />
           <NavigationProperty Name="Subjekt_Tik" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_1" FromRole="Tikim_Letipul_Orech_Din" ToRole="Subjekt_Tik" />
           <NavigationProperty Name="Taalichim_Letikim" Relationship="Self.FK_Tikim_Letipul_Orech_Din_ToTable_3" FromRole="Tikim_Letipul_Orech_Din" ToRole="Taalichim_Letikim" />
           <NavigationProperty Name="Tahalich_Tipul_Betik" Relationship="Self.FK_Tahalich_Tipul_Betik_ToTable" FromRole="Tikim_Letipul_Orech_Din" ToRole="Tahalich_Tipul_Betik" />
           <NavigationProperty Name="Tashlumim_Letik" Relationship="Self.FK_Tashlumim_Letik_ToTable" FromRole="Tikim_Letipul_Orech_Din" ToRole="Tashlumim_Letik" />
+        </EntityType>
+        <EntityType Name="Yoman">
+          <Key>
+            <PropertyRef Name="IDYoman" />
+          </Key>
+          <Property Name="IDYoman" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Taarich" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Peula" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Yeshut" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="KodYeshut" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Pratim" Type="String" MaxLength="400" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -614,6 +655,7 @@
           <EntitySet Name="Tashlumim_Letik" EntityType="Self.Tashlumim_Letik" />
           <EntitySet Name="Tikim_Letipul_Orech_Din" EntityType="Self.Tikim_Letipul_Orech_Din" />
           <EntitySet Name="Users" EntityType="Self.Users" />
+          <EntitySet Name="Yoman" EntityType="Self.Yoman" />
           <AssociationSet Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable" Association="Self.FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
             <End Role="Bet_Mishpat" EntitySet="Bet_Mishpat" />
             <End Role="Subjekts_Shebet_Mishpat_Metapel" EntitySet="Subjekts_Shebet_Mishpat_Metapel" />
@@ -689,6 +731,7 @@
                 <ScalarProperty Name="DateBirthday" ColumnName="DateBirthday" />
                 <ScalarProperty Name="CopyID" ColumnName="CopyID" />
                 <ScalarProperty Name="SugPerson" ColumnName="SugPerson" />
+                <ScalarProperty Name="SugMezahe" ColumnName="SugMezahe" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -740,6 +783,8 @@
                 <ScalarProperty Name="TaharichMeshoar" ColumnName="TaharichMeshoar" />
                 <ScalarProperty Name="TaharichBizhua" ColumnName="TaharichBizhua" />
                 <ScalarProperty Name="Buzha" ColumnName="Buzha" />
+                <ScalarProperty Name="Hearot" ColumnName="Hearot" />
+                <ScalarProperty Name="MeshechYamim" ColumnName="MeshechYamim" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -763,6 +808,10 @@
                 <ScalarProperty Name="Teur" ColumnName="Teur" />
                 <ScalarProperty Name="NumAsmachta" ColumnName="NumAsmachta" />
                 <ScalarProperty Name="TaarichLachek" ColumnName="TaarichLachek" />
+                <ScalarProperty Name="SugTashlum" ColumnName="SugTashlum" />
+                <ScalarProperty Name="VatRate" ColumnName="VatRate" />
+                <ScalarProperty Name="Mevutal" ColumnName="Mevutal" />
+                <ScalarProperty Name="MevatelTashlum" ColumnName="MevatelTashlum" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -788,6 +837,20 @@
                 <ScalarProperty Name="AchuzRevachim" ColumnName="AchuzRevachim" />
                 <ScalarProperty Name="KodOrechDinNegdi" ColumnName="KodOrechDinNegdi" />
                 <ScalarProperty Name="KodLakoachNegdi" ColumnName="KodLakoachNegdi" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Yoman">
+            <EntityTypeMapping TypeName="LawyerDBModel1.Yoman">
+              <MappingFragment StoreEntitySet="Yoman">
+                <ScalarProperty Name="IDYoman" ColumnName="IDYoman" />
+                <ScalarProperty Name="Taarich" ColumnName="Taarich" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Peula" ColumnName="Peula" />
+                <ScalarProperty Name="Yeshut" ColumnName="Yeshut" />
+                <ScalarProperty Name="KodYeshut" ColumnName="KodYeshut" />
+                <ScalarProperty Name="Pratim" ColumnName="Pratim" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

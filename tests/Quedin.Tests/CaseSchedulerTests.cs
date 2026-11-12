@@ -9,7 +9,8 @@ namespace Quedin.Tests
     [TestClass]
     public class CaseSchedulerTests
     {
-        private static readonly DateTime Opened = new DateTime(2024, 3, 1);
+        // A Monday; with 7/14/21-day steps every estimate is also a Monday, so no weekend shift applies.
+        private static readonly DateTime Opened = new DateTime(2024, 3, 4);
 
         private static List<StepTemplate> CivilClaim()
         {
@@ -60,7 +61,7 @@ namespace Quedin.Tests
         public void CompleteStep_Late_PushesAllFollowingDeadlines()
         {
             List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
-            DateTime doneLate = Opened.AddDays(12); // planned for day 7
+            DateTime doneLate = Opened.AddDays(10); // planned for day 7; a Thursday
 
             CaseScheduler.CompleteStep(plan, plan[0], doneLate);
 
@@ -121,6 +122,166 @@ namespace Quedin.Tests
             List<ScheduledStep> due = CaseScheduler.DueSoon(plan, today, 7);
 
             CollectionAssert.AreEqual(new[] { 10, 20 }, due.Select(s => s.ProcessId).ToArray());
+        }
+
+        // ---------------------------------------------------------- workdays
+
+        [TestMethod]
+        public void BusinessCalendar_FridayAndSaturday_MoveToSunday()
+        {
+            Assert.AreEqual(new DateTime(2024, 3, 3), BusinessCalendar.NextWorkday(new DateTime(2024, 3, 1)));  // Fri
+            Assert.AreEqual(new DateTime(2024, 3, 3), BusinessCalendar.NextWorkday(new DateTime(2024, 3, 2)));  // Sat
+            Assert.AreEqual(new DateTime(2024, 3, 7), BusinessCalendar.NextWorkday(new DateTime(2024, 3, 7)));  // Thu stays
+            Assert.IsFalse(BusinessCalendar.IsWorkday(new DateTime(2024, 3, 2)));
+            Assert.IsTrue(BusinessCalendar.IsWorkday(new DateTime(2024, 3, 3)));
+        }
+
+        [TestMethod]
+        public void BuildPlan_DeadlineOnWeekend_MovesToSunday_AndNextStepCountsFromThere()
+        {
+            var templates = new List<StepTemplate>
+            {
+                new StepTemplate { ProcessId = 1, Level = 1, DurationDays = 4 }, // Mon + 4 = Fri -> Sun 10/3
+                new StepTemplate { ProcessId = 2, Level = 2, DurationDays = 6 }, // Sun + 6 = Sat -> Sun 17/3
+            };
+            List<ScheduledStep> plan = CaseScheduler.BuildPlan(templates, Opened);
+
+            Assert.AreEqual(new DateTime(2024, 3, 10), plan[0].EstimatedDate);
+            Assert.AreEqual(new DateTime(2024, 3, 17), plan[1].EstimatedDate);
+            Assert.IsTrue(plan.All(s => BusinessCalendar.IsWorkday(s.EstimatedDate)));
+        }
+
+        [TestMethod]
+        public void CompleteStep_FollowingDeadlinesNeverFallOnWeekend()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], new DateTime(2024, 3, 9)); // Sat + 14 = Sat -> Sun
+
+            Assert.AreEqual(new DateTime(2024, 3, 24), plan[1].EstimatedDate);
+            Assert.IsTrue(BusinessCalendar.IsWorkday(plan[2].EstimatedDate));
+        }
+
+        // ---------------------------------------------------------- completion date rules
+
+        [TestMethod]
+        public void CompleteStep_DateBeforePreviousStepDone_Throws()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(10));
+
+            Assert.ThrowsException<InvalidOperationException>(() => CaseScheduler.CompleteStep(plan, plan[1], Opened.AddDays(9)));
+            Assert.IsFalse(plan[1].IsDone);
+        }
+
+        [TestMethod]
+        public void CompleteStep_SameDayAsPreviousStep_IsAllowed()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(3));
+            CaseScheduler.CompleteStep(plan, plan[1], Opened.AddDays(3));
+
+            Assert.IsTrue(plan[1].IsDone);
+        }
+
+        // ---------------------------------------------------------- order
+
+        [TestMethod]
+        public void Ordered_FollowsCreationOrder_NotDates()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            plan[2].EstimatedDate = Opened; // a strange date must not move step 3 to the front
+
+            Assert.AreSame(plan[0], CaseScheduler.NextPending(plan));
+            CollectionAssert.AreEqual(new[] { 1, 2, 3 }, CaseScheduler.Ordered(plan).Select(s => s.Id).ToArray());
+        }
+
+        // ---------------------------------------------------------- reschedule
+
+        [TestMethod]
+        public void Reschedule_KeepsExactDate_AndPushesFollowingSteps()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            DateTime hearing = new DateTime(2024, 5, 2); // Thursday, set by the court
+
+            CaseScheduler.Reschedule(plan, plan[1], hearing);
+
+            Assert.AreEqual(hearing, plan[1].EstimatedDate);
+            Assert.AreEqual(hearing.AddDays(21), plan[2].EstimatedDate);
+            Assert.AreEqual(Opened.AddDays(7), plan[0].EstimatedDate, "earlier steps are not touched");
+        }
+
+        [TestMethod]
+        public void Reschedule_CanMoveADeadlineEarlier()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.Reschedule(plan, plan[1], Opened.AddDays(10));
+
+            Assert.AreEqual(Opened.AddDays(10), plan[1].EstimatedDate);
+            Assert.AreEqual(Opened.AddDays(31), plan[2].EstimatedDate);
+        }
+
+        [TestMethod]
+        public void Reschedule_DoneStep_Throws()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(7));
+
+            Assert.ThrowsException<InvalidOperationException>(() => CaseScheduler.Reschedule(plan, plan[0], Opened.AddDays(20)));
+        }
+
+        [TestMethod]
+        public void Reschedule_BeforePreviousStep_Throws()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(8));
+
+            Assert.ThrowsException<InvalidOperationException>(() => CaseScheduler.Reschedule(plan, plan[1], Opened.AddDays(7)));
+            Assert.ThrowsException<InvalidOperationException>(() => CaseScheduler.Reschedule(plan, plan[2], Opened));
+        }
+
+        // ---------------------------------------------------------- undo
+
+        [TestMethod]
+        public void UndoLastCompletion_ReopensStep_AndRecalculatesFromItsEstimate()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(10));
+
+            ScheduledStep undone = CaseScheduler.UndoLastCompletion(plan);
+
+            Assert.AreSame(plan[0], undone);
+            Assert.IsFalse(plan[0].IsDone);
+            Assert.IsNull(plan[0].DoneDate);
+            Assert.AreEqual(Opened.AddDays(21), plan[1].EstimatedDate);
+            Assert.AreSame(plan[0], CaseScheduler.NextPending(plan));
+        }
+
+        [TestMethod]
+        public void UndoLastCompletion_OnlyUndoesTheLatestStep()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(7));
+            CaseScheduler.CompleteStep(plan, plan[1], Opened.AddDays(21));
+
+            CaseScheduler.UndoLastCompletion(plan);
+
+            Assert.IsTrue(plan[0].IsDone);
+            Assert.IsFalse(plan[1].IsDone);
+        }
+
+        [TestMethod]
+        public void UndoLastCompletion_NothingDone_Throws()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            Assert.ThrowsException<InvalidOperationException>(() => CaseScheduler.UndoLastCompletion(plan));
+        }
+
+        [TestMethod]
+        public void DaysLate_PositiveWhenLate_NegativeWhenAhead()
+        {
+            Assert.AreEqual(3, CaseScheduler.DaysLate(Opened, Opened.AddDays(3)));
+            Assert.AreEqual(-2, CaseScheduler.DaysLate(Opened.AddDays(2), Opened));
+            Assert.AreEqual(0, CaseScheduler.DaysLate(Opened, Opened.AddHours(20)));
         }
     }
 }

@@ -72,10 +72,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BLL\AppSettings.cs" />
+    <Compile Include="BLL\AuditService.cs" />
     <Compile Include="BLL\AuthService.cs" />
+    <Compile Include="BLL\BackupService.cs" />
     <Compile Include="BLL\CaseScheduler.cs" />
     <Compile Include="BLL\CaseService.cs" />
     <Compile Include="BLL\Constants.cs" />
+    <Compile Include="BLL\CustomerExtensions.cs" />
     <Compile Include="BLL\FeeCalculator.cs" />
     <Compile Include="BLL\PasswordHasher.cs" />
     <Compile Include="BLL\Session.cs" />
@@ -128,6 +131,9 @@
     </Compile>
     <Compile Include="DB\Tikim_Letipul_Orech_Din1.cs" />
     <Compile Include="DB\Users.cs">
+      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\Yoman.cs">
       <DependentUpon>LawyerProjekt.tt</DependentUpon>
     </Compile>
     <Compile Include="GUI\FrmAbout.Designer.cs">

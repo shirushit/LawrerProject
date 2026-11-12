@@ -52,6 +52,7 @@ namespace LawyerProject.BLL
                 PasswordWorker = PasswordHasher.Hash(password),
                 KindWorker = role
             });
+            AuditService.Log(db, AuditActions.UserAdded, "משתמש", name, role);
             db.SaveChanges();
             return null;
         }
@@ -68,6 +69,23 @@ namespace LawyerProject.BLL
             if (passwordError != null) return passwordError;
 
             user.PasswordWorker = PasswordHasher.Hash(newPassword);
+            AuditService.Log(db, AuditActions.PasswordChanged, "משתמש", user.UserName, null);
+            db.SaveChanges();
+            return null;
+        }
+
+        /// <summary>A manager sets a new password for a user who forgot theirs.</summary>
+        public string ResetPassword(string userName, string newPassword)
+        {
+            if (!Session.IsManager) return "רק מנהל יכול לאפס סיסמה.";
+            string name = (userName ?? string.Empty).Trim();
+            Users user = db.Users.FirstOrDefault(u => u.UserName == name);
+            if (user == null) return "המשתמש לא נמצא.";
+            string passwordError = Validation.GetPasswordError(newPassword);
+            if (passwordError != null) return passwordError;
+
+            user.PasswordWorker = PasswordHasher.Hash(newPassword);
+            AuditService.Log(db, AuditActions.PasswordReset, "משתמש", user.UserName, null);
             db.SaveChanges();
             return null;
         }

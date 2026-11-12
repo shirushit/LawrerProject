@@ -31,6 +31,7 @@ IF OBJECT_ID(N'dbo.Taalichim_Letikim', N'U') IS NOT NULL DROP TABLE [dbo].[Taali
 IF OBJECT_ID(N'dbo.Subjekt_Tik', N'U') IS NOT NULL DROP TABLE [dbo].[Subjekt_Tik];
 IF OBJECT_ID(N'dbo.Bet_Mishpat', N'U') IS NOT NULL DROP TABLE [dbo].[Bet_Mishpat];
 IF OBJECT_ID(N'dbo.Customers', N'U') IS NOT NULL DROP TABLE [dbo].[Customers];
+IF OBJECT_ID(N'dbo.Yoman', N'U') IS NOT NULL DROP TABLE [dbo].[Yoman];
 IF OBJECT_ID(N'dbo.Users', N'U') IS NOT NULL DROP TABLE [dbo].[Users];
 GO
 
@@ -42,20 +43,31 @@ CREATE TABLE [dbo].[Users] (
     [KindWorker] nvarchar(50) NOT NULL,
     CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Code])
 );
+CREATE TABLE [dbo].[Yoman] (
+    [IDYoman] int IDENTITY(1,1) NOT NULL,
+    [Taarich] datetime NOT NULL,
+    [UserName] nvarchar(50) NULL,
+    [Peula] nvarchar(50) NOT NULL,
+    [Yeshut] nvarchar(50) NULL,
+    [KodYeshut] nvarchar(50) NULL,
+    [Pratim] nvarchar(400) NULL,
+    CONSTRAINT [PK_Yoman] PRIMARY KEY CLUSTERED ([IDYoman])
+);
 CREATE TABLE [dbo].[Customers] (
-    [IDcustemer] nvarchar(9) NOT NULL,
+    [IDcustemer] nvarchar(20) NOT NULL,
     [FirstName] nvarchar(25) NOT NULL,
     [LastName] nvarchar(25) NOT NULL,
-    [City] nvarchar(50) NOT NULL,
-    [Adress] nvarchar(50) NOT NULL,
-    [House] nvarchar(5) NOT NULL,
+    [City] nvarchar(50) NULL,
+    [Adress] nvarchar(50) NULL,
+    [House] nvarchar(5) NULL,
     [Mikud] nvarchar(50) NULL,
-    [Telephone] nvarchar(10) NOT NULL,
-    [SmartPhone] nvarchar(10) NULL,
-    [Mail] nvarchar(50) NOT NULL,
+    [Telephone] nvarchar(20) NULL,
+    [SmartPhone] nvarchar(20) NULL,
+    [Mail] nvarchar(50) NULL,
     [DateBirthday] date NULL,
     [CopyID] nvarchar(50) NULL,
     [SugPerson] nvarchar(50) NOT NULL,
+    [SugMezahe] nvarchar(20) NULL,
     CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([IDcustemer])
 );
 CREATE TABLE [dbo].[Bet_Mishpat] (
@@ -92,13 +104,13 @@ CREATE TABLE [dbo].[Taalichim_Kvuim_Batik] (
 );
 CREATE TABLE [dbo].[Tikim_Letipul_Orech_Din] (
     [IDTik] int IDENTITY(1,1) NOT NULL,
-    [IDCostemer] nvarchar(9) NOT NULL,
+    [IDCostemer] nvarchar(20) NOT NULL,
     [IDSubjektTik] int NOT NULL,
     [IsTheTikMenualInBETMishpat] bit NULL,
     [IDBetMishpat] int NULL,
     [StatusTik] int NOT NULL,
     [IpuiKohach] nvarchar(50) NOT NULL,
-    [Shulam] bit NOT NULL,
+    [Shulam] bit NOT NULL CONSTRAINT [DF_Tikim_Letipul_Orech_Din_Shulam] DEFAULT 0,
     [Mikdama] money NOT NULL,
     [ShulamMikdama] bit NULL,
     [Gush] nvarchar(50) NULL,
@@ -110,6 +122,7 @@ CREATE TABLE [dbo].[Tikim_Letipul_Orech_Din] (
     [AchuzRevachim] float NULL,
     [KodOrechDinNegdi] nvarchar(50) NOT NULL,
     [KodLakoachNegdi] nvarchar(50) NOT NULL,
+    [RowVersion] rowversion NOT NULL,
     CONSTRAINT [PK_Tikim_Letipul_Orech_Din] PRIMARY KEY CLUSTERED ([IDTik])
 );
 CREATE TABLE [dbo].[Tahalich_Tipul_Betik] (
@@ -119,6 +132,8 @@ CREATE TABLE [dbo].[Tahalich_Tipul_Betik] (
     [TaharichMeshoar] date NULL,
     [TaharichBizhua] date NULL,
     [Buzha] bit NULL,
+    [Hearot] nvarchar(200) NULL,
+    [MeshechYamim] int NULL,
     CONSTRAINT [PK_Tahalich_Tipul_Betik] PRIMARY KEY CLUSTERED ([IDTahalichTipulLetik])
 );
 CREATE TABLE [dbo].[Tashlumim_Letik] (
@@ -139,6 +154,10 @@ CREATE TABLE [dbo].[Tashlumim_Letik] (
     [Teur] nvarchar(50) NULL,
     [NumAsmachta] nvarchar(50) NULL,
     [TaarichLachek] date NULL,
+    [SugTashlum] nvarchar(20) NULL,
+    [VatRate] decimal(5,4) NULL,
+    [Mevutal] bit NOT NULL CONSTRAINT [DF_Tashlumim_Letik_Mevutal] DEFAULT 0,
+    [MevatelTashlum] int NULL,
     CONSTRAINT [PK_Tashlumim_Letik] PRIMARY KEY CLUSTERED ([IDTashlum])
 );
 GO
@@ -244,72 +263,73 @@ INSERT INTO [dbo].[Taalichim_Kvuim_Batik] ([IDTaalichKavua], [IDSubjektTik], [ID
     (27, 4, 13, 5),
     (28, 4, 14, 6);
 SET IDENTITY_INSERT [dbo].[Taalichim_Kvuim_Batik] OFF;
-INSERT INTO [dbo].[Customers] ([IDcustemer], [FirstName], [LastName], [City], [Adress], [House], [Mikud], [Telephone], [SmartPhone], [Mail], [DateBirthday], [CopyID], [SugPerson]) VALUES
-    (N'300000007', N'דנה', N'לוי', N'ירושלים', N'יפו', N'12', NULL, N'026000000', N'0521234567', N'demo1@example.com', N'1980-01-01', NULL, N'לקוח'),
-    (N'312345671', N'יוסף', N'אברהם', N'תל אביב', N'דיזנגוף', N'80', NULL, N'026001111', N'0521235577', N'demo2@example.com', N'1980-01-02', NULL, N'לקוח'),
-    (N'324691344', N'מיכל', N'כהן', N'חיפה', N'הנביאים', N'5', NULL, N'026002222', N'0521236587', N'demo3@example.com', N'1980-01-03', NULL, N'לקוח'),
-    (N'337037014', N'אבי', N'מזרחי', N'בית שמש', N'נהר הירדן', N'21', NULL, N'026003333', N'0521237597', N'demo4@example.com', N'1980-01-04', NULL, N'לקוח'),
-    (N'349382689', N'נועה', N'פרץ', N'מודיעין', N'עמק דותן', N'3', NULL, N'026004444', N'0521238607', N'demo5@example.com', N'1980-01-05', NULL, N'לקוח'),
-    (N'361728355', N'שמעון', N'דהן', N'ירושלים', N'עזה', N'40', NULL, N'026005555', N'0521239617', N'demo6@example.com', NULL, NULL, N'לקוח נגדי'),
-    (N'374074029', N'אורית', N'שגיא', N'רמת גן', N'ביאליק', N'17', NULL, N'026006666', N'0521240627', N'demo7@example.com', NULL, NULL, N'לקוח נגדי'),
-    (N'386419691', N'גיל', N'רוזן', N'חיפה', N'מוריה', N'102', NULL, N'026007777', N'0521241637', N'demo8@example.com', NULL, NULL, N'לקוח נגדי'),
-    (N'398765362', N'רחל', N'גולן', N'ירושלים', N'המלך ג׳ורג׳', N'30', NULL, N'026008888', N'0521242647', N'demo9@example.com', NULL, NULL, N'עורך דין נגדי'),
-    (N'411111032', N'אהרון', N'קליין', N'תל אביב', N'רוטשילד', N'45', NULL, N'026009999', N'0521243657', N'demo10@example.com', NULL, NULL, N'עורך דין נגדי'),
-    (N'423456706', N'תמר', N'שמש', N'חיפה', N'חורב', N'8', NULL, N'026011110', N'0521244667', N'demo11@example.com', NULL, NULL, N'עורך דין נגדי');
+INSERT INTO [dbo].[Customers] ([IDcustemer], [FirstName], [LastName], [City], [Adress], [House], [Mikud], [Telephone], [SmartPhone], [Mail], [DateBirthday], [CopyID], [SugPerson], [SugMezahe]) VALUES
+    (N'300000007', N'דנה', N'לוי', N'ירושלים', N'יפו', N'12', NULL, N'026000000', N'0521234567', N'demo1@example.com', N'1980-01-01', NULL, N'לקוח', N'ת.ז.'),
+    (N'312345671', N'יוסף', N'אברהם', N'תל אביב', N'דיזנגוף', N'80', NULL, N'026001111', N'0521235577', N'demo2@example.com', N'1980-01-02', NULL, N'לקוח', N'ת.ז.'),
+    (N'324691344', N'מיכל', N'כהן', N'חיפה', N'הנביאים', N'5', NULL, N'026002222', N'0521236587', N'demo3@example.com', N'1980-01-03', NULL, N'לקוח', N'ת.ז.'),
+    (N'337037014', N'אבי', N'מזרחי', N'בית שמש', N'נהר הירדן', N'21', NULL, N'026003333', N'0521237597', N'demo4@example.com', N'1980-01-04', NULL, N'לקוח', N'ת.ז.'),
+    (N'349382689', N'נועה', N'פרץ', N'מודיעין', N'עמק דותן', N'3', NULL, N'026004444', N'0521238607', N'demo5@example.com', N'1980-01-05', NULL, N'לקוח', N'ת.ז.'),
+    (N'361728355', N'שמעון', N'דהן', N'ירושלים', N'עזה', N'40', NULL, N'026005555', N'0521239617', N'demo6@example.com', NULL, NULL, N'לקוח נגדי', N'ת.ז.'),
+    (N'374074029', N'אורית', N'שגיא', N'רמת גן', N'ביאליק', N'17', NULL, N'026006666', N'0521240627', N'demo7@example.com', NULL, NULL, N'לקוח נגדי', N'ת.ז.'),
+    (N'386419691', N'גיל', N'רוזן', N'חיפה', N'מוריה', N'102', NULL, N'026007777', N'0521241637', N'demo8@example.com', NULL, NULL, N'לקוח נגדי', N'ת.ז.'),
+    (N'398765362', N'רחל', N'גולן', N'ירושלים', N'המלך ג׳ורג׳', N'30', NULL, N'026008888', N'0521242647', N'demo9@example.com', NULL, NULL, N'עורך דין נגדי', N'ת.ז.'),
+    (N'411111032', N'אהרון', N'קליין', N'תל אביב', N'רוטשילד', N'45', NULL, N'026009999', N'0521243657', N'demo10@example.com', NULL, NULL, N'עורך דין נגדי', N'ת.ז.'),
+    (N'423456706', N'תמר', N'שמש', N'חיפה', N'חורב', N'8', NULL, N'026011110', N'0521244667', N'demo11@example.com', NULL, NULL, N'עורך דין נגדי', N'ת.ז.'),
+    (N'512345786', N'אלפא נכסים בע"מ', N'', N'תל אביב', N'הארבעה', N'19', NULL, N'026012221', N'0521245677', N'demo12@example.com', NULL, NULL, N'לקוח נגדי', N'ח.פ.');
 SET IDENTITY_INSERT [dbo].[Tikim_Letipul_Orech_Din] ON;
 INSERT INTO [dbo].[Tikim_Letipul_Orech_Din] ([IDTik], [IDCostemer], [IDSubjektTik], [IsTheTikMenualInBETMishpat], [IDBetMishpat], [StatusTik], [IpuiKohach], [Shulam], [Mikdama], [ShulamMikdama], [Gush], [Chelka], [TatChelka], [AdressNeches], [SchumLetvia], [SchumShenitba], [AchuzRevachim], [KodOrechDinNegdi], [KodLakoachNegdi]) VALUES
-    (1, N'300000007', 1, 1, 1, 5, N'יפ"כ 2024/101', 0, 3000, 1, NULL, NULL, NULL, NULL, 85000, NULL, 20, N'398765362', N'361728355'),
-    (2, N'312345671', 3, 1, 4, 3, N'יפ"כ 2024/102', 0, 2000, 0, NULL, NULL, NULL, NULL, 42000, NULL, 25, N'411111032', N'374074029'),
-    (3, N'324691344', 2, 1, 5, 2, N'יפ"כ 2024/103', 0, 5000, 0, NULL, NULL, NULL, NULL, 120000, NULL, 18, N'423456706', N'386419691'),
-    (4, N'337037014', 4, 0, NULL, 12, N'יפ"כ 2024/104', 0, 1500, 1, N'5432', N'17', N'4', N'נהר הירדן 21, בית שמש', 1850000, NULL, 0.5, N'398765362', N'361728355'),
-    (5, N'349382689', 1, 1, 3, 9, N'יפ"כ 2023/087', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 20, N'411111032', N'374074029');
+    (1, N'300000007', 1, 1, 1, 5, N'נחתם 02/06/2026', 0, 3000, 1, NULL, NULL, NULL, NULL, 85000, NULL, 20, N'398765362', N'361728355'),
+    (2, N'312345671', 3, 1, 4, 3, N'נחתם 20/09/2026', 0, 2000, 0, NULL, NULL, NULL, NULL, 42000, NULL, 25, N'411111032', N'374074029'),
+    (3, N'324691344', 2, 1, 5, 2, N'', 0, 5000, 0, NULL, NULL, NULL, NULL, 120000, NULL, 18, N'423456706', N'386419691'),
+    (4, N'337037014', 4, 0, NULL, 12, N'נחתם 23/10/2026', 0, 1500, 1, N'5432', N'17', N'4', N'נהר הירדן 21, בית שמש', 1850000, NULL, 0.5, N'398765362', N'512345786'),
+    (5, N'349382689', 1, 1, 3, 9, N'נחתם 05/10/2025', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 20, N'411111032', N'374074029');
 SET IDENTITY_INSERT [dbo].[Tikim_Letipul_Orech_Din] OFF;
 SET IDENTITY_INSERT [dbo].[Tahalich_Tipul_Betik] ON;
-INSERT INTO [dbo].[Tahalich_Tipul_Betik] ([IDTahalichTipulLetik], [IDTik], [IDTahalich], [TaharichMeshoar], [TaharichBizhua], [Buzha]) VALUES
-    (1, 1, 1, DATEADD(day, -153, @Today), DATEADD(day, -150, @Today), 1),
-    (2, 1, 2, DATEADD(day, -136, @Today), DATEADD(day, -138, @Today), 1),
-    (3, 1, 3, DATEADD(day, -117, @Today), DATEADD(day, -114, @Today), 1),
-    (4, 1, 4, DATEADD(day, -84, @Today), DATEADD(day, -86, @Today), 1),
-    (5, 1, 5, DATEADD(day, -41, @Today), NULL, 0),
-    (6, 1, 6, DATEADD(day, -11, @Today), NULL, 0),
-    (7, 1, 7, DATEADD(day, 49, @Today), NULL, 0),
-    (8, 1, 8, DATEADD(day, 79, @Today), NULL, 0),
-    (9, 1, 9, DATEADD(day, 124, @Today), NULL, 0),
-    (10, 2, 1, DATEADD(day, -43, @Today), DATEADD(day, -40, @Today), 1),
-    (11, 2, 2, DATEADD(day, -26, @Today), DATEADD(day, -28, @Today), 1),
-    (12, 2, 3, DATEADD(day, -7, @Today), NULL, 0),
-    (13, 2, 5, DATEADD(day, 38, @Today), NULL, 0),
-    (14, 2, 7, DATEADD(day, 98, @Today), NULL, 0),
-    (15, 2, 9, DATEADD(day, 143, @Today), NULL, 0),
-    (16, 3, 1, DATEADD(day, -28, @Today), DATEADD(day, -25, @Today), 1),
-    (17, 3, 2, DATEADD(day, -11, @Today), NULL, 0),
-    (18, 3, 3, DATEADD(day, 10, @Today), NULL, 0),
-    (19, 3, 4, DATEADD(day, 40, @Today), NULL, 0),
-    (20, 3, 5, DATEADD(day, 85, @Today), NULL, 0),
-    (21, 3, 7, DATEADD(day, 145, @Today), NULL, 0),
-    (22, 3, 9, DATEADD(day, 190, @Today), NULL, 0),
-    (23, 4, 1, DATEADD(day, -13, @Today), DATEADD(day, -10, @Today), 1),
-    (24, 4, 10, DATEADD(day, -7, @Today), DATEADD(day, -9, @Today), 1),
-    (25, 4, 11, DATEADD(day, 1, @Today), DATEADD(day, 0, @Today), 1),
-    (26, 4, 12, DATEADD(day, 7, @Today), NULL, 0),
-    (27, 4, 13, DATEADD(day, 12, @Today), NULL, 0),
-    (28, 4, 14, DATEADD(day, 72, @Today), NULL, 0),
-    (29, 5, 1, DATEADD(day, -393, @Today), DATEADD(day, -390, @Today), 1),
-    (30, 5, 2, DATEADD(day, -376, @Today), DATEADD(day, -378, @Today), 1),
-    (31, 5, 3, DATEADD(day, -357, @Today), DATEADD(day, -354, @Today), 1),
-    (32, 5, 4, DATEADD(day, -324, @Today), DATEADD(day, -326, @Today), 1),
-    (33, 5, 5, DATEADD(day, -281, @Today), DATEADD(day, -278, @Today), 1),
-    (34, 5, 6, DATEADD(day, -248, @Today), DATEADD(day, -250, @Today), 1),
-    (35, 5, 7, DATEADD(day, -190, @Today), DATEADD(day, -187, @Today), 1),
-    (36, 5, 8, DATEADD(day, -157, @Today), DATEADD(day, -159, @Today), 1),
-    (37, 5, 9, DATEADD(day, -114, @Today), DATEADD(day, -111, @Today), 1);
+INSERT INTO [dbo].[Tahalich_Tipul_Betik] ([IDTahalichTipulLetik], [IDTik], [IDTahalich], [TaharichMeshoar], [TaharichBizhua], [Buzha], [MeshechYamim], [Hearot]) VALUES
+    (1, 1, 1, DATEADD(day, -153, @Today), DATEADD(day, -150, @Today), 1, 7, NULL),
+    (2, 1, 2, DATEADD(day, -136, @Today), DATEADD(day, -138, @Today), 1, 14, NULL),
+    (3, 1, 3, DATEADD(day, -117, @Today), DATEADD(day, -114, @Today), 1, 21, NULL),
+    (4, 1, 4, DATEADD(day, -84, @Today), DATEADD(day, -86, @Today), 1, 30, NULL),
+    (5, 1, 5, DATEADD(day, -41, @Today), NULL, 0, 45, N'הדיון נקבע בהחלטת בית המשפט'),
+    (6, 1, 6, DATEADD(day, -11, @Today), NULL, 0, 30, NULL),
+    (7, 1, 7, DATEADD(day, 49, @Today), NULL, 0, 60, NULL),
+    (8, 1, 8, DATEADD(day, 79, @Today), NULL, 0, 30, NULL),
+    (9, 1, 9, DATEADD(day, 124, @Today), NULL, 0, 45, NULL),
+    (10, 2, 1, DATEADD(day, -43, @Today), DATEADD(day, -40, @Today), 1, 7, NULL),
+    (11, 2, 2, DATEADD(day, -26, @Today), DATEADD(day, -28, @Today), 1, 14, NULL),
+    (12, 2, 3, DATEADD(day, -7, @Today), NULL, 0, 21, NULL),
+    (13, 2, 5, DATEADD(day, 38, @Today), NULL, 0, 45, NULL),
+    (14, 2, 7, DATEADD(day, 98, @Today), NULL, 0, 60, NULL),
+    (15, 2, 9, DATEADD(day, 143, @Today), NULL, 0, 45, NULL),
+    (16, 3, 1, DATEADD(day, -28, @Today), DATEADD(day, -25, @Today), 1, 7, NULL),
+    (17, 3, 2, DATEADD(day, -11, @Today), NULL, 0, 14, NULL),
+    (18, 3, 3, DATEADD(day, 10, @Today), NULL, 0, 21, NULL),
+    (19, 3, 4, DATEADD(day, 40, @Today), NULL, 0, 30, NULL),
+    (20, 3, 5, DATEADD(day, 85, @Today), NULL, 0, 45, NULL),
+    (21, 3, 7, DATEADD(day, 145, @Today), NULL, 0, 60, NULL),
+    (22, 3, 9, DATEADD(day, 190, @Today), NULL, 0, 45, NULL),
+    (23, 4, 1, DATEADD(day, -13, @Today), DATEADD(day, -10, @Today), 1, 7, NULL),
+    (24, 4, 10, DATEADD(day, -7, @Today), DATEADD(day, -9, @Today), 1, 3, NULL),
+    (25, 4, 11, DATEADD(day, 1, @Today), DATEADD(day, 0, @Today), 1, 10, NULL),
+    (26, 4, 12, DATEADD(day, 7, @Today), NULL, 0, 7, NULL),
+    (27, 4, 13, DATEADD(day, 12, @Today), NULL, 0, 5, NULL),
+    (28, 4, 14, DATEADD(day, 72, @Today), NULL, 0, 60, NULL),
+    (29, 5, 1, DATEADD(day, -393, @Today), DATEADD(day, -390, @Today), 1, 7, NULL),
+    (30, 5, 2, DATEADD(day, -376, @Today), DATEADD(day, -378, @Today), 1, 14, NULL),
+    (31, 5, 3, DATEADD(day, -357, @Today), DATEADD(day, -354, @Today), 1, 21, NULL),
+    (32, 5, 4, DATEADD(day, -324, @Today), DATEADD(day, -326, @Today), 1, 30, NULL),
+    (33, 5, 5, DATEADD(day, -281, @Today), DATEADD(day, -278, @Today), 1, 45, NULL),
+    (34, 5, 6, DATEADD(day, -248, @Today), DATEADD(day, -250, @Today), 1, 30, NULL),
+    (35, 5, 7, DATEADD(day, -190, @Today), DATEADD(day, -187, @Today), 1, 60, NULL),
+    (36, 5, 8, DATEADD(day, -157, @Today), DATEADD(day, -159, @Today), 1, 30, NULL),
+    (37, 5, 9, DATEADD(day, -114, @Today), DATEADD(day, -111, @Today), 1, 45, NULL);
 SET IDENTITY_INSERT [dbo].[Tahalich_Tipul_Betik] OFF;
 SET IDENTITY_INSERT [dbo].[Tashlumim_Letik] ON;
-INSERT INTO [dbo].[Tashlumim_Letik] ([IDTashlum], [IDTik], [Itra], [EmzhaeyTashlum], [NumCartis], [Tokef], [ThreeNums], [NumTeudatZeut], [NumChek], [NumBank], [NumSnif], [NumCheshbon], [Schum], [TaarichTashlum], [Teur], [NumAsmachta], [TaarichLachek]) VALUES
-    (1, 1, 15200.0, N'מזומן', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3000, DATEADD(day, -150, @Today), N'מקדמה', NULL, NULL),
-    (2, 1, 10200.0, N'העברה בנקאית', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5000, DATEADD(day, -130, @Today), N'תשלום שכר טרחה', N'TR-00002', NULL),
-    (3, 4, 7750.0, N'מזומן', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1500, DATEADD(day, -10, @Today), N'מקדמה', NULL, NULL),
-    (4, 5, 0.0, N'צ''ק', NULL, NULL, NULL, NULL, N'1000004', N'12', N'345', N'987654', 13200.0, DATEADD(day, -390, @Today), N'מקדמה', NULL, DATEADD(day, -390, @Today));
+INSERT INTO [dbo].[Tashlumim_Letik] ([IDTashlum], [IDTik], [Itra], [EmzhaeyTashlum], [SugTashlum], [VatRate], [Mevutal], [MevatelTashlum], [NumCartis], [Tokef], [ThreeNums], [NumTeudatZeut], [NumChek], [NumBank], [NumSnif], [NumCheshbon], [Schum], [TaarichTashlum], [Teur], [NumAsmachta], [TaarichLachek]) VALUES
+    (1, 1, 15200.0, N'מזומן', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3000, DATEADD(day, -150, @Today), N'מקדמה', NULL, NULL),
+    (2, 1, 10200.0, N'העברה בנקאית', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5000, DATEADD(day, -130, @Today), N'תשלום שכר טרחה', N'TR-00002', NULL),
+    (3, 4, 7750.0, N'מזומן', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1500, DATEADD(day, -10, @Today), N'מקדמה', NULL, NULL),
+    (4, 5, 0.0, N'צ''ק', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, N'1000004', N'12', N'345', N'987654', 13200.0, DATEADD(day, -390, @Today), N'מקדמה', NULL, DATEADD(day, -390, @Today));
 SET IDENTITY_INSERT [dbo].[Tashlumim_Letik] OFF;
 GO
 

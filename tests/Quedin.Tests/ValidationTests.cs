@@ -112,5 +112,113 @@ namespace Quedin.Tests
             Assert.IsFalse(Validation.IsNameKey('5'));
             Assert.IsTrue(Validation.IsRegistryKey('/'));
         }
+
+        // ---------------------------------------------------------- money parsing edge cases
+
+        [DataTestMethod]
+        [DataRow("1250", 1250.0)]
+        [DataRow("1,250.50", 1250.5)]
+        [DataRow("1250.5", 1250.5)]
+        [DataRow("0.01", 0.01)]
+        [DataRow(" 18,200 ", 18200.0)]
+        public void TryParseMoney_AcceptsClearAmounts(string text, double expected)
+        {
+            decimal amount;
+            Assert.IsTrue(Validation.TryParseMoney(text, out amount), text);
+            Assert.AreEqual((decimal)expected, amount);
+        }
+
+        [DataTestMethod]
+        [DataRow("12,5")]      // used to become 125
+        [DataRow("1,25,000")]
+        [DataRow("10.555")]    // more than 2 decimals
+        [DataRow("-5")]
+        [DataRow("1.2.3")]
+        [DataRow("")]
+        [DataRow("abc")]
+        public void TryParseMoney_RejectsAmbiguousInput(string text)
+        {
+            decimal amount;
+            Assert.IsFalse(Validation.TryParseMoney(text, out amount), text);
+        }
+
+        [TestMethod]
+        public void TryParsePayment_RequiresAtLeastOneAgora()
+        {
+            decimal amount;
+            Assert.IsFalse(Validation.TryParsePayment("0", out amount));
+            Assert.IsFalse(Validation.TryParsePayment("0.004", out amount)); // used to be saved as 0
+            Assert.IsTrue(Validation.TryParsePayment("0.01", out amount));
+        }
+
+        // ---------------------------------------------------------- identifiers
+
+        [TestMethod]
+        public void GetIdentifierError_ChecksByType()
+        {
+            Assert.IsNull(Validation.GetIdentifierError(IdTypes.IsraeliId, "000000018"));
+            Assert.IsNotNull(Validation.GetIdentifierError(IdTypes.IsraeliId, "123456789"));
+            Assert.IsNull(Validation.GetIdentifierError(IdTypes.CompanyNumber, "510000003"));
+            Assert.IsNotNull(Validation.GetIdentifierError(IdTypes.CompanyNumber, "18"), "a company number has 9 digits");
+            Assert.IsNull(Validation.GetIdentifierError(IdTypes.Passport, "AB123456"));
+            Assert.IsNotNull(Validation.GetIdentifierError(IdTypes.Passport, "AB1"));
+            Assert.IsNull(Validation.GetIdentifierError(IdTypes.None, ""), "opposing party without a known ID");
+            Assert.IsNotNull(Validation.GetIdentifierError(null, "000000018"));
+        }
+
+        // ---------------------------------------------------------- phones and names
+
+        [DataTestMethod]
+        [DataRow("+44 20 7123 4567")]
+        [DataRow("+972-50-1234567")]
+        [DataRow("050-1234567")]
+        [DataRow("03-6123456")]
+        public void IsPhone_AcceptsIsraeliAndInternational(string phone)
+        {
+            Assert.IsTrue(Validation.IsPhone(phone), phone);
+        }
+
+        [DataTestMethod]
+        [DataRow("+0123456789")]
+        [DataRow("+12")]
+        [DataRow("12345")]
+        public void IsPhone_RejectsInvalid(string phone)
+        {
+            Assert.IsFalse(Validation.IsPhone(phone), phone);
+        }
+
+        [TestMethod]
+        public void NormalizePhone_KeepsDigitsAndLeadingPlus()
+        {
+            Assert.AreEqual("+442071234567", Validation.NormalizePhone(" +44 (20) 7123-4567 "));
+            Assert.AreEqual("0501234567", Validation.NormalizePhone("050-123-4567"));
+            Assert.IsNull(Validation.NormalizePhone("  "));
+        }
+
+        [DataTestMethod]
+        [DataRow("אלפא נכסים בע\"מ")]
+        [DataRow("אלפא נכסים בע״מ")]
+        [DataRow("Smith & Sons (2020) Ltd.")]
+        [DataRow("כהן")]
+        public void IsPartyName_AcceptsCompanyNames(string name)
+        {
+            Assert.IsTrue(Validation.IsPartyName(name), name);
+        }
+
+        [TestMethod]
+        public void IsPartyName_RejectsEmptyOrTooLong()
+        {
+            Assert.IsFalse(Validation.IsPartyName(" "));
+            Assert.IsFalse(Validation.IsPartyName(new string('א', 51)));
+            Assert.IsFalse(Validation.IsPartyName("@company"));
+        }
+
+        [TestMethod]
+        public void IsFutureDate_ComparesDaysOnly()
+        {
+            DateTime today = new DateTime(2026, 11, 12);
+            Assert.IsFalse(Validation.IsFutureDate(today.AddHours(23), today));
+            Assert.IsTrue(Validation.IsFutureDate(today.AddDays(1), today));
+        }
     }
 }

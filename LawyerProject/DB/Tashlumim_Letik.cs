@@ -31,6 +31,10 @@ namespace LawyerProject.DB
         public string Teur { get; set; }
         public string NumAsmachta { get; set; }
         public Nullable<System.DateTime> TaarichLachek { get; set; }
+        public string SugTashlum { get; set; }
+        public Nullable<decimal> VatRate { get; set; }
+        public bool Mevutal { get; set; }
+        public Nullable<int> MevatelTashlum { get; set; }
     
         public virtual Tikim_Letipul_Orech_Din Tikim_Letipul_Orech_Din { get; set; }
     }

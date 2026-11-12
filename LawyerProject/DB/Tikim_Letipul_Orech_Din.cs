@@ -40,6 +40,7 @@ namespace LawyerProject.DB
         public Nullable<double> AchuzRevachim { get; set; }
         public string KodOrechDinNegdi { get; set; }
         public string KodLakoachNegdi { get; set; }
+        public byte[] RowVersion { get; set; }
     
         public virtual Bet_Mishpat Bet_Mishpat { get; set; }
         public virtual Customers Customers { get; set; }

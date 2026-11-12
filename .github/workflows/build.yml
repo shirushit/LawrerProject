@@ -89,7 +89,7 @@ jobs:
           docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
             SET NOCOUNT ON;
             IF (SELECT COUNT(*) FROM Users) <> 2 THROW 50001, 'Users', 1;
-            IF (SELECT COUNT(*) FROM Customers) <> 11 THROW 50002, 'Customers', 1;
+            IF (SELECT COUNT(*) FROM Customers) <> 12 THROW 50002, 'Customers', 1;
             IF (SELECT COUNT(*) FROM Tikim_Letipul_Orech_Din) <> 5 THROW 50003, 'Cases', 1;
             IF (SELECT COUNT(*) FROM Tahalich_Tipul_Betik) <> 37 THROW 50004, 'Steps', 1;
             IF (SELECT COUNT(*) FROM Tashlumim_Letik) <> 4 THROW 50005, 'Payments', 1;
@@ -98,6 +98,6 @@ jobs:
               SELECT 1 FROM Tikim_Letipul_Orech_Din t
               CROSS APPLY (SELECT TOP 1 s.IDTahalich FROM Tahalich_Tipul_Betik s
                            WHERE s.IDTik = t.IDTik AND s.Buzha = 0
-                           ORDER BY s.TaharichMeshoar, s.IDTahalichTipulLetik) nextStep
+                           ORDER BY s.IDTahalichTipulLetik) nextStep
               WHERE nextStep.IDTahalich <> t.StatusTik) THROW 50007, 'Case status does not match next step', 1;
             PRINT 'Demo data verified.';"

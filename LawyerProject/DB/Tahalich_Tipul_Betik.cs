@@ -20,6 +20,8 @@ namespace LawyerProject.DB
         public Nullable<System.DateTime> TaharichMeshoar { get; set; }
         public Nullable<System.DateTime> TaharichBizhua { get; set; }
         public Nullable<bool> Buzha { get; set; }
+        public string Hearot { get; set; }
+        public Nullable<int> MeshechYamim { get; set; }
     
         public virtual Taalichim_Letikim Taalichim_Letikim { get; set; }
         public virtual Tikim_Letipul_Orech_Din Tikim_Letipul_Orech_Din { get; set; }

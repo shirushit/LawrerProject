@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LawyerProject.BLL
 {
@@ -25,6 +27,27 @@ namespace LawyerProject.BLL
 
             decimal share = claimAmount * (decimal)profitPercent / 100m;
             return Round(share + courtFee);
+        }
+
+        /// <summary>
+        /// The open balance of a case, always computed: case total minus the sum of its payments.
+        /// Cancellations are stored as negative payments, so they add back automatically.
+        /// </summary>
+        public static decimal Balance(decimal caseTotal, IEnumerable<decimal> payments)
+        {
+            decimal paid = payments == null ? 0m : payments.Sum();
+            return Round(caseTotal - paid);
+        }
+
+        /// <summary>
+        /// VAT shown on a receipt. Only fee payments carry VAT; court fees and expenses passed on to
+        /// the client do not. <paramref name="vatRate"/> is the rate stored with the payment.
+        /// </summary>
+        public static VatBreakdown ReceiptVat(decimal amount, string paymentKind, decimal vatRate)
+        {
+            if (paymentKind == PaymentKinds.Expenses)
+                return new VatBreakdown { Net = Round(amount), Vat = 0m, Total = Round(amount) };
+            return SplitVat(amount, vatRate);
         }
 
         /// <summary>Balance left after a payment. A payment may not exceed the open balance.</summary>

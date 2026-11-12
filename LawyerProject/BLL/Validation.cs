@@ -16,6 +16,12 @@ namespace LawyerProject.BLL
         private static readonly Regex CellPhoneRegex = new Regex(@"^05\d-?\d{7}$", RegexOptions.Compiled);
         private static readonly Regex EmailRegex = new Regex(@"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$", RegexOptions.Compiled);
         private static readonly Regex HebrewOrEnglishNameRegex = new Regex(@"^[א-תA-Za-z][א-תA-Za-z '\-]*$", RegexOptions.Compiled);
+        // Company / organization names: also digits, quotes (בע"מ, בע״מ), geresh, dot, ampersand, parentheses.
+        private static readonly Regex PartyNameRegex = new Regex(@"^[א-תA-Za-z0-9][א-תA-Za-z0-9 '\-""״׳.,&()/]*$", RegexOptions.Compiled);
+        private static readonly Regex InternationalPhoneRegex = new Regex(@"^\+[1-9]\d{7,14}$", RegexOptions.Compiled);
+        private static readonly Regex PassportRegex = new Regex(@"^[A-Za-z0-9]{5,20}$", RegexOptions.Compiled);
+        // Money: plain digits or correctly grouped thousands, at most 2 decimals. "12,5" is rejected, not read as 125.
+        private static readonly Regex MoneyRegex = new Regex(@"^(\d+|\d{1,3}(,\d{3})+)(\.\d{1,2})?$", RegexOptions.Compiled);
 
         // ---------- Whole-value checks ----------
 
@@ -51,9 +57,46 @@ namespace LawyerProject.BLL
             return !string.IsNullOrWhiteSpace(phone) && CellPhoneRegex.IsMatch(phone.Trim());
         }
 
+        /// <summary>Israeli landline or mobile, or an international number such as +44 20 7123 4567.</summary>
         public static bool IsPhone(string phone)
         {
-            return IsTelephone(phone) || IsCellPhone(phone);
+            if (IsTelephone(phone) || IsCellPhone(phone)) return true;
+            string normalized = NormalizePhone(phone);
+            return normalized != null && InternationalPhoneRegex.IsMatch(normalized);
+        }
+
+        /// <summary>Removes spaces, dashes and brackets so phones are stored the same way (max 20 characters).</summary>
+        public static string NormalizePhone(string phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone)) return null;
+            var sb = new System.Text.StringBuilder();
+            foreach (char ch in phone.Trim())
+                if (char.IsDigit(ch) || (ch == '+' && sb.Length == 0)) sb.Append(ch);
+            return sb.Length == 0 ? null : sb.ToString();
+        }
+
+        /// <summary>A person or a company name (allows digits, quotes and punctuation used in company names).</summary>
+        public static bool IsPartyName(string text)
+        {
+            return !string.IsNullOrWhiteSpace(text) && text.Trim().Length <= 50 && PartyNameRegex.IsMatch(text.Trim());
+        }
+
+        /// <summary>
+        /// Checks an identifier by its type: Israeli ID / company number (check digit), passport (5-20 letters
+        /// and digits). Returns null when valid, otherwise a Hebrew error message.
+        /// </summary>
+        public static string GetIdentifierError(string idType, string value)
+        {
+            string v = (value ?? string.Empty).Trim();
+            if (idType == IdTypes.IsraeliId)
+                return IsLegalId(v) ? null : "מספר תעודת זהות לא תקין";
+            if (idType == IdTypes.CompanyNumber)
+                return v.Length == 9 && IsLegalId(v) ? null : "מספר חברה (ח.פ.) לא תקין - 9 ספרות";
+            if (idType == IdTypes.Passport)
+                return PassportRegex.IsMatch(v) ? null : "מספר דרכון: 5-20 אותיות לועזיות וספרות";
+            if (idType == IdTypes.None)
+                return null;
+            return "יש לבחור סוג מזהה";
         }
 
         public static bool IsEmail(string email)
@@ -126,12 +169,28 @@ namespace LawyerProject.BLL
             return age >= 18 && age <= 120;
         }
 
-        /// <summary>Parses a non-negative money amount (accepts "1,250.50").</summary>
+        /// <summary>
+        /// Parses a non-negative money amount: "1250", "1,250.50" or "1250.5".
+        /// Rejects ambiguous input such as "12,5" (which a lenient parser reads as 125) and more than 2 decimals.
+        /// </summary>
         public static bool TryParseMoney(string text, out decimal amount)
         {
-            bool ok = decimal.TryParse((text ?? string.Empty).Trim(), NumberStyles.Number,
+            amount = 0m;
+            string t = (text ?? string.Empty).Trim();
+            if (!MoneyRegex.IsMatch(t)) return false;
+            return decimal.TryParse(t.Replace(",", string.Empty), NumberStyles.AllowDecimalPoint,
                 CultureInfo.InvariantCulture, out amount);
-            return ok && amount >= 0;
+        }
+
+        /// <summary>A payment amount: at least 0.01.</summary>
+        public static bool TryParsePayment(string text, out decimal amount)
+        {
+            return TryParseMoney(text, out amount) && amount >= 0.01m;
+        }
+
+        public static bool IsFutureDate(DateTime date, DateTime today)
+        {
+            return date.Date > today.Date;
         }
 
         // ---------- Key-press filters (used by TextBox.KeyPress) ----------

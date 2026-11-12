@@ -33,6 +33,7 @@ namespace LawyerProject.DB
         public Nullable<System.DateTime> DateBirthday { get; set; }
         public string CopyID { get; set; }
         public string SugPerson { get; set; }
+        public string SugMezahe { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tikim_Letipul_Orech_Din> Tikim_Letipul_Orech_Din { get; set; }
