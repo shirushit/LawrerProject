@@ -44,9 +44,9 @@ namespace LawyerProject.GUI
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(374, 25);
+            this.label6.Location = new System.Drawing.Point(346, 25);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(76, 23);
+            this.label6.Size = new System.Drawing.Size(104, 23);
             this.label6.TabIndex = 0;
             this.label6.AutoSize = false;
             this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -54,9 +54,9 @@ namespace LawyerProject.GUI
             // 
             // lblIdSubjektTik
             // 
-            this.lblIdSubjektTik.Location = new System.Drawing.Point(60, 25);
+            this.lblIdSubjektTik.Location = new System.Drawing.Point(256, 25);
             this.lblIdSubjektTik.Name = "lblIdSubjektTik";
-            this.lblIdSubjektTik.Size = new System.Drawing.Size(260, 23);
+            this.lblIdSubjektTik.Size = new System.Drawing.Size(64, 23);
             this.lblIdSubjektTik.TabIndex = 1;
             this.lblIdSubjektTik.AutoSize = false;
             this.lblIdSubjektTik.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -65,9 +65,9 @@ namespace LawyerProject.GUI
             // 
             // lblTaalich
             // 
-            this.lblTaalich.Location = new System.Drawing.Point(382, 70);
+            this.lblTaalich.Location = new System.Drawing.Point(356, 70);
             this.lblTaalich.Name = "lblTaalich";
-            this.lblTaalich.Size = new System.Drawing.Size(68, 23);
+            this.lblTaalich.Size = new System.Drawing.Size(94, 23);
             this.lblTaalich.TabIndex = 2;
             this.lblTaalich.AutoSize = false;
             this.lblTaalich.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -83,9 +83,9 @@ namespace LawyerProject.GUI
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(359, 115);
+            this.label3.Location = new System.Drawing.Point(326, 115);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(91, 23);
+            this.label3.Size = new System.Drawing.Size(124, 23);
             this.label3.TabIndex = 4;
             this.label3.AutoSize = false;
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -103,13 +103,13 @@ namespace LawyerProject.GUI
             // 
             // lblLevelHint
             // 
-            this.lblLevelHint.Location = new System.Drawing.Point(42, 115);
+            this.lblLevelHint.Location = new System.Drawing.Point(66, 115);
             this.lblLevelHint.Name = "lblLevelHint";
-            this.lblLevelHint.Size = new System.Drawing.Size(188, 23);
+            this.lblLevelHint.Size = new System.Drawing.Size(164, 23);
             this.lblLevelHint.TabIndex = 6;
             this.lblLevelHint.AutoSize = false;
             this.lblLevelHint.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblLevelHint.Text = "השלבים מתבצעים לפי הסדר";
+            this.lblLevelHint.Text = "לפי סדר הביצוע";
             this.lblLevelHint.ForeColor = System.Drawing.SystemColors.GrayText;
             // 
             // blnAdd

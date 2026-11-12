@@ -42,9 +42,9 @@ namespace LawyerProject.GUI
             //
             this.lblSearch.AutoSize = false;
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblSearch.Location = new System.Drawing.Point(689, 30);
+            this.lblSearch.Location = new System.Drawing.Point(656, 30);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(151, 23);
+            this.lblSearch.Size = new System.Drawing.Size(184, 23);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "מספר תיק / שם לקוח";
             //
@@ -79,9 +79,9 @@ namespace LawyerProject.GUI
             //
             this.lblTotal.AutoSize = false;
             this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblTotal.Location = new System.Drawing.Point(180, 500);
+            this.lblTotal.Location = new System.Drawing.Point(236, 500);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(120, 23);
+            this.lblTotal.Size = new System.Drawing.Size(64, 23);
             this.lblTotal.TabIndex = 3;
             //
             // FrmAllPayments

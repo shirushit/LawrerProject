@@ -62,9 +62,9 @@ namespace LawyerProject.GUI
             //
             this.lblId.AutoSize = false;
             this.lblId.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblId.Location = new System.Drawing.Point(329, 23);
+            this.lblId.Location = new System.Drawing.Point(306, 23);
             this.lblId.Name = "lblId";
-            this.lblId.Size = new System.Drawing.Size(61, 23);
+            this.lblId.Size = new System.Drawing.Size(84, 23);
             this.lblId.TabIndex = 0;
             this.lblId.Text = "ת.ז. *";
             //
@@ -81,9 +81,9 @@ namespace LawyerProject.GUI
             //
             this.lblSugPerson.AutoSize = false;
             this.lblSugPerson.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblSugPerson.Location = new System.Drawing.Point(337, 68);
+            this.lblSugPerson.Location = new System.Drawing.Point(316, 68);
             this.lblSugPerson.Name = "lblSugPerson";
-            this.lblSugPerson.Size = new System.Drawing.Size(53, 23);
+            this.lblSugPerson.Size = new System.Drawing.Size(74, 23);
             this.lblSugPerson.TabIndex = 2;
             this.lblSugPerson.Text = "סוג *";
             //
@@ -99,9 +99,9 @@ namespace LawyerProject.GUI
             //
             this.lblFirstName.AutoSize = false;
             this.lblFirstName.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblFirstName.Location = new System.Drawing.Point(307, 113);
+            this.lblFirstName.Location = new System.Drawing.Point(276, 113);
             this.lblFirstName.Name = "lblFirstName";
-            this.lblFirstName.Size = new System.Drawing.Size(83, 23);
+            this.lblFirstName.Size = new System.Drawing.Size(114, 23);
             this.lblFirstName.TabIndex = 4;
             this.lblFirstName.Text = "שם פרטי *";
             //
@@ -118,9 +118,9 @@ namespace LawyerProject.GUI
             //
             this.lblLastName.AutoSize = false;
             this.lblLastName.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblLastName.Location = new System.Drawing.Point(299, 158);
+            this.lblLastName.Location = new System.Drawing.Point(266, 158);
             this.lblLastName.Name = "lblLastName";
-            this.lblLastName.Size = new System.Drawing.Size(91, 23);
+            this.lblLastName.Size = new System.Drawing.Size(124, 23);
             this.lblLastName.TabIndex = 6;
             this.lblLastName.Text = "שם משפחה *";
             //
@@ -137,9 +137,9 @@ namespace LawyerProject.GUI
             //
             this.lblCity.AutoSize = false;
             this.lblCity.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblCity.Location = new System.Drawing.Point(337, 203);
+            this.lblCity.Location = new System.Drawing.Point(316, 203);
             this.lblCity.Name = "lblCity";
-            this.lblCity.Size = new System.Drawing.Size(53, 23);
+            this.lblCity.Size = new System.Drawing.Size(74, 23);
             this.lblCity.TabIndex = 8;
             this.lblCity.Text = "עיר *";
             //
@@ -156,9 +156,9 @@ namespace LawyerProject.GUI
             //
             this.lblStreet.AutoSize = false;
             this.lblStreet.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblStreet.Location = new System.Drawing.Point(329, 248);
+            this.lblStreet.Location = new System.Drawing.Point(306, 248);
             this.lblStreet.Name = "lblStreet";
-            this.lblStreet.Size = new System.Drawing.Size(61, 23);
+            this.lblStreet.Size = new System.Drawing.Size(84, 23);
             this.lblStreet.TabIndex = 10;
             this.lblStreet.Text = "רחוב *";
             //
@@ -174,9 +174,9 @@ namespace LawyerProject.GUI
             //
             this.lblHouse.AutoSize = false;
             this.lblHouse.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblHouse.Location = new System.Drawing.Point(299, 293);
+            this.lblHouse.Location = new System.Drawing.Point(266, 293);
             this.lblHouse.Name = "lblHouse";
-            this.lblHouse.Size = new System.Drawing.Size(91, 23);
+            this.lblHouse.Size = new System.Drawing.Size(124, 23);
             this.lblHouse.TabIndex = 12;
             this.lblHouse.Text = "מספר בית *";
             //
@@ -192,9 +192,9 @@ namespace LawyerProject.GUI
             //
             this.lblMikud.AutoSize = false;
             this.lblMikud.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblMikud.Location = new System.Drawing.Point(337, 338);
+            this.lblMikud.Location = new System.Drawing.Point(316, 338);
             this.lblMikud.Name = "lblMikud";
-            this.lblMikud.Size = new System.Drawing.Size(53, 23);
+            this.lblMikud.Size = new System.Drawing.Size(74, 23);
             this.lblMikud.TabIndex = 14;
             this.lblMikud.Text = "מיקוד";
             //
@@ -211,9 +211,9 @@ namespace LawyerProject.GUI
             //
             this.lblPhone1.AutoSize = false;
             this.lblPhone1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblPhone1.Location = new System.Drawing.Point(322, 383);
+            this.lblPhone1.Location = new System.Drawing.Point(296, 383);
             this.lblPhone1.Name = "lblPhone1";
-            this.lblPhone1.Size = new System.Drawing.Size(68, 23);
+            this.lblPhone1.Size = new System.Drawing.Size(94, 23);
             this.lblPhone1.TabIndex = 16;
             this.lblPhone1.Text = "טלפון *";
             //
@@ -230,9 +230,9 @@ namespace LawyerProject.GUI
             //
             this.lblPhone2.AutoSize = false;
             this.lblPhone2.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblPhone2.Location = new System.Drawing.Point(344, 428);
+            this.lblPhone2.Location = new System.Drawing.Point(326, 428);
             this.lblPhone2.Name = "lblPhone2";
-            this.lblPhone2.Size = new System.Drawing.Size(46, 23);
+            this.lblPhone2.Size = new System.Drawing.Size(64, 23);
             this.lblPhone2.TabIndex = 18;
             this.lblPhone2.Text = "נייד";
             //
@@ -249,9 +249,9 @@ namespace LawyerProject.GUI
             //
             this.lblMail.AutoSize = false;
             this.lblMail.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblMail.Location = new System.Drawing.Point(329, 473);
+            this.lblMail.Location = new System.Drawing.Point(306, 473);
             this.lblMail.Name = "lblMail";
-            this.lblMail.Size = new System.Drawing.Size(61, 23);
+            this.lblMail.Size = new System.Drawing.Size(84, 23);
             this.lblMail.TabIndex = 20;
             this.lblMail.Text = "מייל *";
             //
@@ -268,9 +268,9 @@ namespace LawyerProject.GUI
             //
             this.lblBirthDay.AutoSize = false;
             this.lblBirthDay.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblBirthDay.Location = new System.Drawing.Point(299, 518);
+            this.lblBirthDay.Location = new System.Drawing.Point(266, 518);
             this.lblBirthDay.Name = "lblBirthDay";
-            this.lblBirthDay.Size = new System.Drawing.Size(91, 23);
+            this.lblBirthDay.Size = new System.Drawing.Size(124, 23);
             this.lblBirthDay.TabIndex = 22;
             this.lblBirthDay.Text = "תאריך לידה";
             //

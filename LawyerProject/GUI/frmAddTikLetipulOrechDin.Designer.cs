@@ -139,9 +139,9 @@ namespace LawyerProject.GUI
             // 
             // lblCodeTikTitle
             // 
-            this.lblCodeTikTitle.Location = new System.Drawing.Point(379, 33);
+            this.lblCodeTikTitle.Location = new System.Drawing.Point(351, 33);
             this.lblCodeTikTitle.Name = "lblCodeTikTitle";
-            this.lblCodeTikTitle.Size = new System.Drawing.Size(76, 23);
+            this.lblCodeTikTitle.Size = new System.Drawing.Size(104, 23);
             this.lblCodeTikTitle.TabIndex = 1;
             this.lblCodeTikTitle.AutoSize = false;
             this.lblCodeTikTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -149,9 +149,9 @@ namespace LawyerProject.GUI
             // 
             // lblCodeTik
             // 
-            this.lblCodeTik.Location = new System.Drawing.Point(60, 33);
+            this.lblCodeTik.Location = new System.Drawing.Point(246, 33);
             this.lblCodeTik.Name = "lblCodeTik";
-            this.lblCodeTik.Size = new System.Drawing.Size(260, 23);
+            this.lblCodeTik.Size = new System.Drawing.Size(74, 23);
             this.lblCodeTik.TabIndex = 2;
             this.lblCodeTik.AutoSize = false;
             this.lblCodeTik.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -160,9 +160,9 @@ namespace LawyerProject.GUI
             // 
             // lblCustomer
             // 
-            this.lblCustomer.Location = new System.Drawing.Point(394, 70);
+            this.lblCustomer.Location = new System.Drawing.Point(371, 70);
             this.lblCustomer.Name = "lblCustomer";
-            this.lblCustomer.Size = new System.Drawing.Size(61, 23);
+            this.lblCustomer.Size = new System.Drawing.Size(84, 23);
             this.lblCustomer.TabIndex = 3;
             this.lblCustomer.AutoSize = false;
             this.lblCustomer.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -188,9 +188,9 @@ namespace LawyerProject.GUI
             // 
             // lblSubjekt
             // 
-            this.lblSubjekt.Location = new System.Drawing.Point(364, 107);
+            this.lblSubjekt.Location = new System.Drawing.Point(331, 107);
             this.lblSubjekt.Name = "lblSubjekt";
-            this.lblSubjekt.Size = new System.Drawing.Size(91, 23);
+            this.lblSubjekt.Size = new System.Drawing.Size(124, 23);
             this.lblSubjekt.TabIndex = 6;
             this.lblSubjekt.AutoSize = false;
             this.lblSubjekt.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -206,9 +206,9 @@ namespace LawyerProject.GUI
             // 
             // lblType
             // 
-            this.lblType.Location = new System.Drawing.Point(415, 144);
+            this.lblType.Location = new System.Drawing.Point(391, 144);
             this.lblType.Name = "lblType";
-            this.lblType.Size = new System.Drawing.Size(40, 23);
+            this.lblType.Size = new System.Drawing.Size(64, 23);
             this.lblType.TabIndex = 8;
             this.lblType.AutoSize = false;
             this.lblType.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -239,9 +239,9 @@ namespace LawyerProject.GUI
             // 
             // lblIpuy
             // 
-            this.lblIpuy.Location = new System.Drawing.Point(357, 181);
+            this.lblIpuy.Location = new System.Drawing.Point(326, 181);
             this.lblIpuy.Name = "lblIpuy";
-            this.lblIpuy.Size = new System.Drawing.Size(98, 23);
+            this.lblIpuy.Size = new System.Drawing.Size(129, 23);
             this.lblIpuy.TabIndex = 11;
             this.lblIpuy.AutoSize = false;
             this.lblIpuy.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -257,9 +257,9 @@ namespace LawyerProject.GUI
             // 
             // lblStatusTitle
             // 
-            this.lblStatusTitle.Location = new System.Drawing.Point(372, 218);
+            this.lblStatusTitle.Location = new System.Drawing.Point(341, 218);
             this.lblStatusTitle.Name = "lblStatusTitle";
-            this.lblStatusTitle.Size = new System.Drawing.Size(83, 23);
+            this.lblStatusTitle.Size = new System.Drawing.Size(114, 23);
             this.lblStatusTitle.TabIndex = 13;
             this.lblStatusTitle.AutoSize = false;
             this.lblStatusTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -267,9 +267,9 @@ namespace LawyerProject.GUI
             // 
             // lblStatusTik
             // 
-            this.lblStatusTik.Location = new System.Drawing.Point(60, 218);
+            this.lblStatusTik.Location = new System.Drawing.Point(256, 218);
             this.lblStatusTik.Name = "lblStatusTik";
-            this.lblStatusTik.Size = new System.Drawing.Size(260, 23);
+            this.lblStatusTik.Size = new System.Drawing.Size(64, 23);
             this.lblStatusTik.TabIndex = 14;
             this.lblStatusTik.AutoSize = false;
             this.lblStatusTik.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -292,9 +292,9 @@ namespace LawyerProject.GUI
             // 
             // lblCustemerNegdi
             // 
-            this.lblCustemerNegdi.Location = new System.Drawing.Point(357, 40);
+            this.lblCustemerNegdi.Location = new System.Drawing.Point(326, 40);
             this.lblCustemerNegdi.Name = "lblCustemerNegdi";
-            this.lblCustemerNegdi.Size = new System.Drawing.Size(98, 23);
+            this.lblCustemerNegdi.Size = new System.Drawing.Size(129, 23);
             this.lblCustemerNegdi.TabIndex = 16;
             this.lblCustemerNegdi.AutoSize = false;
             this.lblCustemerNegdi.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -320,9 +320,9 @@ namespace LawyerProject.GUI
             // 
             // lblOrechDinNegdi
             // 
-            this.lblOrechDinNegdi.Location = new System.Drawing.Point(349, 85);
+            this.lblOrechDinNegdi.Location = new System.Drawing.Point(326, 85);
             this.lblOrechDinNegdi.Name = "lblOrechDinNegdi";
-            this.lblOrechDinNegdi.Size = new System.Drawing.Size(106, 23);
+            this.lblOrechDinNegdi.Size = new System.Drawing.Size(129, 23);
             this.lblOrechDinNegdi.TabIndex = 19;
             this.lblOrechDinNegdi.AutoSize = false;
             this.lblOrechDinNegdi.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -363,9 +363,9 @@ namespace LawyerProject.GUI
             // 
             // lblBetMishpat
             // 
-            this.lblBetMishpat.Location = new System.Drawing.Point(364, 40);
+            this.lblBetMishpat.Location = new System.Drawing.Point(331, 40);
             this.lblBetMishpat.Name = "lblBetMishpat";
-            this.lblBetMishpat.Size = new System.Drawing.Size(91, 23);
+            this.lblBetMishpat.Size = new System.Drawing.Size(124, 23);
             this.lblBetMishpat.TabIndex = 23;
             this.lblBetMishpat.AutoSize = false;
             this.lblBetMishpat.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -381,9 +381,9 @@ namespace LawyerProject.GUI
             // 
             // lblSchumKetvia
             // 
-            this.lblSchumKetvia.Location = new System.Drawing.Point(342, 85);
+            this.lblSchumKetvia.Location = new System.Drawing.Point(326, 85);
             this.lblSchumKetvia.Name = "lblSchumKetvia";
-            this.lblSchumKetvia.Size = new System.Drawing.Size(113, 23);
+            this.lblSchumKetvia.Size = new System.Drawing.Size(129, 23);
             this.lblSchumKetvia.TabIndex = 25;
             this.lblSchumKetvia.AutoSize = false;
             this.lblSchumKetvia.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -400,9 +400,9 @@ namespace LawyerProject.GUI
             // 
             // lblSchumShenitba
             // 
-            this.lblSchumShenitba.Location = new System.Drawing.Point(364, 130);
+            this.lblSchumShenitba.Location = new System.Drawing.Point(331, 130);
             this.lblSchumShenitba.Name = "lblSchumShenitba";
-            this.lblSchumShenitba.Size = new System.Drawing.Size(91, 23);
+            this.lblSchumShenitba.Size = new System.Drawing.Size(124, 23);
             this.lblSchumShenitba.TabIndex = 27;
             this.lblSchumShenitba.AutoSize = false;
             this.lblSchumShenitba.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -437,9 +437,9 @@ namespace LawyerProject.GUI
             // 
             // lblAdressNeches
             // 
-            this.lblAdressNeches.Location = new System.Drawing.Point(349, 35);
+            this.lblAdressNeches.Location = new System.Drawing.Point(326, 35);
             this.lblAdressNeches.Name = "lblAdressNeches";
-            this.lblAdressNeches.Size = new System.Drawing.Size(106, 23);
+            this.lblAdressNeches.Size = new System.Drawing.Size(129, 23);
             this.lblAdressNeches.TabIndex = 30;
             this.lblAdressNeches.AutoSize = false;
             this.lblAdressNeches.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -455,9 +455,9 @@ namespace LawyerProject.GUI
             // 
             // lblGush
             // 
-            this.lblGush.Location = new System.Drawing.Point(402, 75);
+            this.lblGush.Location = new System.Drawing.Point(381, 75);
             this.lblGush.Name = "lblGush";
-            this.lblGush.Size = new System.Drawing.Size(53, 23);
+            this.lblGush.Size = new System.Drawing.Size(74, 23);
             this.lblGush.TabIndex = 32;
             this.lblGush.AutoSize = false;
             this.lblGush.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -474,9 +474,9 @@ namespace LawyerProject.GUI
             // 
             // lblChelka
             // 
-            this.lblChelka.Location = new System.Drawing.Point(394, 115);
+            this.lblChelka.Location = new System.Drawing.Point(371, 115);
             this.lblChelka.Name = "lblChelka";
-            this.lblChelka.Size = new System.Drawing.Size(61, 23);
+            this.lblChelka.Size = new System.Drawing.Size(84, 23);
             this.lblChelka.TabIndex = 34;
             this.lblChelka.AutoSize = false;
             this.lblChelka.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -493,9 +493,9 @@ namespace LawyerProject.GUI
             // 
             // lblTatChelka
             // 
-            this.lblTatChelka.Location = new System.Drawing.Point(387, 155);
+            this.lblTatChelka.Location = new System.Drawing.Point(361, 155);
             this.lblTatChelka.Name = "lblTatChelka";
-            this.lblTatChelka.Size = new System.Drawing.Size(68, 23);
+            this.lblTatChelka.Size = new System.Drawing.Size(94, 23);
             this.lblTatChelka.TabIndex = 36;
             this.lblTatChelka.AutoSize = false;
             this.lblTatChelka.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -512,9 +512,9 @@ namespace LawyerProject.GUI
             // 
             // lblPropertyValue
             // 
-            this.lblPropertyValue.Location = new System.Drawing.Point(357, 195);
+            this.lblPropertyValue.Location = new System.Drawing.Point(326, 195);
             this.lblPropertyValue.Name = "lblPropertyValue";
-            this.lblPropertyValue.Size = new System.Drawing.Size(98, 23);
+            this.lblPropertyValue.Size = new System.Drawing.Size(129, 23);
             this.lblPropertyValue.TabIndex = 38;
             this.lblPropertyValue.AutoSize = false;
             this.lblPropertyValue.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -550,9 +550,9 @@ namespace LawyerProject.GUI
             // 
             // lblAchuz
             // 
-            this.lblAchuz.Location = new System.Drawing.Point(327, 40);
+            this.lblAchuz.Location = new System.Drawing.Point(326, 40);
             this.lblAchuz.Name = "lblAchuz";
-            this.lblAchuz.Size = new System.Drawing.Size(128, 23);
+            this.lblAchuz.Size = new System.Drawing.Size(129, 23);
             this.lblAchuz.TabIndex = 41;
             this.lblAchuz.AutoSize = false;
             this.lblAchuz.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -569,9 +569,9 @@ namespace LawyerProject.GUI
             // 
             // lblMikdama
             // 
-            this.lblMikdama.Location = new System.Drawing.Point(402, 80);
+            this.lblMikdama.Location = new System.Drawing.Point(381, 80);
             this.lblMikdama.Name = "lblMikdama";
-            this.lblMikdama.Size = new System.Drawing.Size(53, 23);
+            this.lblMikdama.Size = new System.Drawing.Size(74, 23);
             this.lblMikdama.TabIndex = 43;
             this.lblMikdama.AutoSize = false;
             this.lblMikdama.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -587,19 +587,19 @@ namespace LawyerProject.GUI
             // 
             // checkBoxShulamMikdama
             // 
-            this.checkBoxShulamMikdama.Location = new System.Drawing.Point(-15, 79);
+            this.checkBoxShulamMikdama.Location = new System.Drawing.Point(95, 79);
             this.checkBoxShulamMikdama.Name = "checkBoxShulamMikdama";
-            this.checkBoxShulamMikdama.Size = new System.Drawing.Size(200, 23);
+            this.checkBoxShulamMikdama.Size = new System.Drawing.Size(90, 23);
             this.checkBoxShulamMikdama.TabIndex = 45;
-            this.checkBoxShulamMikdama.AutoSize = true;
+            this.checkBoxShulamMikdama.AutoSize = false;
             this.checkBoxShulamMikdama.Text = "שולמה";
             this.checkBoxShulamMikdama.UseVisualStyleBackColor = true;
             // 
             // lblTotalTitle
             // 
-            this.lblTotalTitle.Location = new System.Drawing.Point(364, 120);
+            this.lblTotalTitle.Location = new System.Drawing.Point(331, 120);
             this.lblTotalTitle.Name = "lblTotalTitle";
-            this.lblTotalTitle.Size = new System.Drawing.Size(91, 23);
+            this.lblTotalTitle.Size = new System.Drawing.Size(124, 23);
             this.lblTotalTitle.TabIndex = 46;
             this.lblTotalTitle.AutoSize = false;
             this.lblTotalTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -607,9 +607,9 @@ namespace LawyerProject.GUI
             // 
             // lblTotal
             // 
-            this.lblTotal.Location = new System.Drawing.Point(60, 120);
+            this.lblTotal.Location = new System.Drawing.Point(256, 120);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(260, 23);
+            this.lblTotal.Size = new System.Drawing.Size(64, 23);
             this.lblTotal.TabIndex = 47;
             this.lblTotal.AutoSize = false;
             this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -617,9 +617,9 @@ namespace LawyerProject.GUI
             // 
             // lblBalanceTitle
             // 
-            this.lblBalanceTitle.Location = new System.Drawing.Point(357, 155);
+            this.lblBalanceTitle.Location = new System.Drawing.Point(326, 155);
             this.lblBalanceTitle.Name = "lblBalanceTitle";
-            this.lblBalanceTitle.Size = new System.Drawing.Size(98, 23);
+            this.lblBalanceTitle.Size = new System.Drawing.Size(129, 23);
             this.lblBalanceTitle.TabIndex = 48;
             this.lblBalanceTitle.AutoSize = false;
             this.lblBalanceTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -627,9 +627,9 @@ namespace LawyerProject.GUI
             // 
             // lblBalance
             // 
-            this.lblBalance.Location = new System.Drawing.Point(60, 155);
+            this.lblBalance.Location = new System.Drawing.Point(256, 155);
             this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(260, 23);
+            this.lblBalance.Size = new System.Drawing.Size(64, 23);
             this.lblBalance.TabIndex = 49;
             this.lblBalance.AutoSize = false;
             this.lblBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -642,7 +642,7 @@ namespace LawyerProject.GUI
             this.checkBoxShulam.Name = "checkBoxShulam";
             this.checkBoxShulam.Size = new System.Drawing.Size(200, 23);
             this.checkBoxShulam.TabIndex = 50;
-            this.checkBoxShulam.AutoSize = true;
+            this.checkBoxShulam.AutoSize = false;
             this.checkBoxShulam.Text = "התיק שולם במלואו";
             this.checkBoxShulam.UseVisualStyleBackColor = true;
             // 
@@ -658,9 +658,9 @@ namespace LawyerProject.GUI
             // 
             // lblSaveHint
             // 
-            this.lblSaveHint.Location = new System.Drawing.Point(527, 541);
+            this.lblSaveHint.Location = new System.Drawing.Point(421, 541);
             this.lblSaveHint.Name = "lblSaveHint";
-            this.lblSaveHint.Size = new System.Drawing.Size(308, 23);
+            this.lblSaveHint.Size = new System.Drawing.Size(414, 23);
             this.lblSaveHint.TabIndex = 52;
             this.lblSaveHint.AutoSize = false;
             this.lblSaveHint.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -707,6 +707,7 @@ namespace LawyerProject.GUI
             this.listView1.MultiSelect = false;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.RightToLeftLayout = true;
             // 
             // colStepNo
             // 
@@ -745,13 +746,13 @@ namespace LawyerProject.GUI
             // 
             // lblStepsHint
             // 
-            this.lblStepsHint.Location = new System.Drawing.Point(284, 233);
+            this.lblStepsHint.Location = new System.Drawing.Point(278, 233);
             this.lblStepsHint.Name = "lblStepsHint";
-            this.lblStepsHint.Size = new System.Drawing.Size(428, 23);
+            this.lblStepsHint.Size = new System.Drawing.Size(434, 23);
             this.lblStepsHint.TabIndex = 57;
             this.lblStepsHint.AutoSize = false;
             this.lblStepsHint.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblStepsHint.Text = "סימון שלב מעדכן אוטומטית את המועדים של כל השלבים הבאים.";
+            this.lblStepsHint.Text = "המועדים של השלבים הבאים יתעדכנו אוטומטית.";
             this.lblStepsHint.ForeColor = System.Drawing.SystemColors.GrayText;
             // 
             // tabPayments
@@ -785,6 +786,7 @@ namespace LawyerProject.GUI
             this.listView2.MultiSelect = false;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
+            this.listView2.RightToLeftLayout = true;
             // 
             // colPayId
             // 

@@ -60,9 +60,9 @@ namespace LawyerProject.GUI
             //
             this.lblUserName.AutoSize = false;
             this.lblUserName.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblUserName.Location = new System.Drawing.Point(324, 38);
+            this.lblUserName.Location = new System.Drawing.Point(296, 38);
             this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(76, 23);
+            this.lblUserName.Size = new System.Drawing.Size(104, 23);
             this.lblUserName.TabIndex = 0;
             this.lblUserName.Text = "שם משתמש";
             //
@@ -78,9 +78,9 @@ namespace LawyerProject.GUI
             //
             this.lblPassword.AutoSize = false;
             this.lblPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblPassword.Location = new System.Drawing.Point(347, 78);
+            this.lblPassword.Location = new System.Drawing.Point(326, 78);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(53, 23);
+            this.lblPassword.Size = new System.Drawing.Size(74, 23);
             this.lblPassword.TabIndex = 2;
             this.lblPassword.Text = "סיסמה";
             //
@@ -97,9 +97,9 @@ namespace LawyerProject.GUI
             //
             this.lblRole.AutoSize = false;
             this.lblRole.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblRole.Location = new System.Drawing.Point(317, 118);
+            this.lblRole.Location = new System.Drawing.Point(286, 118);
             this.lblRole.Name = "lblRole";
-            this.lblRole.Size = new System.Drawing.Size(83, 23);
+            this.lblRole.Size = new System.Drawing.Size(114, 23);
             this.lblRole.TabIndex = 4;
             this.lblRole.Text = "סוג משתמש";
             //
@@ -116,9 +116,9 @@ namespace LawyerProject.GUI
             this.lblPasswordRules.AutoSize = false;
             this.lblPasswordRules.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.lblPasswordRules.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.lblPasswordRules.Location = new System.Drawing.Point(92, 150);
+            this.lblPasswordRules.Location = new System.Drawing.Point(3, 150);
             this.lblPasswordRules.Name = "lblPasswordRules";
-            this.lblPasswordRules.Size = new System.Drawing.Size(308, 23);
+            this.lblPasswordRules.Size = new System.Drawing.Size(397, 23);
             this.lblPasswordRules.TabIndex = 6;
             this.lblPasswordRules.Text = "סיסמה: לפחות 8 תווים, אות אחת וספרה אחת";
             //

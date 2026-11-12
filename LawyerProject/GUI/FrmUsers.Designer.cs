@@ -81,9 +81,9 @@ namespace LawyerProject.GUI
             //
             this.lblUserName.AutoSize = false;
             this.lblUserName.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblUserName.Location = new System.Drawing.Point(304, 38);
+            this.lblUserName.Location = new System.Drawing.Point(276, 38);
             this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(76, 23);
+            this.lblUserName.Size = new System.Drawing.Size(104, 23);
             this.lblUserName.TabIndex = 0;
             this.lblUserName.Text = "שם משתמש";
             //
@@ -99,9 +99,9 @@ namespace LawyerProject.GUI
             //
             this.lblPassword.AutoSize = false;
             this.lblPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblPassword.Location = new System.Drawing.Point(327, 78);
+            this.lblPassword.Location = new System.Drawing.Point(306, 78);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(53, 23);
+            this.lblPassword.Size = new System.Drawing.Size(74, 23);
             this.lblPassword.TabIndex = 2;
             this.lblPassword.Text = "סיסמה";
             //
@@ -116,7 +116,7 @@ namespace LawyerProject.GUI
             //
             // chkShowPassword
             //
-            this.chkShowPassword.AutoSize = true;
+            this.chkShowPassword.AutoSize = false;
             this.chkShowPassword.Location = new System.Drawing.Point(160, 110);
             this.chkShowPassword.Name = "chkShowPassword";
             this.chkShowPassword.Size = new System.Drawing.Size(100, 23);
@@ -168,9 +168,9 @@ namespace LawyerProject.GUI
             //
             this.lblOldPassword.AutoSize = false;
             this.lblOldPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblOldPassword.Location = new System.Drawing.Point(274, 38);
+            this.lblOldPassword.Location = new System.Drawing.Point(266, 38);
             this.lblOldPassword.Name = "lblOldPassword";
-            this.lblOldPassword.Size = new System.Drawing.Size(106, 23);
+            this.lblOldPassword.Size = new System.Drawing.Size(114, 23);
             this.lblOldPassword.TabIndex = 0;
             this.lblOldPassword.Text = "סיסמה נוכחית";
             //
@@ -187,9 +187,9 @@ namespace LawyerProject.GUI
             //
             this.lblNewPassword.AutoSize = false;
             this.lblNewPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblNewPassword.Location = new System.Drawing.Point(289, 78);
+            this.lblNewPassword.Location = new System.Drawing.Point(266, 78);
             this.lblNewPassword.Name = "lblNewPassword";
-            this.lblNewPassword.Size = new System.Drawing.Size(91, 23);
+            this.lblNewPassword.Size = new System.Drawing.Size(114, 23);
             this.lblNewPassword.TabIndex = 2;
             this.lblNewPassword.Text = "סיסמה חדשה";
             //
@@ -206,9 +206,9 @@ namespace LawyerProject.GUI
             //
             this.lblConfirmPassword.AutoSize = false;
             this.lblConfirmPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblConfirmPassword.Location = new System.Drawing.Point(282, 118);
+            this.lblConfirmPassword.Location = new System.Drawing.Point(266, 118);
             this.lblConfirmPassword.Name = "lblConfirmPassword";
-            this.lblConfirmPassword.Size = new System.Drawing.Size(98, 23);
+            this.lblConfirmPassword.Size = new System.Drawing.Size(114, 23);
             this.lblConfirmPassword.TabIndex = 4;
             this.lblConfirmPassword.Text = "אימות סיסמה";
             //
