@@ -128,7 +128,7 @@
           </Key>
           <Property Name="Code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PasswordWorker" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordWorker" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="KindWorker" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">
@@ -468,7 +468,7 @@
           </Key>
           <Property Name="Code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PasswordWorker" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordWorker" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="KindWorker" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <Association Name="FK_Subjekts_Shebet_Mishpat_Metapel_ToTable">

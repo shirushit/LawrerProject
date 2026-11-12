@@ -1,155 +1,167 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace LawyerProject.BLL
 {
-    public class Validation
+    /// <summary>
+    /// Input validation rules. Pure functions only: no UI, no database,
+    /// so every rule can be unit-tested (see tests/Quedin.Tests).
+    /// </summary>
+    public static class Validation
     {
-        //בדיקת תקינות מספרים ולוכסנים
-        public static bool IsNumberAndProchent(char KeyAscii)
-        {
-            if ((KeyAscii >= '0') && (KeyAscii <= '9') ||
-             (Convert.ToChar(KeyAscii) == 32) || (Convert.ToChar(KeyAscii) == 8) || (KeyAscii
-              == '.') || (KeyAscii == '/') || (KeyAscii == ',') || (KeyAscii == '-'))
-                return true;
-            else
-                return false;
-        }
-        //בדיקת מספר קטן מ- 100
-        public static bool ChekNumAchuz(double num)
-        {
-            if (num <= 100) return true;
-            else return false;
-        }
-        //בדיקת תקינות סיסמה חדשה
-        public static bool ChekPassword(string str)
-        {
-            bool ok = true, okD = false, okl = false;
-            if (str.Length < 8)
-            {
-                ok = false;
-                MessageBox.Show("הסיסמה חייבת להכיל 8 תווים");
-            }
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (char.IsDigit(str[i]) == true)
-                {
-                    okD = true;
-                }
-                if (char.IsLetter(str[i]) == true)
-                {
-                    okl = true;
-                }
-                if (okl == false)
-                {
-                    MessageBox.Show("הסיסמה חייבת להכיל אות באנגלית");
-                    ok = false;
-                }
-                if (okD == false)
-                {
-                    MessageBox.Show("הסיסמה חייבת להכיל מספר");
-                    ok = false;
-                }
-            }
-            return ok;
-        }
-              //בדיקת תקינות תעודת זהות
-              public static bool IsLegalId(string s)
-              {
-                    int x;
-                    if (!int.TryParse(s, out x)) return false;
-                    if (s.Length < 5 || s.Length > 9) return false;
-                    for (int i = s.Length; i < 9; i++)
-                        s = "0" + s;
-                    int sum = 0;
-                    for (int i = 0; i < 9; i++)
-                    {
-                        int k = ((i % 2) + 1) * (Convert.ToInt32(s[i]) - '0');
-                        if (k > 9) k -= 9;
-                        sum += k;
-                    }
-                    return sum % 10 == 0;
-              }
-                public static bool IsHebrew(string pattern)
-                {
-                    Regex reg = new Regex(@"\b[א-ת-\s ]+$");
-                    Match match = reg.Match(pattern);
-                    if (match.Success)
-                        return true;  // correct
-                    else
-                        return false;  // is incorrect
+        public const int MinPasswordLength = 8;
 
-                }
-                //טלפון
-                public static bool IsTelephone(string tel)
-                {
-                    string pattern = @"\b0[2 4 7 8 3 77 72 73]-[2-9]\d{6}$";
-                    Regex reg = new Regex(pattern);
-                    return reg.IsMatch(tel);
-                }
-                //פלאפון
-                public static bool IsCellPhone(string tel)
-                {
-                    string pattern = tel;
-                    Regex reg = new Regex(@"\b05[0 2 4 5 6 7 8 3]-[2-9]\d{6}$");
-                    Match match = reg.Match(pattern);
-                    if (match.Success)
-                        return true;  // correct
-                    else
-                        return false;// is incorrect
-                }
-                //לידה תאריך לפי גיל חישוב//        
-                public static int GetAge(DateTime d)
-                {
-                    DateTime t = DateTime.Today;
-                    int age = t.Year - d.Year;
-                    if (t < d.AddYears(age)) age--;
-                    return age;
-                }
-                //בדיקה שהטקסט בפורמט של מייל       
-                public static bool CheackMail(string email)
-                {
-                    Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-                    Match match = regex.Match(email);
-                    if (match.Success)
-                        return true;  // correct
-                    else
-                        return false;  // is incorrect
-                }
-                //בלבד מספרים   //        
-                public static bool IsNumber(string num)
-                {
-                    string pattern = num;
-                    Regex reg = new Regex(@"\b[0-9-\s]+$");
-                    Match match = reg.Match(pattern);
-                    return match.Success;
-                }
-                // תו ומחיקת רווח מקש ,בעברית אותיות המאפשרת בדיקה         
-                public static bool bdikat_text(char KeyAscii)
-                {
-                    if ((KeyAscii >= 'א') && (KeyAscii <= 'ת') ||
-                    (Convert.ToChar(KeyAscii) == 8) || (Convert.ToChar(KeyAscii) == 32) ||
-                    (KeyAscii >= 'A') && (KeyAscii <= 'Z') || (KeyAscii >= 'a') && (KeyAscii <=
-                     'z'))
-                        return true;
-                    else
-                        return false;
-                }
-                //ונקודה מספר הקשת המאפשרת בדיקה        
-                public static bool bdikat_mispar(char KeyAscii)
-                {
-                    if ((KeyAscii >= '0') && (KeyAscii <= '9') ||
-                    (Convert.ToChar(KeyAscii) == 32) || (Convert.ToChar(KeyAscii) == 8) || KeyAscii
-                    == '.')
-                        return true;
-                    else
-                        return false;
-                }
+        private static readonly Regex LandlineRegex = new Regex(@"^0(2|3|4|8|9|7[2-9])-?\d{7}$", RegexOptions.Compiled);
+        private static readonly Regex CellPhoneRegex = new Regex(@"^05\d-?\d{7}$", RegexOptions.Compiled);
+        private static readonly Regex EmailRegex = new Regex(@"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$", RegexOptions.Compiled);
+        private static readonly Regex HebrewOrEnglishNameRegex = new Regex(@"^[א-תA-Za-z][א-תA-Za-z '\-]*$", RegexOptions.Compiled);
+
+        // ---------- Whole-value checks ----------
+
+        /// <summary>Israeli ID number (Teudat Zehut) with check digit.</summary>
+        public static bool IsLegalId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return false;
+            id = id.Trim();
+            if (id.Length < 5 || id.Length > 9) return false;
+            foreach (char ch in id)
+                if (ch < '0' || ch > '9') return false;
+
+            id = id.PadLeft(9, '0');
+            int sum = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                int k = ((i % 2) + 1) * (id[i] - '0');
+                if (k > 9) k -= 9;
+                sum += k;
             }
+            return sum % 10 == 0;
+        }
+
+        /// <summary>Israeli landline: 02/03/04/08/09/07x, with or without a dash.</summary>
+        public static bool IsTelephone(string phone)
+        {
+            return !string.IsNullOrWhiteSpace(phone) && LandlineRegex.IsMatch(phone.Trim());
+        }
+
+        /// <summary>Israeli mobile number: 05x-xxxxxxx, with or without a dash.</summary>
+        public static bool IsCellPhone(string phone)
+        {
+            return !string.IsNullOrWhiteSpace(phone) && CellPhoneRegex.IsMatch(phone.Trim());
+        }
+
+        public static bool IsPhone(string phone)
+        {
+            return IsTelephone(phone) || IsCellPhone(phone);
+        }
+
+        public static bool IsEmail(string email)
+        {
+            return !string.IsNullOrWhiteSpace(email) && EmailRegex.IsMatch(email.Trim());
+        }
+
+        /// <summary>A person or place name in Hebrew or English letters.</summary>
+        public static bool IsName(string text)
+        {
+            return !string.IsNullOrWhiteSpace(text) && HebrewOrEnglishNameRegex.IsMatch(text.Trim());
+        }
+
+        /// <summary>Percent between 0 and 100 inclusive.</summary>
+        public static bool IsPercent(double value)
+        {
+            return value >= 0 && value <= 100;
+        }
+
+        /// <summary>
+        /// Returns null when the password is valid, otherwise a Hebrew message
+        /// describing every rule that failed.
+        /// </summary>
+        public static string GetPasswordError(string password)
+        {
+            if (password == null) password = string.Empty;
+            bool hasDigit = false, hasLetter = false;
+            foreach (char ch in password)
+            {
+                if (char.IsDigit(ch)) hasDigit = true;
+                if (char.IsLetter(ch)) hasLetter = true;
+            }
+
+            var problems = new System.Collections.Generic.List<string>();
+            if (password.Length < MinPasswordLength) problems.Add("לפחות " + MinPasswordLength + " תווים");
+            if (!hasLetter) problems.Add("לפחות אות אחת");
+            if (!hasDigit) problems.Add("לפחות ספרה אחת");
+
+            return problems.Count == 0 ? null : "הסיסמה חייבת להכיל: " + string.Join(", ", problems);
+        }
+
+        public static bool IsValidPassword(string password)
+        {
+            return GetPasswordError(password) == null;
+        }
+
+        /// <summary>Parses dd/MM/yyyy (the format of the masked date boxes).</summary>
+        public static bool TryParseDate(string text, out DateTime date)
+        {
+            return DateTime.TryParseExact((text ?? string.Empty).Trim(), "dd/MM/yyyy",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+        }
+
+        public static int GetAge(DateTime birthDate, DateTime today)
+        {
+            int age = today.Year - birthDate.Year;
+            if (today < birthDate.AddYears(age)) age--;
+            return age;
+        }
+
+        public static int GetAge(DateTime birthDate)
+        {
+            return GetAge(birthDate, DateTime.Today);
+        }
+
+        /// <summary>Clients must be adults; anything over 120 is a typo.</summary>
+        public static bool IsAdultBirthDate(DateTime birthDate, DateTime today)
+        {
+            int age = GetAge(birthDate, today);
+            return age >= 18 && age <= 120;
+        }
+
+        /// <summary>Parses a non-negative money amount (accepts "1,250.50").</summary>
+        public static bool TryParseMoney(string text, out decimal amount)
+        {
+            bool ok = decimal.TryParse((text ?? string.Empty).Trim(), NumberStyles.Number,
+                CultureInfo.InvariantCulture, out amount);
+            return ok && amount >= 0;
+        }
+
+        // ---------- Key-press filters (used by TextBox.KeyPress) ----------
+
+        private static bool IsControlKey(char ch)
+        {
+            return ch == '\b' || char.IsControl(ch);
+        }
+
+        public static bool IsDigitKey(char ch)
+        {
+            return IsControlKey(ch) || (ch >= '0' && ch <= '9');
+        }
+
+        public static bool IsMoneyKey(char ch)
+        {
+            return IsDigitKey(ch) || ch == '.' || ch == ',';
+        }
+
+        /// <summary>Digits plus the separators used in land registry numbers (gush/chelka).</summary>
+        public static bool IsRegistryKey(char ch)
+        {
+            return IsDigitKey(ch) || ch == '/' || ch == '-';
+        }
+
+        public static bool IsNameKey(char ch)
+        {
+            return IsControlKey(ch) || ch == ' ' || ch == '-' || ch == '\''
+                || (ch >= 'א' && ch <= 'ת')
+                || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+        }
     }
-
+}
