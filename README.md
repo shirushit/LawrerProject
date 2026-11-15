@@ -1,7 +1,6 @@
 <div align="center">
 
-# QUEDIN ⚖️
-### Case & deadline management for a law office
+<img src="docs/banner.svg" alt="QUEDIN: case and deadline management for a law office" width="100%">
 
 [![build](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml/badge.svg)](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml)
 ![C#](https://img.shields.io/badge/C%23-.NET%20Framework%204.7.2-512BD4)
@@ -11,6 +10,8 @@
 ![tests](https://img.shields.io/badge/tests-115%20unit%20%2B%2024%20integration-brightgreen)
 
 **English** · [עברית](#עברית)
+
+[Features](#-features) · [Timeline engine](#-how-the-timeline-engine-works) · [Where to look](#-where-to-look-in-the-code) · [Architecture](#%EF%B8%8F-architecture) · [Getting started](#-getting-started) · [Tests](#-tests)
 
 </div>
 
@@ -26,6 +27,25 @@ today" home screen, court-set dates, payment cancellation by credit note, an aud
 concurrency and strict money parsing. **v1.3** renames the whole code base and database to English
 and closes every edge case from a second review (two users on one case, holidays, refunds, lockout,
 server time). See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
+
+<!-- Screenshots: add Windows screenshots to docs/screenshots/ and remove this comment.
+| Home: what's urgent today | A case and its timeline | Receipt |
+|---|---|---|
+| ![Home](docs/screenshots/home.png) | ![Case](docs/screenshots/case.png) | ![Receipt](docs/screenshots/receipt.png) |
+-->
+
+## 🔎 Where to look in the code
+
+Five minutes with the project? These files show the most:
+
+| File | Why it is interesting |
+|---|---|
+| [`BLL/CaseScheduler.cs`](LawyerProject/BLL/CaseScheduler.cs) | The timeline engine: plans a case, pushes deadlines, keeps court-set dates fixed, skips weekends and Jewish holidays (computed with `HebrewCalendar`). Pure code, no UI or database. |
+| [`tests/Quedin.Tests/CaseSchedulerTests.cs`](tests/Quedin.Tests/CaseSchedulerTests.cs) | The rules above written as tests, including the edge cases found in review. |
+| [`BLL/CaseService.cs`](LawyerProject/BLL/CaseService.cs) | Where the rules meet Entity Framework: computed balances, payments cancelled by a reversing entry, optimistic concurrency with `rowversion`, audit log. |
+| [`BLL/AuthService.cs`](LawyerProject/BLL/AuthService.cs) · [`PasswordHasher.cs`](LawyerProject/BLL/PasswordHasher.cs) | PBKDF2 hashes, upgrade of the original plain-text passwords on first login, lockout after repeated failures. |
+| [`database/create-database.sql`](database/create-database.sql) · [`.github/workflows/build.yml`](.github/workflows/build.yml) | Reproducible database with fictional demo data, verified on a real SQL Server 2022 in CI. |
+| [`CHANGELOG.md`](CHANGELOG.md) | How a 2024 high-school project was reviewed, fixed and hardened, step by step. The original code is the first commit. |
 
 ---
 

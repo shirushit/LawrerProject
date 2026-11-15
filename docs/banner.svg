@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-label="QUEDIN: case and deadline management for a law office">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17140d"/>
+      <stop offset="1" stop-color="#0b0b0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="360" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="4" fill="#EBC86E"/>
+
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif">
+    <text x="80" y="122" fill="#EBC86E" font-size="76" font-weight="700" letter-spacing="10">QUEDIN</text>
+    <text x="82" y="166" fill="#F2EEE3" font-size="26" font-weight="400">Case &amp; deadline management for a law office</text>
+    <text x="82" y="202" fill="#A89F8A" font-size="20">ניהול תיקים, מועדים ותשלומים למשרד עורכי דין</text>
+  </g>
+
+  <!-- the timeline engine: done steps, the next step, a court-set (fixed) date, future steps -->
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="15" text-anchor="middle">
+    <line x1="110" y1="282" x2="1170" y2="282" stroke="#3a352a" stroke-width="3"/>
+    <line x1="110" y1="282" x2="490" y2="282" stroke="#EBC86E" stroke-width="3"/>
+
+    <circle cx="110" cy="282" r="11" fill="#EBC86E"/>
+    <text x="110" y="320" fill="#F2EEE3">Intake</text>
+    <text x="110" y="252" fill="#A89F8A" font-size="13">done 06/03</text>
+
+    <circle cx="300" cy="282" r="11" fill="#EBC86E"/>
+    <text x="300" y="320" fill="#F2EEE3">Claim filed</text>
+    <text x="300" y="252" fill="#A89F8A" font-size="13">done 24/03</text>
+
+    <circle cx="490" cy="282" r="13" fill="#0b0b0b" stroke="#EBC86E" stroke-width="4"/>
+    <text x="490" y="320" fill="#F2EEE3">Defence</text>
+    <text x="490" y="252" fill="#EBC86E" font-size="13">next · due 23/04</text>
+
+    <rect x="672" y="268" width="28" height="28" transform="rotate(45 686 282)" fill="#EBC86E"/>
+    <text x="686" y="320" fill="#F2EEE3" font-weight="600">Pre-trial hearing</text>
+    <text x="686" y="248" fill="#EBC86E" font-size="13">fixed by the court · 12/05</text>
+
+    <circle cx="880" cy="282" r="10" fill="#0b0b0b" stroke="#6b6352" stroke-width="3"/>
+    <text x="880" y="320" fill="#A89F8A">Evidence</text>
+    <text x="880" y="252" fill="#6b6352" font-size="13">≈ 02/06</text>
+
+    <circle cx="1170" cy="282" r="10" fill="#0b0b0b" stroke="#6b6352" stroke-width="3"/>
+    <text x="1170" y="320" fill="#A89F8A">Ruling</text>
+    <text x="1170" y="252" fill="#6b6352" font-size="13">≈ 17/08</text>
+  </g>
+
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="15" fill="#A89F8A" text-anchor="end">
+    <text x="1200" y="78">C# · WinForms · Entity Framework 6 · SQL Server</text>
+    <text x="1200" y="104">115 unit + 24 integration tests · CI on SQL Server 2022</text>
+  </g>
+</svg>
