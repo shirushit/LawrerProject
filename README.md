@@ -2,7 +2,7 @@
 
 <img src="docs/banner.svg" alt="QUEDIN: case and deadline management for a law office" width="100%">
 
-[![build](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml/badge.svg)](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml)
+[![build](https://github.com/shirushit/LawrerProject/actions/workflows/build.yml/badge.svg)](https://github.com/shirushit/LawrerProject/actions/workflows/build.yml)
 ![C#](https://img.shields.io/badge/C%23-.NET%20Framework%204.7.2-512BD4)
 ![WinForms](https://img.shields.io/badge/UI-WinForms%20(RTL%20Hebrew)-blue)
 ![EF6](https://img.shields.io/badge/ORM-Entity%20Framework%206-6DB33F)
@@ -157,8 +157,8 @@ cannot drift apart.
 (it includes SQL Server Express LocalDB).
 
 ```powershell
-git clone https://github.com/shirushit/quedin-law-office-manager.git
-cd quedin-law-office-manager
+git clone https://github.com/shirushit/LawrerProject.git
+cd LawrerProject
 
 # create the database with demo data
 sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
