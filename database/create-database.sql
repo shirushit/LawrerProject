@@ -199,8 +199,8 @@ CREATE TRIGGER [dbo].[TR_AuditLog_AppendOnly] ON [dbo].[AuditLog]
 INSTEAD OF UPDATE, DELETE
 AS
 BEGIN
+    -- INSTEAD OF: the change itself never runs; the caller gets an error.
     RAISERROR (N'The audit log is append-only.', 16, 1);
-    ROLLBACK TRANSACTION;
 END
 GO
 

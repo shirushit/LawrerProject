@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.3 — English code base and edge cases (2026)
+
+### English names
+The code and database used Hebrew words written in Latin letters (`Tikim_Letipul_Orech_Din`,
+`Tashlumim_Letik`, `frmAddCostemer`). Everything is now English: tables (`Cases`, `CaseSteps`,
+`Payments`, `Customers`, ...), columns, entity classes (`LegalCase`, `CaseStep`, `Payment`, ...), the
+context (`QuedinDbContext`), forms (`CaseForm`, `CustomerForm`, `HomeForm`, ...), controls and local
+variables. The screens stay in Hebrew. The EF model is generated from one spec. Unused columns that
+held sensitive data (card CVV, ID copy, payer ID number, card expiry) were removed.
+
+### Edge cases (from the edge-case report)
+- **Bug — court dates were overwritten:** completing or undoing an earlier step recalculated a date
+  the court had set. Such steps are now *fixed*; later steps are counted from them, and the user is
+  warned when an earlier step is expected after a fixed date.
+- **Bug — deleted case while open:** a user saving a case that a manager deleted got a confusing error
+  and a window on a case that no longer existed. Now they are told it was deleted and the window closes.
+- A court date may be earlier than the estimate of an open earlier step (only a completed step limits it).
+- Open case windows notice changes by others when they get focus (reload, or a warning when the user
+  has unsaved edits). Closing a window with unsaved changes asks to save; logout warns only about
+  windows with real unsaved changes.
+- Customers have optimistic concurrency like cases.
+- Warning before opening a second open case of the same client and case type.
+- Jewish holidays on which courts are closed are skipped (computed from the Hebrew calendar); managers
+  add extra days (Independence Day, recess) in a new **Office settings** screen.
+- Steps of cases opened before v1.2 now store their duration on first use, so catalogue changes no
+  longer move them.
+- VAT rate and office details are stored in the database and shared by every workstation.
+- Refund of an overpayment (after lowering the claim amount), with a warning when the new total is
+  below what was paid; after cancelling a payment the user is offered to record the correct one.
+- The advance cannot be larger than the case total.
+- "Today" comes from the database server; a warning at login when the PC clock is off.
+- Backup reminder on the home screen, and `database/backup-nightly.cmd` for a scheduled nightly backup.
+- `database/security.sql`: SQL Server roles so the rules hold outside the app; the audit log is
+  append-only (trigger + DENY).
+- Users are locked for 15 minutes after 5 wrong passwords (a password reset releases them) and can be
+  deactivated by a manager.
+- Unit tests: 104 → 115. Integration tests: 15 → 24.
+
 ## v1.2 — Fixes from a user test and a code review (2026)
 
 Two reviews were written against v1.1: one from the point of view of an office worker using the
