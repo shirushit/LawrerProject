@@ -11,7 +11,7 @@
 
 **English** · [עברית](#עברית)
 
-[Features](#-features) · [Timeline engine](#-how-the-timeline-engine-works) · [Where to look](#-where-to-look-in-the-code) · [Architecture](#%EF%B8%8F-architecture) · [Getting started](#-getting-started) · [Tests](#-tests)
+[Screenshots](#-screenshots) · [Features](#-features) · [Timeline engine](#-how-the-timeline-engine-works) · [Where to look](#-where-to-look-in-the-code) · [Architecture](#%EF%B8%8F-architecture) · [Getting started](#-getting-started) · [Tests](#-tests)
 
 </div>
 
@@ -28,11 +28,17 @@ concurrency and strict money parsing. **v1.3** renames the whole code base and d
 and closes every edge case from a second review (two users on one case, holidays, refunds, lockout,
 server time). See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
 
-<!-- Screenshots: add Windows screenshots to docs/screenshots/ and remove this comment.
-| Home: what's urgent today | A case and its timeline | Receipt |
+## 📸 Screenshots
+
+The app is in Hebrew (right-to-left). All names, IDs and amounts are fictional demo data.
+
+| Home: what's urgent today | A case, its fees and its timeline | Receipt |
 |---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Case](docs/screenshots/case.png) | ![Receipt](docs/screenshots/receipt.png) |
--->
+| ![Home screen](docs/screenshots/home.png) | ![Case screen](docs/screenshots/case.png) | ![Receipt](docs/screenshots/receipt.png) |
+
+| All cases, late and due-soon highlighted | Payments and receipts |
+|---|---|
+| ![Cases list](docs/screenshots/cases.png) | ![Payments list](docs/screenshots/payments.png) |
 
 ## 🔎 Where to look in the code
 
