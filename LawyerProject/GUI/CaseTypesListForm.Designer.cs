@@ -68,14 +68,14 @@
             // 
             this.gridCaseTypes.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.gridCaseTypes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridCaseTypes.Location = new System.Drawing.Point(233, 218);
+            this.gridCaseTypes.Location = new System.Drawing.Point(83, 218);
             this.gridCaseTypes.Margin = new System.Windows.Forms.Padding(4);
             this.gridCaseTypes.MultiSelect = false;
             this.gridCaseTypes.Name = "gridCaseTypes";
             this.gridCaseTypes.ReadOnly = true;
             this.gridCaseTypes.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.gridCaseTypes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridCaseTypes.Size = new System.Drawing.Size(435, 327);
+            this.gridCaseTypes.Size = new System.Drawing.Size(585, 327);
             this.gridCaseTypes.TabIndex = 9;
             // 
             // groupSearch

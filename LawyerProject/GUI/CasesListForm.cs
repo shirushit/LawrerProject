@@ -188,7 +188,6 @@ namespace LawyerProject.GUI
             Ui.SetHeaders(gridCases, new Dictionary<string, string>
             {
                 { "CaseId", "מספר תיק" },
-                { "ClientId", "ת.ז. לקוח" },
                 { "ClientName", "שם לקוח" },
                 { "CaseTypeName", "נושא תיק" },
                 { "CurrentStep", "שלב נוכחי" },

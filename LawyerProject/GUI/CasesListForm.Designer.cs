@@ -62,7 +62,7 @@ namespace LawyerProject.GUI
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnUpdate.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnUpdate.Location = new System.Drawing.Point(405, 813);
+            this.btnUpdate.Location = new System.Drawing.Point(495, 813);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(100, 34);
@@ -75,7 +75,7 @@ namespace LawyerProject.GUI
             // 
             this.btnAdd.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnAdd.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnAdd.Location = new System.Drawing.Point(579, 813);
+            this.btnAdd.Location = new System.Drawing.Point(669, 813);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 34);
@@ -96,7 +96,7 @@ namespace LawyerProject.GUI
             this.gridCases.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.gridCases.RowHeadersWidth = 62;
             this.gridCases.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridCases.Size = new System.Drawing.Size(1125, 520);
+            this.gridCases.Size = new System.Drawing.Size(1305, 520);
             this.gridCases.TabIndex = 9;
             // 
             // groupSearch
@@ -119,7 +119,7 @@ namespace LawyerProject.GUI
             this.groupSearch.Controls.Add(this.label13);
             this.groupSearch.Controls.Add(this.label14);
             this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupSearch.Location = new System.Drawing.Point(32, 18);
+            this.groupSearch.Location = new System.Drawing.Point(122, 18);
             this.groupSearch.Margin = new System.Windows.Forms.Padding(4);
             this.groupSearch.Name = "groupSearch";
             this.groupSearch.Padding = new System.Windows.Forms.Padding(4);
@@ -301,7 +301,7 @@ namespace LawyerProject.GUI
             // 
             // lblSearch
             // 
-            this.lblSearch.Location = new System.Drawing.Point(1000, 208);
+            this.lblSearch.Location = new System.Drawing.Point(1180, 208);
             this.lblSearch.Name = "lblSearch";
             this.lblSearch.Size = new System.Drawing.Size(157, 26);
             this.lblSearch.TabIndex = 20;
@@ -310,7 +310,7 @@ namespace LawyerProject.GUI
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(620, 205);
+            this.txtSearch.Location = new System.Drawing.Point(800, 205);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(375, 32);
             this.txtSearch.TabIndex = 0;
@@ -318,7 +318,7 @@ namespace LawyerProject.GUI
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(490, 203);
+            this.btnClear.Location = new System.Drawing.Point(670, 203);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(120, 34);
             this.btnClear.TabIndex = 21;
@@ -353,7 +353,7 @@ namespace LawyerProject.GUI
             // 
             // lblCount
             // 
-            this.lblCount.Location = new System.Drawing.Point(800, 818);
+            this.lblCount.Location = new System.Drawing.Point(980, 818);
             this.lblCount.Name = "lblCount";
             this.lblCount.Size = new System.Drawing.Size(357, 26);
             this.lblCount.TabIndex = 24;
@@ -367,7 +367,7 @@ namespace LawyerProject.GUI
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(1232, 856);
+            this.ClientSize = new System.Drawing.Size(1412, 856);
             this.Controls.Add(this.groupSearch);
             this.Controls.Add(this.lblSearch);
             this.Controls.Add(this.txtSearch);
