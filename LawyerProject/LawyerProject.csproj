@@ -84,24 +84,62 @@
     <Compile Include="BLL\PasswordHasher.cs" />
     <Compile Include="BLL\Session.cs" />
     <Compile Include="BLL\Validation.cs" />
-    <Compile Include="DB\AuditEntry.cs" />
-    <Compile Include="DB\CaseStep.cs" />
-    <Compile Include="DB\CaseType.cs" />
-    <Compile Include="DB\CaseTypeStep.cs" />
-    <Compile Include="DB\Court.cs" />
-    <Compile Include="DB\CourtCaseType.cs" />
-    <Compile Include="DB\Customer.cs" />
+    <Compile Include="DB\AuditEntry.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\CaseStep.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\CaseType.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\CaseTypeStep.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\Court.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\CourtCaseType.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\Customer.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DB\CustomerExtensions.cs" />
-    <Compile Include="DB\Holiday.cs" />
-    <Compile Include="DB\LegalCase.cs" />
+    <Compile Include="DB\Holiday.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\LegalCase.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DB\ModelExtensions.cs" />
-    <Compile Include="DB\Payment.cs" />
-    <Compile Include="DB\Procedure.cs" />
-    <Compile Include="DB\QuedinModel.Context.cs" />
-    <Compile Include="DB\QuedinModel.Designer.cs" />
-    <Compile Include="DB\QuedinModel.cs" />
-    <Compile Include="DB\Setting.cs" />
-    <Compile Include="DB\User.cs" />
+    <Compile Include="DB\Payment.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\Procedure.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\QuedinModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuedinModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\QuedinModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="DB\QuedinModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\Setting.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DB\User.cs">
+      <DependentUpon>QuedinModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="GUI\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
@@ -298,12 +336,12 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="DB\LawyerProjekt.edmx">
+    <EntityDeploy Include="DB\QuedinModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>LawyerProjekt.Designer.cs</LastGenOutput>
+      <LastGenOutput>QuedinModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="DB\LawyerProjekt.edmx.diagram">
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
+    <None Include="DB\QuedinModel.edmx.diagram">
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -311,15 +349,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <Content Include="DB\LawyerProjekt.Context.tt">
+    <Content Include="DB\QuedinModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
-      <LastGenOutput>LawyerProjekt.Context.cs</LastGenOutput>
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
+      <LastGenOutput>QuedinModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="DB\LawyerProjekt.tt">
+    <Content Include="DB\QuedinModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
-      <LastGenOutput>LawyerProjekt.cs</LastGenOutput>
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
+      <LastGenOutput>QuedinModel.cs</LastGenOutput>
     </Content>
     <None Include="Resources\אודות.PNG" />
     <None Include="Resources\אייקון %282%29.PNG" />
