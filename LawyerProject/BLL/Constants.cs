@@ -26,6 +26,8 @@ namespace LawyerProject.BLL
         public const string CreditCard = "אשראי";
         public const string BankTransfer = "העברה בנקאית";
         public const string Check = "צ'ק";
+
+        public static readonly string[] All = { Cash, CreditCard, BankTransfer, Check };
     }
 
     /// <summary>Values stored in Customer.IdType (what CustomerId contains).</summary>
@@ -45,6 +47,10 @@ namespace LawyerProject.BLL
         public const string Fee = "שכר טרחה";
         public const string Expenses = "אגרה והוצאות";
 
+        /// <summary>Money returned to a client who paid more than the case total (recorded by the system, not picked by users).</summary>
+        public const string Refund = "החזר ללקוח";
+
+        /// <summary>The kinds a user can choose when recording a payment.</summary>
         public static readonly string[] All = { Fee, Expenses };
     }
 
@@ -64,5 +70,13 @@ namespace LawyerProject.BLL
         public const string PasswordChanged = "החלפת סיסמה";
         public const string PasswordReset = "איפוס סיסמה";
         public const string Backup = "גיבוי";
+        public const string Refund = "החזר ללקוח";
+        public const string CustomerUpdated = "עדכון פרטי לקוח";
+        public const string UserActivated = "הפעלת משתמש";
+        public const string UserDeactivated = "השבתת משתמש";
+        public const string UserLocked = "נעילת משתמש";
+        public const string SettingsChanged = "שינוי הגדרות";
+        public const string HolidayAdded = "הוספת יום חופש";
+        public const string HolidayRemoved = "הסרת יום חופש";
     }
 }

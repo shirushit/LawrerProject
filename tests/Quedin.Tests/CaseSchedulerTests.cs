@@ -283,5 +283,155 @@ namespace Quedin.Tests
             Assert.AreEqual(-2, CaseScheduler.DaysLate(Opened.AddDays(2), Opened));
             Assert.AreEqual(0, CaseScheduler.DaysLate(Opened, Opened.AddHours(20)));
         }
+
+        // ---------------------------------------------------------- court-set (fixed) dates
+
+        [TestMethod]
+        public void CompletingAnEarlierStep_DoesNotMoveACourtSetDate()
+        {
+            // the report's bug: the hearing date of step 3 moved when step 1 was completed
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            DateTime hearing = new DateTime(2024, 5, 2);
+            CaseScheduler.Reschedule(plan, plan[2], hearing);
+
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(12));
+
+            Assert.AreEqual(hearing, plan[2].EstimatedDate);
+            Assert.IsTrue(plan[2].IsFixed);
+        }
+
+        [TestMethod]
+        public void UndoingAStep_DoesNotMoveACourtSetDate()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(7));
+            DateTime hearing = new DateTime(2024, 6, 4);
+            CaseScheduler.Reschedule(plan, plan[2], hearing);
+
+            CaseScheduler.UndoLastCompletion(plan);
+
+            Assert.AreEqual(hearing, plan[2].EstimatedDate);
+        }
+
+        [TestMethod]
+        public void StepsAfterAFixedDate_AreCountedFromIt()
+        {
+            var templates = new List<StepTemplate>
+            {
+                new StepTemplate { ProcessId = 1, Level = 1, DurationDays = 7 },
+                new StepTemplate { ProcessId = 2, Level = 2, DurationDays = 14 },
+                new StepTemplate { ProcessId = 3, Level = 3, DurationDays = 21 },
+            };
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(templates, Opened));
+            DateTime hearing = new DateTime(2024, 4, 9); // Tuesday
+            CaseScheduler.Reschedule(plan, plan[1], hearing);
+
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(3));
+
+            Assert.AreEqual(hearing, plan[1].EstimatedDate);
+            Assert.AreEqual(hearing.AddDays(21), plan[2].EstimatedDate);
+        }
+
+        [TestMethod]
+        public void Reschedule_BeforeTheEstimateOfAnOpenEarlierStep_IsAllowed()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            DateTime hearing = plan[0].EstimatedDate.AddDays(-2); // earlier than step 1's estimate, step 1 still open
+
+            CaseScheduler.Reschedule(plan, plan[1], hearing);
+
+            Assert.AreEqual(hearing, plan[1].EstimatedDate);
+        }
+
+        [TestMethod]
+        public void Conflicts_ReportsAStepCalculatedAfterAFixedDate()
+        {
+            List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(CivilClaim(), Opened));
+            CaseScheduler.Reschedule(plan, plan[1], Opened.AddDays(9)); // hearing set early
+            CaseScheduler.CompleteStep(plan, plan[0], Opened.AddDays(2));
+            Assert.AreEqual(0, CaseScheduler.Conflicts(plan).Count);
+
+            plan[0].IsDone = false; plan[0].DoneDate = null;
+            plan[0].EstimatedDate = Opened.AddDays(15); // step 1 now expected after the hearing
+            List<ScheduledStep> conflicts = CaseScheduler.Conflicts(plan);
+
+            Assert.AreEqual(1, conflicts.Count);
+            Assert.AreSame(plan[0], conflicts[0]);
+        }
+
+        // ---------------------------------------------------------- holidays
+
+        [TestMethod]
+        public void JewishHolidays_2026_MatchTheCalendar()
+        {
+            Dictionary<DateTime, string> h = BusinessCalendar.JewishHolidays(2026);
+            Assert.IsTrue(h.ContainsKey(new DateTime(2026, 4, 2)), "Pesach");
+            Assert.IsTrue(h.ContainsKey(new DateTime(2026, 5, 22)), "Shavuot");
+            Assert.IsTrue(h.ContainsKey(new DateTime(2026, 9, 12)), "Rosh Hashana");
+            Assert.IsTrue(h.ContainsKey(new DateTime(2026, 9, 21)), "Yom Kippur");
+            Assert.IsTrue(h.ContainsKey(new DateTime(2026, 10, 3)), "Shemini Atzeret");
+            Assert.AreEqual(8, h.Count);
+        }
+
+        [TestMethod]
+        public void NextWorkday_SkipsHolidaysAndWeekends()
+        {
+            Assert.AreEqual(new DateTime(2026, 9, 22), BusinessCalendar.NextWorkday(new DateTime(2026, 9, 21))); // Yom Kippur (Mon)
+            Assert.AreEqual(new DateTime(2026, 9, 14), BusinessCalendar.NextWorkday(new DateTime(2026, 9, 11))); // Fri, Sat RH, Sun RH
+            Assert.AreEqual(new DateTime(2026, 4, 5), BusinessCalendar.NextWorkday(new DateTime(2026, 4, 2)));   // Pesach (Thu)
+            Assert.AreEqual("יום כיפור", BusinessCalendar.HolidayName(new DateTime(2026, 9, 21)));
+        }
+
+        [TestMethod]
+        public void ExtraHolidays_AddedByTheOffice_AreNotWorkdays()
+        {
+            DateTime recess = new DateTime(2026, 7, 15); // a Wednesday
+            try
+            {
+                BusinessCalendar.SetExtraHolidays(new Dictionary<DateTime, string> { { recess, "פגרה" } });
+                Assert.IsFalse(BusinessCalendar.IsWorkday(recess));
+                Assert.AreEqual(recess.AddDays(1), BusinessCalendar.NextWorkday(recess));
+            }
+            finally
+            {
+                BusinessCalendar.SetExtraHolidays(null);
+            }
+            Assert.IsTrue(BusinessCalendar.IsWorkday(recess));
+        }
+
+        // ---------------------------------------------------------- login lockout and clock
+
+        [TestMethod]
+        public void LoginPolicy_LocksAfterFiveFailures()
+        {
+            DateTime now = new DateTime(2026, 11, 15, 10, 0, 0);
+            DateTime? locked = null;
+            int failures = 0;
+            for (int i = 0; i < 4; i++) failures = LoginPolicy.RegisterFailure(failures, now, out locked);
+            Assert.AreEqual(4, failures);
+            Assert.IsNull(locked);
+
+            failures = LoginPolicy.RegisterFailure(failures, now, out locked);
+            Assert.AreEqual(0, failures);
+            Assert.AreEqual(now.AddMinutes(15), locked);
+            Assert.IsTrue(LoginPolicy.IsLocked(locked, now.AddMinutes(14)));
+            Assert.IsFalse(LoginPolicy.IsLocked(locked, now.AddMinutes(16)));
+        }
+
+        [TestMethod]
+        public void Clock_FollowsTheServerTime()
+        {
+            try
+            {
+                Clock.SetServerTime(DateTime.Now.AddDays(1));
+                Assert.AreEqual(DateTime.Today.AddDays(1), Clock.Today);
+                Clock.SetServerTime(DateTime.Now.AddMilliseconds(500));
+                Assert.AreEqual(TimeSpan.Zero, Clock.Offset, "network delay is ignored");
+            }
+            finally
+            {
+                Clock.Reset();
+            }
+        }
     }
 }

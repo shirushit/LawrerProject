@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using LawyerProject.BLL;
@@ -61,7 +62,7 @@ namespace Quedin.IntegrationTests
         [TestMethod]
         public void Login_UpgradesLegacyPlainTextPassword()
         {
-            db.Users.Add(new User { UserName = "legacy", PasswordHash = "12345", Role = Roles.Worker });
+            db.Users.Add(new User { UserName = "legacy", PasswordHash = "12345", Role = Roles.Worker, IsActive = true });
             db.SaveChanges();
 
             User user = new AuthService(db).Login("legacy", "12345");
@@ -284,7 +285,7 @@ namespace Quedin.IntegrationTests
             Assert.IsNull(service.CompleteStep(legalCase, steps[0].CaseStepId, new DateTime(2025, 1, 20)));
             Session.SignOut();
             Assert.IsNotNull(service.UndoLastStep(legalCase), "only a manager may undo");
-            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager });
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager, IsActive = true });
             try
             {
                 Assert.IsNull(service.UndoLastStep(legalCase));
@@ -299,7 +300,7 @@ namespace Quedin.IntegrationTests
         [TestMethod]
         public void DeleteCase_OnlyWhenNothingHappenedYet()
         {
-            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager });
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager, IsActive = true });
             try
             {
                 LegalCase paid = SavedCase();
@@ -323,6 +324,167 @@ namespace Quedin.IntegrationTests
         {
             var due = new CaseService(db).DueSteps(new DateTime(2030, 1, 1), 7);
             Assert.AreEqual(due.Count, due.Select(d => d.CaseId).Distinct().Count());
+        }
+
+        // ------------------------------------------------------------------ edge cases from the report
+
+        [TestMethod]
+        public void FixedCourtDate_SurvivesCompletingAnEarlierStep()
+        {
+            LegalCase legalCase = SavedCase();
+            var service = new CaseService(db);
+            var steps = CaseService.OrderedSteps(legalCase);
+            DateTime hearing = new DateTime(2025, 7, 1);
+
+            Assert.IsNull(service.RescheduleStep(legalCase, steps[1].CaseStepId, hearing, null));
+            Assert.IsNull(service.CompleteStep(legalCase, steps[0].CaseStepId, new DateTime(2025, 1, 30)));
+
+            using (var fresh = new QuedinDbContext())
+            {
+                CaseStep stored = fresh.CaseSteps.Single(s => s.CaseStepId == steps[1].CaseStepId);
+                Assert.AreEqual(hearing, stored.DueDate);
+                Assert.IsTrue(stored.IsFixedDate);
+            }
+        }
+
+        [TestMethod]
+        public void Refund_ReturnsTheOverpayment()
+        {
+            LegalCase legalCase = SavedCase();
+            var service = new CaseService(db);
+            decimal total = CaseService.CaseTotal(legalCase);
+            Assert.IsNull(service.AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today }));
+
+            legalCase.ClaimAmount = legalCase.ClaimAmount / 2; // claim lowered after the client paid
+            db.SaveChanges();
+            Assert.IsTrue(CaseService.OpenBalance(legalCase) < 0);
+
+            Assert.IsNull(service.RefundOverpayment(legalCase, PaymentMethods.BankTransfer, null));
+            Assert.AreEqual(0m, CaseService.OpenBalance(legalCase));
+            Assert.IsNotNull(service.RefundOverpayment(legalCase, PaymentMethods.BankTransfer, null), "nothing left to refund");
+        }
+
+        [TestMethod]
+        public void DeletedCase_IsDetected()
+        {
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager, IsActive = true });
+            try
+            {
+                LegalCase legalCase = SavedCase();
+                int id = legalCase.CaseId;
+                Assert.IsTrue(new CaseService(db).CaseExists(id));
+                Assert.IsNotNull(new CaseService(db).CurrentVersion(id));
+                Assert.IsNull(new CaseService(db).DeleteCase(legalCase));
+                Assert.IsFalse(new CaseService(db).CaseExists(id));
+                Assert.IsNull(new CaseService(db).CurrentVersion(id));
+            }
+            finally
+            {
+                Session.SignOut();
+            }
+        }
+
+        [TestMethod]
+        public void DuplicateOpenCase_IsFound()
+        {
+            LegalCase first = SavedCase();
+            LegalCase second = SavedCase(); // same client and case type
+            LegalCase found = new CaseService(db).FindOpenDuplicate(second.ClientId, second.CaseTypeId, second.CaseId);
+            Assert.IsNotNull(found);
+            Assert.AreNotEqual(second.CaseId, found.CaseId, "the case itself is not its own duplicate");
+        }
+
+        [TestMethod]
+        public void ConcurrentEdit_OfTheSameCustomer_IsDetected()
+        {
+            Customer customer = db.Customers.First(c => c.PersonType == PersonTypes.Client);
+            using (var other = new QuedinDbContext())
+            {
+                other.Customers.Single(c => c.CustomerId == customer.CustomerId).City = "חיפה";
+                other.SaveChanges();
+            }
+            customer.City = "אילת";
+            Assert.ThrowsException<System.Data.Entity.Infrastructure.DbUpdateConcurrencyException>(() => db.SaveChanges());
+        }
+
+        [TestMethod]
+        public void Login_LocksAfterRepeatedFailures_AndResetReleases()
+        {
+            var auth = new AuthService(db);
+            string error;
+            for (int i = 0; i < LoginPolicy.MaxFailures; i++) auth.Login("worker", "wrong", out error);
+
+            Assert.IsNull(auth.Login("worker", "Worker2024", out error), "locked even with the right password");
+            StringAssert.Contains(error, "נעול");
+
+            Session.SignIn(auth.Login("admin", "Quedin2024"));
+            try
+            {
+                Assert.IsNull(auth.ResetPassword("worker", "Fresh2024x"));
+                Assert.IsNotNull(auth.Login("worker", "Fresh2024x"));
+            }
+            finally
+            {
+                Session.SignOut();
+            }
+        }
+
+        [TestMethod]
+        public void DeactivatedUser_CannotLogIn()
+        {
+            var auth = new AuthService(db);
+            Session.SignIn(auth.Login("admin", "Quedin2024"));
+            try
+            {
+                Assert.IsNotNull(auth.SetActive("admin", false), "a manager cannot deactivate themselves");
+                Assert.IsNull(auth.SetActive("worker", false));
+                string error;
+                Assert.IsNull(auth.Login("worker", "Worker2024", out error));
+                StringAssert.Contains(error, "הושבת");
+            }
+            finally
+            {
+                Session.SignOut();
+            }
+        }
+
+        [TestMethod]
+        public void Settings_AreSharedThroughTheDatabase()
+        {
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager, IsActive = true });
+            try
+            {
+                Assert.IsNotNull(AppSettings.Save(db, new Dictionary<string, string> { { AppSettings.VatRateKey, "1.5" } }), "invalid rate refused");
+                Assert.IsNull(AppSettings.Save(db, new Dictionary<string, string> { { AppSettings.VatRateKey, "0.17" } }));
+                using (var fresh = new QuedinDbContext())
+                {
+                    AppSettings.Load(fresh);
+                    Assert.AreEqual(0.17m, AppSettings.VatRate);
+                }
+            }
+            finally
+            {
+                Session.SignOut();
+                AppSettings.Load(db);
+            }
+        }
+
+        [TestMethod]
+        public void AuditLog_IsAppendOnly()
+        {
+            AuditService.Log(db, "בדיקה", "בדיקה", 1, null);
+            db.SaveChanges();
+            bool refused = false;
+            try
+            {
+                db.AuditLog.Remove(db.AuditLog.OrderByDescending(a => a.AuditEntryId).First());
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                refused = true;
+            }
+            Assert.IsTrue(refused, "deleting from the audit log must fail");
         }
     }
 }

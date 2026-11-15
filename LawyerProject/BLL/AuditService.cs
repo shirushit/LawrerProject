@@ -13,7 +13,7 @@ namespace LawyerProject.BLL
         {
             db.AuditLog.Add(new AuditEntry
             {
-                OccurredAt = DateTime.Now,
+                OccurredAt = Clock.Now,
                 UserName = Session.CurrentUser != null ? Session.CurrentUser.UserName : null,
                 Action = action,
                 Entity = entity,

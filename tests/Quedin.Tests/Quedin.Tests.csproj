@@ -18,6 +18,8 @@
     <Compile Include="..\..\LawyerProject\BLL\CaseScheduler.cs" Link="Linked\CaseScheduler.cs" />
     <Compile Include="..\..\LawyerProject\BLL\FeeCalculator.cs" Link="Linked\FeeCalculator.cs" />
     <Compile Include="..\..\LawyerProject\BLL\Constants.cs" Link="Linked\Constants.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\Clock.cs" Link="Linked\Clock.cs" />
+    <Compile Include="..\..\LawyerProject\BLL\LoginPolicy.cs" Link="Linked\LoginPolicy.cs" />
   </ItemGroup>
 
   <ItemGroup>

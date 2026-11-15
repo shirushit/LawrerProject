@@ -104,5 +104,13 @@ namespace Quedin.Tests
             Assert.AreEqual(-180m, b.Vat);
             Assert.AreEqual(b.Total, b.Net + b.Vat);
         }
+
+        [TestMethod]
+        public void Overpaid_IsWhatTheOfficeOwesBack()
+        {
+            Assert.AreEqual(0m, FeeCalculator.Overpaid(1000m, new[] { 400m }));
+            Assert.AreEqual(250m, FeeCalculator.Overpaid(1000m, new[] { 1250m }), "claim lowered after payment");
+            Assert.AreEqual(0m, FeeCalculator.Overpaid(1000m, new[] { 1250m, -250m }), "after the refund");
+        }
     }
 }

@@ -50,6 +50,12 @@ namespace LawyerProject.BLL
             return SplitVat(amount, vatRate);
         }
 
+        /// <summary>How much the client paid above the case total (0 when nothing is owed back).</summary>
+        public static decimal Overpaid(decimal caseTotal, IEnumerable<decimal> payments)
+        {
+            return Math.Max(0m, -Balance(caseTotal, payments));
+        }
+
         /// <summary>Balance left after a payment. A payment may not exceed the open balance.</summary>
         public static decimal BalanceAfterPayment(decimal openBalance, decimal payment)
         {

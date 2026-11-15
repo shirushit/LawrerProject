@@ -77,8 +77,10 @@
     <Compile Include="BLL\BackupService.cs" />
     <Compile Include="BLL\CaseScheduler.cs" />
     <Compile Include="BLL\CaseService.cs" />
+    <Compile Include="BLL\Clock.cs" />
     <Compile Include="BLL\Constants.cs" />
     <Compile Include="BLL\FeeCalculator.cs" />
+    <Compile Include="BLL\LoginPolicy.cs" />
     <Compile Include="BLL\PasswordHasher.cs" />
     <Compile Include="BLL\Session.cs" />
     <Compile Include="BLL\Validation.cs" />
@@ -295,12 +297,12 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="DB\QuedinModel.edmx">
+    <EntityDeploy Include="DB\LawyerProjekt.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QuedinModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>LawyerProjekt.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="DB\QuedinModel.edmx.diagram">
-      <DependentUpon>QuedinModel.edmx</DependentUpon>
+    <None Include="DB\LawyerProjekt.edmx.diagram">
+      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -308,15 +310,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <Content Include="DB\QuedinModel.Context.tt">
+    <Content Include="DB\LawyerProjekt.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QuedinModel.edmx</DependentUpon>
-      <LastGenOutput>QuedinModel.Context.cs</LastGenOutput>
+      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
+      <LastGenOutput>LawyerProjekt.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="DB\QuedinModel.tt">
+    <Content Include="DB\LawyerProjekt.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>QuedinModel.edmx</DependentUpon>
-      <LastGenOutput>QuedinModel.cs</LastGenOutput>
+      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
+      <LastGenOutput>LawyerProjekt.cs</LastGenOutput>
     </Content>
     <None Include="Resources\אודות.PNG" />
     <None Include="Resources\אייקון %282%29.PNG" />

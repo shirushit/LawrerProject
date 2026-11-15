@@ -16,7 +16,7 @@ namespace LawyerProject.BLL
         public static string Backup(QuedinDbContext db, string folder)
         {
             if (!Session.IsManager) throw new InvalidOperationException("רק מנהלת יכולה לגבות את המערכת.");
-            string path = Path.Combine(folder, DefaultFileName(DateTime.Now));
+            string path = Path.Combine(folder, DefaultFileName(Clock.Now));
             string dbName = db.Database.Connection.Database;
             // BACKUP cannot run inside a transaction; the database name cannot be a parameter, so quote it.
             db.Database.ExecuteSqlCommand(System.Data.Entity.TransactionalBehavior.DoNotEnsureTransaction,

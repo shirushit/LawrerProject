@@ -159,7 +159,7 @@ namespace LawyerProject.BLL
 
         public static int GetAge(DateTime birthDate)
         {
-            return GetAge(birthDate, DateTime.Today);
+            return GetAge(birthDate, Clock.Today);
         }
 
         /// <summary>Clients must be adults; anything over 120 is a typo.</summary>

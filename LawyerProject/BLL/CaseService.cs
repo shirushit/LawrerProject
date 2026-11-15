@@ -72,7 +72,7 @@ namespace LawyerProject.BLL
         /// <summary>Marks the next open step as done on the given date (not in the future) and pushes later dates.</summary>
         public string CompleteStep(LegalCase legalCase, int stepId, DateTime doneOn)
         {
-            if (Validation.IsFutureDate(doneOn, DateTime.Today)) return "לא ניתן לסמן שלב כבוצע בתאריך עתידי.";
+            if (Validation.IsFutureDate(doneOn, Clock.Today)) return "לא ניתן לסמן שלב כבוצע בתאריך עתידי.";
             return ApplyToTimeline(legalCase, stepId, (steps, target) => CaseScheduler.CompleteStep(steps, target, doneOn),
                 AuditActions.StepCompleted, "בוצע ב-" + doneOn.ToString("dd/MM/yyyy"));
         }
@@ -162,11 +162,24 @@ namespace LawyerProject.BLL
                 e.IsDone = s.IsDone;
                 e.DoneDate = s.DoneDate;
                 e.DueDate = s.EstimatedDate;
+                e.IsFixedDate = s.IsFixed;
             }
             ScheduledStep next = CaseScheduler.NextPending(map.Values);
             ScheduledStep last = CaseScheduler.Ordered(map.Values).LastOrDefault();
             legalCase.CurrentProcedureId = next != null ? next.ProcessId : (last != null ? last.ProcessId : legalCase.CurrentProcedureId);
             TouchCase(legalCase);
+        }
+
+        /// <summary>
+        /// Open steps whose calculated date is after a later court-set date (for example evidence due after
+        /// the hearing). Shown to the user as a warning; nothing is changed automatically.
+        /// </summary>
+        public List<CaseStep> ScheduleConflicts(LegalCase legalCase)
+        {
+            List<CaseStep> entities = legalCase.Steps.ToList();
+            Dictionary<int, ScheduledStep> map = entities.ToDictionary(e => e.CaseStepId, ToScheduled);
+            HashSet<int> ids = new HashSet<int>(CaseScheduler.Conflicts(map.Values).Select(s => s.Id));
+            return entities.Where(e => ids.Contains(e.CaseStepId)).OrderBy(e => e.CaseStepId).ToList();
         }
 
         /// <summary>Steps of the case in timeline order (the order of the case type's levels).</summary>
@@ -281,7 +294,7 @@ namespace LawyerProject.BLL
                 Kind = original.Kind,
                 VatRate = original.VatRate,
                 Method = original.Method,
-                PaidOn = DateTime.Today,
+                PaidOn = Clock.Today,
                 Description = Truncate("ביטול קבלה " + original.PaymentId + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), 50),
                 CancelsPaymentId = original.PaymentId,
                 IsCancelled = false
@@ -295,7 +308,59 @@ namespace LawyerProject.BLL
             return null;
         }
 
+        /// <summary>
+        /// Records money returned to a client who paid more than the case total (for example after the
+        /// claim amount was lowered). The refund is a negative entry, like a cancellation.
+        /// </summary>
+        public string RefundOverpayment(LegalCase legalCase, string method, string reason)
+        {
+            decimal overpaid = FeeCalculator.Overpaid(CaseTotal(legalCase), legalCase.Payments.Select(p => p.Amount));
+            if (overpaid <= 0) return "אין עודף להחזיר בתיק זה.";
+            if (!PaymentMethods.All.Contains(method)) return "יש לבחור אמצעי תשלום.";
+
+            var refund = new Payment
+            {
+                CaseId = legalCase.CaseId,
+                Amount = -overpaid,
+                Kind = PaymentKinds.Refund,
+                VatRate = AppSettings.VatRate,
+                Method = method,
+                PaidOn = Clock.Today,
+                Description = Truncate("החזר עודף ללקוח" + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), 50),
+                IsCancelled = false,
+                BalanceAfter = 0m
+            };
+            legalCase.Payments.Add(refund);
+            RefreshPaymentFlags(legalCase);
+            TouchCase(legalCase);
+            AuditService.Log(db, AuditActions.Refund, "תיק", legalCase.CaseId, overpaid.ToString("0.00") + " " + method);
+            db.SaveChanges();
+            return null;
+        }
+
         // ------------------------------------------------------------------ case lifecycle
+
+        /// <summary>False when the case was deleted (for example by another user while it was open).</summary>
+        public bool CaseExists(int caseId)
+        {
+            return db.Cases.Any(c => c.CaseId == caseId);
+        }
+
+        /// <summary>The case's current row version in the database, or null when it no longer exists.</summary>
+        public byte[] CurrentVersion(int caseId)
+        {
+            return db.Cases.Where(c => c.CaseId == caseId).Select(c => c.RowVersion).FirstOrDefault();
+        }
+
+        /// <summary>An open case (not all steps done) of the same client and case type, other than <paramref name="exceptCaseId"/>.</summary>
+        public LegalCase FindOpenDuplicate(string clientId, int caseTypeId, int exceptCaseId)
+        {
+            return db.Cases
+                .Where(c => c.ClientId == clientId && c.CaseTypeId == caseTypeId && c.CaseId != exceptCaseId)
+                .Where(c => c.Steps.Any(s => s.IsDone != true))
+                .OrderBy(c => c.CaseId)
+                .FirstOrDefault();
+        }
 
         /// <summary>A case opened by mistake can be deleted by a manager while nothing was paid or completed.</summary>
         public string DeleteCase(LegalCase legalCase)
@@ -342,6 +407,7 @@ namespace LawyerProject.BLL
                 // Steps created before v1.2 have no snapshot; fall back to the catalogue.
                 Procedure process = e.Procedure ?? db.Procedures.Find(e.ProcedureId);
                 days = process != null ? process.DurationDays : 0;
+                e.DurationDays = days; // keep it from now on, so a later catalogue change does not move this case
             }
             return new ScheduledStep
             {
@@ -350,7 +416,8 @@ namespace LawyerProject.BLL
                 DurationDays = days,
                 EstimatedDate = e.DueDate ?? DateTime.MaxValue.Date,
                 DoneDate = e.DoneDate,
-                IsDone = e.IsDone == true
+                IsDone = e.IsDone == true,
+                IsFixed = e.IsFixedDate
             };
         }
     }
