@@ -4,11 +4,15 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  release:
+    types: [ published ]   # a published release gets the built app attached as a zip
 
 jobs:
   build-and-test:
     name: Build app + unit tests (Windows)
     runs-on: windows-latest
+    permissions:
+      contents: write   # only used to attach the zip to a published release
     steps:
       - uses: actions/checkout@v4
 
@@ -50,6 +54,21 @@ jobs:
             LawyerProject/bin/Release/*.dll
             LawyerProject/bin/Release/*.config
             database/create-database.sql
+
+      - name: Attach the app to the release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.event.release.tag_name }}"
+          $dir = "QUEDIN-$tag"
+          New-Item -ItemType Directory -Force "$dir/app", "$dir/database" | Out-Null
+          Copy-Item LawyerProject/bin/Release/*.exe, LawyerProject/bin/Release/*.dll, LawyerProject/bin/Release/*.config "$dir/app"
+          Copy-Item database/create-database.sql, database/security.sql, database/backup-nightly.cmd "$dir/database"
+          Copy-Item packaging/HOW-TO-RUN.txt, LICENSE "$dir"
+          Compress-Archive -Path $dir -DestinationPath "$dir.zip" -Force
+          gh release upload $tag "$dir.zip" --clobber
 
   database:
     name: Database script on SQL Server 2022

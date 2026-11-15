@@ -1,0 +1,31 @@
+QUEDIN - law office manager (demo)
+==================================
+
+Requirements: Windows 10/11, .NET Framework 4.7.2 (built in), SQL Server Express LocalDB.
+LocalDB comes with Visual Studio; or install "SQL Server Express LocalDB" from Microsoft.
+
+1. Create the database with fictional demo data (Command Prompt, in this folder):
+
+       sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
+
+2. Run app\LawyerProject.exe and log in:
+
+       admin  / Quedin2024   (manager)
+       worker / Worker2024   (regular user)
+
+   These are demo passwords. Before using QUEDIN with real data, change them
+   (login screen -> "החלפת סיסמה") or add new users and deactivate the demo ones.
+
+3. Optional, for a real office: database\security.sql sets permissions inside SQL Server
+   (see the Security section of the README).
+
+Source code, screenshots and documentation:
+https://github.com/shirushit/quedin-law-office-manager
+
+----------------------------------------------------------------------------
+הוראות בעברית
+
+1. יוצרים את מסד הנתונים עם נתוני דמו בדויים (בשורת הפקודה, בתיקייה הזו):
+       sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
+2. מפעילים את app\LawyerProject.exe ונכנסים עם admin / Quedin2024.
+   אלה סיסמאות דמו - יש להחליף אותן לפני שימוש עם נתונים אמיתיים.

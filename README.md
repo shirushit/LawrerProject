@@ -164,6 +164,12 @@ database script from it, so the three cannot drift apart.
 
 ## 🚀 Getting started
 
+**Just want to try it?** Download `QUEDIN-<version>.zip` from the
+[latest release](https://github.com/shirushit/quedin-law-office-manager/releases/latest): it holds the
+app built by CI, the database scripts and a one-page `HOW-TO-RUN.txt` (needs only LocalDB).
+
+**From source:**
+
 **Requirements:** Windows · Visual Studio 2022 with the *.NET desktop development* workload
 (it includes SQL Server Express LocalDB).
 
@@ -234,6 +240,7 @@ LawyerProject/
 └── App.config    connection string and defaults for a new database
 database/         create-database.sql (schema + demo data), security.sql (roles), backup-nightly.cmd
 tools/            generators: EF model and SQL script from one spec, the .csproj file list
+packaging/        HOW-TO-RUN.txt, packed with the app into each release zip by CI
 tests/            unit tests (.NET 8) and integration tests (.NET Framework + LocalDB)
 docs/             diagrams from the original project book
 ```
