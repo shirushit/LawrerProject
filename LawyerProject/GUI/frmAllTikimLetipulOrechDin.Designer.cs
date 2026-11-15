@@ -30,6 +30,12 @@ namespace LawyerProject.GUI
         {
             this.btnUpDate = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.lblSearch = new System.Windows.Forms.Label();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.lblLegendLate = new System.Windows.Forms.Label();
+            this.lblLegendSoon = new System.Windows.Forms.Label();
+            this.lblCount = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
@@ -293,6 +299,66 @@ namespace LawyerProject.GUI
             this.label14.TabIndex = 1;
             this.label14.Text = "ת.ז. לקוח";
             // 
+            // lblSearch
+            // 
+            this.lblSearch.Location = new System.Drawing.Point(1000, 208);
+            this.lblSearch.Name = "lblSearch";
+            this.lblSearch.Size = new System.Drawing.Size(157, 26);
+            this.lblSearch.TabIndex = 20;
+            this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblSearch.Text = "חיפוש חופשי";
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(620, 205);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(375, 32);
+            this.txtSearch.TabIndex = 0;
+            this.txtSearch.Font = new System.Drawing.Font("Calibri", 12F);
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(490, 203);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(120, 34);
+            this.btnClear.TabIndex = 21;
+            this.btnClear.Text = "ניקוי סינון";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // lblLegendLate
+            // 
+            this.lblLegendLate.BackColor = System.Drawing.Color.MistyRose;
+            this.lblLegendLate.Location = new System.Drawing.Point(32, 208);
+            this.lblLegendLate.Name = "lblLegendLate";
+            this.lblLegendLate.Size = new System.Drawing.Size(130, 26);
+            this.lblLegendLate.TabIndex = 22;
+            this.lblLegendLate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblLegendLate.Font = new System.Drawing.Font("Calibri", 10F);
+            this.lblLegendLate.Text = "שלב באיחור";
+            // 
+            // lblLegendSoon
+            // 
+            this.lblLegendSoon.BackColor = System.Drawing.Color.LightYellow;
+            this.lblLegendSoon.Location = new System.Drawing.Point(170, 208);
+            this.lblLegendSoon.Name = "lblLegendSoon";
+            this.lblLegendSoon.Size = new System.Drawing.Size(180, 26);
+            this.lblLegendSoon.TabIndex = 23;
+            this.lblLegendSoon.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblLegendSoon.Font = new System.Drawing.Font("Calibri", 10F);
+            this.lblLegendSoon.Text = "מועד בשבוע הקרוב";
+            // 
+            // lblCount
+            // 
+            this.lblCount.Location = new System.Drawing.Point(800, 818);
+            this.lblCount.Name = "lblCount";
+            this.lblCount.Size = new System.Drawing.Size(357, 26);
+            this.lblCount.TabIndex = 24;
+            this.lblCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblCount.Font = new System.Drawing.Font("Calibri", 11F);
+            this.lblCount.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.lblCount.Text = "";
+            // 
             // frmAllTikimLetipulOrechDin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 29F);
@@ -300,6 +366,12 @@ namespace LawyerProject.GUI
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(1232, 856);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.lblSearch);
+            this.Controls.Add(this.txtSearch);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.lblLegendLate);
+            this.Controls.Add(this.lblLegendSoon);
+            this.Controls.Add(this.lblCount);
             this.Controls.Add(this.btnUpDate);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.dataGridView1);
@@ -319,6 +391,12 @@ namespace LawyerProject.GUI
 
         private System.Windows.Forms.Button btnUpDate;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Label lblSearch;
+        private System.Windows.Forms.TextBox txtSearch;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Label lblLegendLate;
+        private System.Windows.Forms.Label lblLegendSoon;
+        private System.Windows.Forms.Label lblCount;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label1;

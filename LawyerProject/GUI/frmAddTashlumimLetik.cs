@@ -31,15 +31,35 @@ namespace LawyerProject.GUI
                 PaymentMethods.Cash, PaymentMethods.CreditCard, PaymentMethods.BankTransfer, PaymentMethods.Check
             });
             cmbEmzhaeyTashlum.SelectedItem = PaymentMethods.Cash;
+            cmbSugTashlum.Items.AddRange(PaymentKinds.All);
+            cmbSugTashlum.SelectedItem = PaymentKinds.Fee;
             dateTimePickerTashlum.Value = DateTime.Today;
             dateTimePickerTashlum.MaxDate = DateTime.Today;
             dateTimePickerDateChek.Value = DateTime.Today;
 
             if (openBalance <= 0)
             {
-                Ui.Info("התיק שולם במלואו. אין יתרה לתשלום.");
+                lblItraAfter.Text = "התיק שולם במלואו - אין יתרה לתשלום.";
                 btnOK.Enabled = false;
             }
+            FitToMethod();
+        }
+
+        /// <summary>The id of the saved payment (receipt number), after DialogResult.OK.</summary>
+        public int SavedPaymentId { get; private set; }
+
+        private void cmbSugTashlum_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lblKindNote.Text = cmbSugTashlum.SelectedItem as string == PaymentKinds.Expenses ? "ללא מע\"מ" : "כולל מע\"מ";
+        }
+
+        /// <summary>Shrinks or grows the window to the details group of the chosen method, so no empty area is left.</summary>
+        private void FitToMethod()
+        {
+            GroupBox shown = new[] { groupBoxCartisAshray, groupBoxAavaraBankait, groupBoxChek }.FirstOrDefault(g => g.Visible);
+            int bottom = shown != null ? shown.Bottom : groupBoxCartisAshray.Top - 10;
+            btnOK.Top = bottom + 15;
+            ClientSize = new System.Drawing.Size(ClientSize.Width, btnOK.Bottom + 20);
         }
 
         private string Method
@@ -52,12 +72,13 @@ namespace LawyerProject.GUI
             groupBoxCartisAshray.Visible = Method == PaymentMethods.CreditCard;
             groupBoxAavaraBankait.Visible = Method == PaymentMethods.BankTransfer;
             groupBoxChek.Visible = Method == PaymentMethods.Check;
+            FitToMethod();
         }
 
         private void txtSchum_TextChanged(object sender, EventArgs e)
         {
             decimal amount;
-            lblItraAfter.Text = Validation.TryParseMoney(txtSchum.Text, out amount) && amount > 0 && amount <= openBalance
+            lblItraAfter.Text = Validation.TryParsePayment(txtSchum.Text, out amount) && amount <= openBalance
                 ? Ui.FormatMoney(openBalance - amount)
                 : "-";
         }
@@ -69,9 +90,11 @@ namespace LawyerProject.GUI
             Action<Control, string> fail = (control, message) => { errorProvider1.SetError(control, message); ok = false; };
 
             decimal amount;
-            if (!Validation.TryParseMoney(txtSchum.Text, out amount) || amount <= 0) fail(txtSchum, "יש להזין סכום");
+            if (!Validation.TryParseMoney(txtSchum.Text, out amount)) fail(txtSchum, "סכום לא תקין (לדוגמה 1,250.50)");
+            else if (amount < 0.01m) fail(txtSchum, "הסכום חייב להיות לפחות 0.01 ₪");
             else if (amount > openBalance) fail(txtSchum, "הסכום גבוה מהיתרה (" + Ui.FormatMoney(openBalance) + ")");
 
+            if (cmbSugTashlum.SelectedItem == null) fail(cmbSugTashlum, "יש לבחור סוג תשלום");
             if (Method == null) fail(cmbEmzhaeyTashlum, "יש לבחור אמצעי תשלום");
             else if (Method == PaymentMethods.CreditCard)
             {
@@ -92,9 +115,8 @@ namespace LawyerProject.GUI
 
             var payment = new Tashlumim_Letik
             {
-                IDTik = tik.IDTik,
-                Schum = FeeCalculator.Round(amount),
-                Itra = FeeCalculator.BalanceAfterPayment(openBalance, amount),
+                Schum = amount,
+                SugTashlum = (string)cmbSugTashlum.SelectedItem,
                 TaarichTashlum = dateTimePickerTashlum.Value.Date,
                 EmzhaeyTashlum = Method,
                 Teur = txtTeur.Text.Trim().Length == 0 ? null : txtTeur.Text.Trim()
@@ -115,13 +137,18 @@ namespace LawyerProject.GUI
 
             try
             {
-                db.Tashlumim_Letik.Add(payment);
-                if (payment.Itra == 0) tik.Shulam = true;
-                db.SaveChanges();
+                // Balance, VAT rate, "paid" flags and the audit entry are handled by the service.
+                string error = new CaseService(db).AddPayment(tik, payment);
+                if (error != null)
+                {
+                    Ui.Error(error);
+                    return;
+                }
+                SavedPaymentId = payment.IDTashlum;
 
-                if (Ui.Confirm("התשלום נשמר. להציג קבלה?"))
+                if (Ui.Confirm("התשלום נשמר (קבלה מספר " + payment.IDTashlum + "). להציג את הקבלה להדפסה?"))
                     using (var receipt = new frmKabala(payment.IDTashlum))
-                        receipt.ShowDialog();
+                        receipt.ShowDialog(this);
 
                 DialogResult = DialogResult.OK;
                 Close();

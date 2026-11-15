@@ -22,22 +22,47 @@ namespace LawyerProject.GUI
                 if (p == null) throw new ArgumentException("Payment not found: " + paymentId);
                 Customers c = p.Tikim_Letipul_Orech_Din.Customers;
 
-                VatBreakdown vat = FeeCalculator.SplitVat(p.Schum, AppSettings.VatRate);
+                // The rate stored with the payment, so a receipt reprinted after a VAT change shows the same numbers.
+                decimal rate = p.VatRate ?? AppSettings.VatRate;
+                string kind = p.SugTashlum ?? PaymentKinds.Fee;
+                VatBreakdown vat = FeeCalculator.ReceiptVat(p.Schum, kind, rate);
+                bool credit = p.MevatelTashlum.HasValue;
 
-                lblTitle.Text = "קבלה מס' " + p.IDTashlum;
+                string title = (credit ? "קבלת זיכוי מס' " : "קבלה מס' ") + p.IDTashlum;
+                if (p.Mevutal) title += " - מבוטלת";
+                lblTitle.Text = title;
+                lblTitle.ForeColor = p.Mevutal || credit ? Color.DarkRed : lblTitle.ForeColor;
+                lblOffice.Text = OfficeHeader();
                 lblDate.Text = Ui.FormatDate(p.TaarichTashlum);
-                lblCustomer.Text = c != null ? c.FirstName + " " + c.LastName + " (ת.ז. " + c.IDcustemer + ")" : "";
-                lblPhone.Text = c != null ? c.Telephone : "";
+                lblCustomer.Text = c != null ? c.DisplayName + " (" + (c.SugMezahe ?? IdTypes.IsraeliId) + " " + c.IDcustemer + ")" : "";
+                lblPhone.Text = c != null ? (c.SmartPhone ?? c.Telephone ?? "") : "";
                 lblTik.Text = p.IDTik.ToString();
                 lblMethod.Text = p.EmzhaeyTashlum + Details(p);
-                lblDesc.Text = string.IsNullOrEmpty(p.Teur) ? "-" : p.Teur;
-                lblVatTitle.Text = "מע\"מ (" + (AppSettings.VatRate * 100).ToString("0.#") + "%):";
+                lblDesc.Text = kind + (string.IsNullOrEmpty(p.Teur) ? "" : " - " + p.Teur);
+                if (p.Mevutal)
+                {
+                    Tashlumim_Letik reversal = db.Tashlumim_Letik.FirstOrDefault(x => x.MevatelTashlum == p.IDTashlum);
+                    if (reversal != null) lblDesc.Text += " (בוטלה בקבלת זיכוי " + reversal.IDTashlum + ")";
+                }
+                lblVatTitle.Text = kind == PaymentKinds.Expenses
+                    ? "מע\"מ (אגרה - פטור):"
+                    : "מע\"מ (" + (rate * 100).ToString("0.#") + "%):";
+                lblTotalTitle.Text = credit ? "סה\"כ זיכוי:" : "סה\"כ שולם:";
                 lblNet.Text = Ui.FormatMoney(vat.Net);
                 lblVat.Text = Ui.FormatMoney(vat.Vat);
                 lblTotal.Text = Ui.FormatMoney(vat.Total);
                 lblBalance.Text = Ui.FormatMoney(p.Itra);
                 Text = "קבלה מס' " + p.IDTashlum;
             }
+        }
+
+        private static string OfficeHeader()
+        {
+            var line = new System.Collections.Generic.List<string>();
+            if (AppSettings.OfficeAddress.Length > 0) line.Add(AppSettings.OfficeAddress);
+            if (AppSettings.OfficePhone.Length > 0) line.Add("טל' " + AppSettings.OfficePhone);
+            if (AppSettings.OfficeTaxId.Length > 0) line.Add("עוסק מורשה " + AppSettings.OfficeTaxId);
+            return AppSettings.OfficeName + (line.Count > 0 ? Environment.NewLine + string.Join(" | ", line) : "");
         }
 
         private static string Details(Tashlumim_Letik p)

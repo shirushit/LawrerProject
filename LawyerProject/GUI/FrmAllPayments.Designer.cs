@@ -25,6 +25,8 @@ namespace LawyerProject.GUI
             this.lblTotal = new System.Windows.Forms.Label();
             this.groupBoxSearch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.btnCancelPayment = new System.Windows.Forms.Button();
+            this.btnOpenCase = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
             // groupBoxSearch
@@ -46,7 +48,7 @@ namespace LawyerProject.GUI
             this.lblSearch.Name = "lblSearch";
             this.lblSearch.Size = new System.Drawing.Size(184, 23);
             this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "מספר תיק / שם לקוח";
+            this.lblSearch.Text = "תיק / לקוח / קבלה";
             //
             // txtSearch
             //
@@ -79,10 +81,30 @@ namespace LawyerProject.GUI
             //
             this.lblTotal.AutoSize = false;
             this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblTotal.Location = new System.Drawing.Point(236, 500);
+            this.lblTotal.Location = new System.Drawing.Point(20, 500);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(64, 23);
+            this.lblTotal.Size = new System.Drawing.Size(400, 23);
             this.lblTotal.TabIndex = 3;
+            // 
+            // btnCancelPayment
+            // 
+            this.btnCancelPayment.Location = new System.Drawing.Point(590, 490);
+            this.btnCancelPayment.Name = "btnCancelPayment";
+            this.btnCancelPayment.Size = new System.Drawing.Size(140, 40);
+            this.btnCancelPayment.TabIndex = 10;
+            this.btnCancelPayment.Text = "ביטול תשלום...";
+            this.btnCancelPayment.UseVisualStyleBackColor = true;
+            this.btnCancelPayment.Click += new System.EventHandler(this.btnCancelPayment_Click);
+            // 
+            // btnOpenCase
+            // 
+            this.btnOpenCase.Location = new System.Drawing.Point(440, 490);
+            this.btnOpenCase.Name = "btnOpenCase";
+            this.btnOpenCase.Size = new System.Drawing.Size(140, 40);
+            this.btnOpenCase.TabIndex = 11;
+            this.btnOpenCase.Text = "פתיחת התיק";
+            this.btnOpenCase.UseVisualStyleBackColor = true;
+            this.btnOpenCase.Click += new System.EventHandler(this.btnOpenCase_Click);
             //
             // FrmAllPayments
             //
@@ -90,6 +112,8 @@ namespace LawyerProject.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 550);
             this.Controls.Add(this.lblTotal);
+            this.Controls.Add(this.btnCancelPayment);
+            this.Controls.Add(this.btnOpenCase);
             this.Controls.Add(this.btnReceipt);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBoxSearch);
@@ -114,6 +138,8 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button btnReceipt;
+        private System.Windows.Forms.Button btnCancelPayment;
+        private System.Windows.Forms.Button btnOpenCase;
         private System.Windows.Forms.Label lblTotal;
     }
 }

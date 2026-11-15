@@ -109,9 +109,9 @@ namespace LawyerProject.GUI
             // 
             // lblTitle
             // 
-            this.lblTitle.Location = new System.Drawing.Point(452, 25);
+            this.lblTitle.Location = new System.Drawing.Point(180, 25);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(88, 40);
+            this.lblTitle.Size = new System.Drawing.Size(360, 40);
             this.lblTitle.TabIndex = 2;
             this.lblTitle.AutoSize = false;
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -120,9 +120,9 @@ namespace LawyerProject.GUI
             // 
             // lblOffice
             // 
-            this.lblOffice.Location = new System.Drawing.Point(376, 65);
+            this.lblOffice.Location = new System.Drawing.Point(180, 65);
             this.lblOffice.Name = "lblOffice";
-            this.lblOffice.Size = new System.Drawing.Size(164, 23);
+            this.lblOffice.Size = new System.Drawing.Size(360, 46);
             this.lblOffice.TabIndex = 3;
             this.lblOffice.AutoSize = false;
             this.lblOffice.TextAlign = System.Drawing.ContentAlignment.TopRight;

@@ -34,6 +34,8 @@ namespace LawyerProject.GUI
             public bool Shulam { get; set; }
             public decimal Balance { get; set; }
             public bool Finished { get; set; }
+            public string LateText { get; set; }
+            public string SearchText { get; set; }
         }
 
         private const string AllItems = "(הכל)";
@@ -47,6 +49,8 @@ namespace LawyerProject.GUI
             checkBox2.ThreeState = true;
             checkBox2.CheckState = CheckState.Indeterminate;
 
+            txtSearch.TextChanged += Filter_Changed;
+            lblLegendSoon.Text = "מועד ב-" + AppSettings.DueSoonDays + " הימים הקרובים";
             maskedTextBox1.TextChanged += Filter_Changed;
             textBox7.TextChanged += Filter_Changed;
             comboBox1.SelectedIndexChanged += Filter_Changed;
@@ -79,7 +83,8 @@ namespace LawyerProject.GUI
                 all = cases.Select(t =>
                 {
                     Tahalich_Tipul_Betik next = CaseService.OrderedSteps(t).FirstOrDefault(s => s.Buzha != true);
-                    return new CaseRow
+                    int late = next != null && next.TaharichMeshoar.HasValue ? CaseScheduler.DaysLate(next.TaharichMeshoar.Value, DateTime.Today) : 0;
+                    var row = new CaseRow
                     {
                         IDTik = t.IDTik,
                         ClientId = t.IDCostemer,
@@ -97,13 +102,19 @@ namespace LawyerProject.GUI
                         Court = t.IsCourtCase && t.Bet_Mishpat != null ? t.Bet_Mishpat.NameBetMishpat : "עסקה",
                         Shulam = t.Shulam,
                         Balance = CaseService.OpenBalance(t),
-                        Finished = CaseService.IsFinished(t)
+                        Finished = CaseService.IsFinished(t),
+                        LateText = late > 0 ? late + " ימים" : ""
                     };
+                    row.SearchText = string.Join(" ", row.IDTik, row.ClientId, row.ClientName, row.Subject, row.Status,
+                        row.OpposingClient, row.OpposingLawyer, row.Court, t.Gush, t.Chelka, t.AdressNeches).ToLowerInvariant();
+                    return row;
                 }).OrderBy(r => r.Finished).ThenBy(r => r.NextDue ?? DateTime.MaxValue).ToList();
 
                 BindFilter(comboBox4, people.Values.Where(p => p.SugPerson == PersonTypes.Client));
-                BindFilter(comboBox3, people.Values.Where(p => p.SugPerson == PersonTypes.OpposingClient));
-                BindFilter(comboBox1, people.Values.Where(p => p.SugPerson == PersonTypes.OpposingLawyer));
+                var opposingIds = new HashSet<string>(cases.Select(c => c.KodLakoachNegdi));
+                var lawyerIds = new HashSet<string>(cases.Select(c => c.KodOrechDinNegdi));
+                BindFilter(comboBox3, people.Values.Where(p => opposingIds.Contains(p.IDcustemer)));
+                BindFilter(comboBox1, people.Values.Where(p => lawyerIds.Contains(p.IDcustemer)));
                 BindFilter(comboBox5, db.Subjekt_Tik.OrderBy(s => s.NameSugTik).ToList());
                 BindFilter(comboBox2, db.Taalichim_Letikim.OrderBy(s => s.NameTaalich).ToList());
             }
@@ -137,6 +148,13 @@ namespace LawyerProject.GUI
         {
             IEnumerable<CaseRow> rows = all;
 
+            // Free search: every word must appear somewhere in the row (name, ID, case no., court, block/parcel...).
+            foreach (string word in txtSearch.Text.Trim().ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string w = word;
+                rows = rows.Where(r => r.SearchText.Contains(w));
+            }
+
             string clientId = maskedTextBox1.Text.Trim();
             if (clientId.Length > 0) rows = rows.Where(r => (r.ClientId ?? "").StartsWith(clientId));
 
@@ -164,7 +182,9 @@ namespace LawyerProject.GUI
                 rows = rows.Where(r => r.Shulam == paid);
             }
 
-            dataGridView1.DataSource = rows.ToList();
+            List<CaseRow> list = rows.ToList();
+            dataGridView1.DataSource = list;
+            lblCount.Text = list.Count == all.Count ? all.Count + " תיקים" : "מוצגים " + list.Count + " מתוך " + all.Count + " תיקים";
             Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
             {
                 { "IDTik", "מספר תיק" },
@@ -173,6 +193,7 @@ namespace LawyerProject.GUI
                 { "Subject", "נושא תיק" },
                 { "Status", "שלב נוכחי" },
                 { "NextDueText", "מועד משוער" },
+                { "LateText", "באיחור" },
                 { "OpposingClient", "לקוח נגדי" },
                 { "OpposingLawyer", "עורך דין נגדי" },
                 { "Court", "בית משפט" },
@@ -204,16 +225,26 @@ namespace LawyerProject.GUI
                 Ui.Error("יש לבחור תיק מהרשימה.");
                 return;
             }
-            using (var form = new frmAddTikLetipulOrechDin(id.Value))
-                form.ShowDialog();
-            LoadCases();
+            CaseWindows.OpenCase(this, id.Value, () => { if (!IsDisposed) LoadCases(); });
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            using (var form = new frmAddTikLetipulOrechDin())
-                form.ShowDialog();
-            LoadCases();
+            CaseWindows.NewCase(this, false, () => { if (!IsDisposed) LoadCases(); });
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            loading = true;
+            txtSearch.Clear();
+            maskedTextBox1.Clear();
+            textBox7.Clear();
+            foreach (ComboBox c in new[] { comboBox1, comboBox2, comboBox3, comboBox4, comboBox5 })
+                if (c.Items.Count > 0) c.SelectedIndex = 0;
+            checkBox2.CheckState = CheckState.Indeterminate;
+            loading = false;
+            ApplyFilter();
+            txtSearch.Focus();
         }
 
         private void btnUpDate_Click(object sender, EventArgs e)

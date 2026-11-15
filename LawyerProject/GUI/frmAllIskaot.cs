@@ -95,9 +95,7 @@ namespace LawyerProject.GUI
 
         private void btnAdd_Click_1(object sender, EventArgs e)
         {
-            using (var form = new frmAddTikLetipulOrechDin(isDeal: true))
-                form.ShowDialog();
-            LoadDeals();
+            CaseWindows.NewCase(this, true, () => { if (!IsDisposed) LoadDeals(); });
         }
 
         private void btnUpDate_Click_1(object sender, EventArgs e)
@@ -108,9 +106,7 @@ namespace LawyerProject.GUI
                 Ui.Error("יש לבחור עסקה מהרשימה.");
                 return;
             }
-            using (var form = new frmAddTikLetipulOrechDin(id.Value))
-                form.ShowDialog();
-            LoadDeals();
+            CaseWindows.OpenCase(this, id.Value, () => { if (!IsDisposed) LoadDeals(); });
         }
     }
 }
