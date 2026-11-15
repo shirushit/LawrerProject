@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.3.1 — Screen polish (2026)
+
+Found while taking the README screenshots on Windows:
+- **Unreadable text on the dark list screens:** the cases list (and the other dark lists) inherited a
+  light text color, so rows, the color legend and the "clear filter" button showed light text on a light
+  background. Grid cells, headers, the legend and the button now use dark text.
+- **Cut-off values:** money totals on the case screen (`18,20` instead of `18,200.00 ₪`) and the date,
+  phone, payment method and description on the receipt were clipped by labels that were too narrow.
+- **Table formatting:** money columns show `#,##0.00` and date columns `dd/MM/yyyy` in every list;
+  id columns take less room. The payments screen is wider so no column is cut.
+- The home screen greeting no longer hides behind the "office settings" button, and the cases list
+  window has a real title instead of `;`.
+
 ## v1.3 — English code base and edge cases (2026)
 
 ### English names

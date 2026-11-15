@@ -323,12 +323,14 @@ namespace LawyerProject.GUI
             this.btnClear.Size = new System.Drawing.Size(120, 34);
             this.btnClear.TabIndex = 21;
             this.btnClear.Text = "ניקוי סינון";
+            this.btnClear.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // lblLegendLate
             // 
             this.lblLegendLate.BackColor = System.Drawing.Color.MistyRose;
+            this.lblLegendLate.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblLegendLate.Location = new System.Drawing.Point(32, 208);
             this.lblLegendLate.Name = "lblLegendLate";
             this.lblLegendLate.Size = new System.Drawing.Size(130, 26);
@@ -340,6 +342,7 @@ namespace LawyerProject.GUI
             // lblLegendSoon
             // 
             this.lblLegendSoon.BackColor = System.Drawing.Color.LightYellow;
+            this.lblLegendSoon.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblLegendSoon.Location = new System.Drawing.Point(170, 208);
             this.lblLegendSoon.Name = "lblLegendSoon";
             this.lblLegendSoon.Size = new System.Drawing.Size(180, 26);
@@ -379,7 +382,7 @@ namespace LawyerProject.GUI
             this.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CasesListForm";
-            this.Text = ";";
+            this.Text = "QUEDIN - תיקים";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

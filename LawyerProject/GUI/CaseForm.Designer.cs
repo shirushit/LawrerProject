@@ -675,9 +675,9 @@
             // 
             // lblTotal
             // 
-            this.lblTotal.Location = new System.Drawing.Point(256, 112);
+            this.lblTotal.Location = new System.Drawing.Point(136, 112);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(64, 23);
+            this.lblTotal.Size = new System.Drawing.Size(184, 23);
             this.lblTotal.TabIndex = 51;
             this.lblTotal.AutoSize = false;
             this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -695,9 +695,9 @@
             // 
             // lblPaid
             // 
-            this.lblPaid.Location = new System.Drawing.Point(256, 142);
+            this.lblPaid.Location = new System.Drawing.Point(136, 142);
             this.lblPaid.Name = "lblPaid";
-            this.lblPaid.Size = new System.Drawing.Size(64, 23);
+            this.lblPaid.Size = new System.Drawing.Size(184, 23);
             this.lblPaid.TabIndex = 53;
             this.lblPaid.AutoSize = false;
             this.lblPaid.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -715,9 +715,9 @@
             // 
             // lblBalance
             // 
-            this.lblBalance.Location = new System.Drawing.Point(256, 172);
+            this.lblBalance.Location = new System.Drawing.Point(136, 172);
             this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(64, 23);
+            this.lblBalance.Size = new System.Drawing.Size(184, 23);
             this.lblBalance.TabIndex = 55;
             this.lblBalance.AutoSize = false;
             this.lblBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;

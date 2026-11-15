@@ -1,4 +1,4 @@
-namespace LawyerProject.GUI
+﻿namespace LawyerProject.GUI
 {
     partial class ReceiptForm
     {
@@ -141,9 +141,9 @@ namespace LawyerProject.GUI
             // 
             // lblDate
             // 
-            this.lblDate.Location = new System.Drawing.Point(326, 120);
+            this.lblDate.Location = new System.Drawing.Point(40, 120);
             this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(64, 23);
+            this.lblDate.Size = new System.Drawing.Size(350, 23);
             this.lblDate.TabIndex = 5;
             this.lblDate.AutoSize = false;
             this.lblDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -162,9 +162,9 @@ namespace LawyerProject.GUI
             // 
             // lblCustomer
             // 
-            this.lblCustomer.Location = new System.Drawing.Point(326, 155);
+            this.lblCustomer.Location = new System.Drawing.Point(40, 155);
             this.lblCustomer.Name = "lblCustomer";
-            this.lblCustomer.Size = new System.Drawing.Size(64, 23);
+            this.lblCustomer.Size = new System.Drawing.Size(350, 23);
             this.lblCustomer.TabIndex = 7;
             this.lblCustomer.AutoSize = false;
             this.lblCustomer.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -183,9 +183,9 @@ namespace LawyerProject.GUI
             // 
             // lblPhone
             // 
-            this.lblPhone.Location = new System.Drawing.Point(326, 190);
+            this.lblPhone.Location = new System.Drawing.Point(40, 190);
             this.lblPhone.Name = "lblPhone";
-            this.lblPhone.Size = new System.Drawing.Size(64, 23);
+            this.lblPhone.Size = new System.Drawing.Size(350, 23);
             this.lblPhone.TabIndex = 9;
             this.lblPhone.AutoSize = false;
             this.lblPhone.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -204,9 +204,9 @@ namespace LawyerProject.GUI
             // 
             // lblCase
             // 
-            this.lblCase.Location = new System.Drawing.Point(326, 225);
+            this.lblCase.Location = new System.Drawing.Point(40, 225);
             this.lblCase.Name = "lblCase";
-            this.lblCase.Size = new System.Drawing.Size(64, 23);
+            this.lblCase.Size = new System.Drawing.Size(350, 23);
             this.lblCase.TabIndex = 11;
             this.lblCase.AutoSize = false;
             this.lblCase.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -225,9 +225,9 @@ namespace LawyerProject.GUI
             // 
             // lblMethod
             // 
-            this.lblMethod.Location = new System.Drawing.Point(326, 260);
+            this.lblMethod.Location = new System.Drawing.Point(40, 260);
             this.lblMethod.Name = "lblMethod";
-            this.lblMethod.Size = new System.Drawing.Size(64, 23);
+            this.lblMethod.Size = new System.Drawing.Size(350, 23);
             this.lblMethod.TabIndex = 13;
             this.lblMethod.AutoSize = false;
             this.lblMethod.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -246,9 +246,9 @@ namespace LawyerProject.GUI
             // 
             // lblDesc
             // 
-            this.lblDesc.Location = new System.Drawing.Point(326, 295);
+            this.lblDesc.Location = new System.Drawing.Point(40, 295);
             this.lblDesc.Name = "lblDesc";
-            this.lblDesc.Size = new System.Drawing.Size(64, 23);
+            this.lblDesc.Size = new System.Drawing.Size(350, 23);
             this.lblDesc.TabIndex = 15;
             this.lblDesc.AutoSize = false;
             this.lblDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -276,9 +276,9 @@ namespace LawyerProject.GUI
             // 
             // lblNet
             // 
-            this.lblNet.Location = new System.Drawing.Point(326, 360);
+            this.lblNet.Location = new System.Drawing.Point(40, 360);
             this.lblNet.Name = "lblNet";
-            this.lblNet.Size = new System.Drawing.Size(64, 23);
+            this.lblNet.Size = new System.Drawing.Size(350, 23);
             this.lblNet.TabIndex = 18;
             this.lblNet.AutoSize = false;
             this.lblNet.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -297,9 +297,9 @@ namespace LawyerProject.GUI
             // 
             // lblVat
             // 
-            this.lblVat.Location = new System.Drawing.Point(326, 395);
+            this.lblVat.Location = new System.Drawing.Point(40, 395);
             this.lblVat.Name = "lblVat";
-            this.lblVat.Size = new System.Drawing.Size(64, 23);
+            this.lblVat.Size = new System.Drawing.Size(350, 23);
             this.lblVat.TabIndex = 20;
             this.lblVat.AutoSize = false;
             this.lblVat.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -318,9 +318,9 @@ namespace LawyerProject.GUI
             // 
             // lblTotal
             // 
-            this.lblTotal.Location = new System.Drawing.Point(326, 430);
+            this.lblTotal.Location = new System.Drawing.Point(40, 430);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(64, 23);
+            this.lblTotal.Size = new System.Drawing.Size(350, 23);
             this.lblTotal.TabIndex = 22;
             this.lblTotal.AutoSize = false;
             this.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -339,9 +339,9 @@ namespace LawyerProject.GUI
             // 
             // lblBalance
             // 
-            this.lblBalance.Location = new System.Drawing.Point(326, 465);
+            this.lblBalance.Location = new System.Drawing.Point(40, 465);
             this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(64, 23);
+            this.lblBalance.Size = new System.Drawing.Size(350, 23);
             this.lblBalance.TabIndex = 24;
             this.lblBalance.AutoSize = false;
             this.lblBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;

@@ -247,6 +247,20 @@ namespace LawyerProject.GUI
             grid.MultiSelect = false;
             grid.ReadOnly = true;
             grid.AllowUserToAddRows = false;
+            // Dark list screens set a light ForeColor on the form; keep cell text dark on the light grid.
+            grid.DefaultCellStyle.ForeColor = SystemColors.ControlText;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
+            foreach (DataGridViewColumn column in grid.Columns)
+            {
+                if (column.ValueType == null) continue;
+                Type type = Nullable.GetUnderlyingType(column.ValueType) ?? column.ValueType;
+                if (type == typeof(decimal) || type == typeof(double))
+                    column.DefaultCellStyle.Format = "#,##0.00";
+                else if (type == typeof(DateTime))
+                    column.DefaultCellStyle.Format = "dd/MM/yyyy";
+                // Short numbers (ids) need less room than names and descriptions.
+                if (type == typeof(int)) column.FillWeight = 55;
+            }
         }
 
         /// <summary>The value of a column in the selected row, or null when nothing is selected.</summary>

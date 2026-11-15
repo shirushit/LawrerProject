@@ -1,4 +1,4 @@
-namespace LawyerProject.GUI
+﻿namespace LawyerProject.GUI
 {
     partial class PaymentsListForm
     {
@@ -35,7 +35,7 @@ namespace LawyerProject.GUI
             this.groupBoxSearch.Controls.Add(this.lblSearch);
             this.groupBoxSearch.Location = new System.Drawing.Point(20, 15);
             this.groupBoxSearch.Name = "groupBoxSearch";
-            this.groupBoxSearch.Size = new System.Drawing.Size(860, 70);
+            this.groupBoxSearch.Size = new System.Drawing.Size(1180, 70);
             this.groupBoxSearch.TabIndex = 0;
             this.groupBoxSearch.TabStop = false;
             this.groupBoxSearch.Text = "חיפוש";
@@ -44,7 +44,7 @@ namespace LawyerProject.GUI
             //
             this.lblSearch.AutoSize = false;
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblSearch.Location = new System.Drawing.Point(656, 30);
+            this.lblSearch.Location = new System.Drawing.Point(976, 30);
             this.lblSearch.Name = "lblSearch";
             this.lblSearch.Size = new System.Drawing.Size(184, 23);
             this.lblSearch.TabIndex = 0;
@@ -52,7 +52,7 @@ namespace LawyerProject.GUI
             //
             // txtSearch
             //
-            this.txtSearch.Location = new System.Drawing.Point(400, 27);
+            this.txtSearch.Location = new System.Drawing.Point(720, 27);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(250, 27);
             this.txtSearch.TabIndex = 1;
@@ -63,13 +63,13 @@ namespace LawyerProject.GUI
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(20, 95);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(860, 380);
+            this.dataGridView1.Size = new System.Drawing.Size(1180, 380);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             //
             // btnReceipt
             //
-            this.btnReceipt.Location = new System.Drawing.Point(740, 490);
+            this.btnReceipt.Location = new System.Drawing.Point(1060, 490);
             this.btnReceipt.Name = "btnReceipt";
             this.btnReceipt.Size = new System.Drawing.Size(140, 40);
             this.btnReceipt.TabIndex = 2;
@@ -88,7 +88,7 @@ namespace LawyerProject.GUI
             // 
             // btnCancelPayment
             // 
-            this.btnCancelPayment.Location = new System.Drawing.Point(590, 490);
+            this.btnCancelPayment.Location = new System.Drawing.Point(910, 490);
             this.btnCancelPayment.Name = "btnCancelPayment";
             this.btnCancelPayment.Size = new System.Drawing.Size(140, 40);
             this.btnCancelPayment.TabIndex = 10;
@@ -98,7 +98,7 @@ namespace LawyerProject.GUI
             // 
             // btnOpenCase
             // 
-            this.btnOpenCase.Location = new System.Drawing.Point(440, 490);
+            this.btnOpenCase.Location = new System.Drawing.Point(760, 490);
             this.btnOpenCase.Name = "btnOpenCase";
             this.btnOpenCase.Size = new System.Drawing.Size(140, 40);
             this.btnOpenCase.TabIndex = 11;
@@ -110,7 +110,7 @@ namespace LawyerProject.GUI
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 550);
+            this.ClientSize = new System.Drawing.Size(1220, 550);
             this.Controls.Add(this.lblTotal);
             this.Controls.Add(this.btnCancelPayment);
             this.Controls.Add(this.btnOpenCase);

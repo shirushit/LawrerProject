@@ -190,7 +190,7 @@
             this.lblWelcome.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.lblWelcome.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold);
             this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
-            this.lblWelcome.Location = new System.Drawing.Point(180, 700);
+            this.lblWelcome.Location = new System.Drawing.Point(35, 12);
             this.lblWelcome.Name = "lblWelcome";
             this.lblWelcome.Size = new System.Drawing.Size(0, 23);
             this.lblWelcome.TabIndex = 10;
