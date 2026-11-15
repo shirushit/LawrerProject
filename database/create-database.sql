@@ -14,6 +14,9 @@
     drops and recreates all tables.
 */
 SET NOCOUNT ON;
+-- Needed by the filtered index and the XML method in usp_GetLoginSalt (sqlcmd starts with it OFF).
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
 GO
 IF DB_ID(N'QuedinDB') IS NULL
     CREATE DATABASE [QuedinDB];
