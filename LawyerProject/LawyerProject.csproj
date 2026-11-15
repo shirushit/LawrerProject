@@ -160,12 +160,14 @@
     <Compile Include="GUI\FrmAllTaalichimLetik.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\FrmAuditLog.cs" />
     <Compile Include="GUI\FrmManageUsers.Designer.cs">
       <DependentUpon>FrmManageUsers.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\FrmManageUsers.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\FrmSetupGuide.cs" />
     <Compile Include="GUI\FrmUsers.Designer.cs">
       <DependentUpon>FrmUsers.cs</DependentUpon>
     </Compile>

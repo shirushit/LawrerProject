@@ -8,12 +8,29 @@ namespace LawyerProject.GUI
     /// <summary>Login screen. The user's role (manager / worker) is read from the database.</summary>
     public partial class FrmUsers : Form
     {
-        private const int LoginHeight = 360;
-        private const int ChangePasswordHeight = 580;
+        private const int LoginHeight = 390;
+        private const int ChangePasswordHeight = 650;
 
         public FrmUsers()
         {
             InitializeComponent();
+            // Passwords are case-sensitive and usually typed in English: warn about Caps Lock or a Hebrew keyboard.
+            foreach (TextBox box in new[] { txtPassword, txtOldPassword, txtNewPassword, txtConfirmPassword })
+            {
+                box.Enter += (s, e) => UpdateKeyboardWarning();
+                box.KeyUp += (s, e) => UpdateKeyboardWarning();
+                box.Leave += (s, e) => lblKeyboardWarning.Text = "";
+            }
+            InputLanguageChanged += (s, e) => UpdateKeyboardWarning();
+        }
+
+        private void UpdateKeyboardWarning()
+        {
+            var warnings = new System.Collections.Generic.List<string>();
+            if (Control.IsKeyLocked(Keys.CapsLock)) warnings.Add("Caps Lock פעיל");
+            InputLanguage language = InputLanguage.CurrentInputLanguage;
+            if (language != null && language.Culture.TwoLetterISOLanguageName == "he") warnings.Add("המקלדת בעברית");
+            lblKeyboardWarning.Text = warnings.Count == 0 ? "" : "⚠ " + string.Join(" | ", warnings);
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -35,7 +52,7 @@ namespace LawyerProject.GUI
             }
             catch (Exception ex)
             {
-                Ui.Error("לא ניתן להתחבר למסד הנתונים. ודאו שהרצתם את database/create-database.sql.", ex);
+                Ui.Error("לא ניתן להתחבר למערכת.", ex);
                 return;
             }
 
@@ -76,15 +93,17 @@ namespace LawyerProject.GUI
                 using (var db = new LawyerDBEntities1())
                 {
                     string error = new AuthService(db).ChangePassword(
-                        txtUserName.Text, txtOldPassword.Text, txtNewPassword.Text, txtConfirmPassword.Text);
+                        txtCpUser.Text, txtOldPassword.Text, txtNewPassword.Text, txtConfirmPassword.Text);
                     if (error != null)
                     {
                         Ui.Error(error);
                         return;
                     }
                 }
-                Ui.Info("הסיסמה עודכנה בהצלחה.");
+                txtUserName.Text = txtCpUser.Text.Trim();
                 SetChangePasswordVisible(false);
+                Ui.Notify(this, "הסיסמה הוחלפה. אפשר להיכנס עם הסיסמה החדשה.");
+                txtPassword.Focus();
             }
             catch (Exception ex)
             {
@@ -101,8 +120,9 @@ namespace LawyerProject.GUI
             txtConfirmPassword.Clear();
             if (visible)
             {
-                if (txtUserName.Text.Length == 0) Ui.Info("הזינו קודם את שם המשתמש בשדה למעלה.");
-                txtOldPassword.Focus();
+                txtCpUser.Text = txtUserName.Text.Trim();
+                if (txtCpUser.Text.Length == 0) txtCpUser.Focus();
+                else txtOldPassword.Focus();
             }
         }
     }

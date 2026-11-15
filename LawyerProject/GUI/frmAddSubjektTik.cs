@@ -82,7 +82,7 @@ namespace LawyerProject.GUI
                 subject.Agra = courtFee;
                 if (isNew) db.Subjekt_Tik.Add(subject);
                 db.SaveChanges();
-                Ui.Info(isNew ? "הנושא נשמר. כעת הוסיפו את התהליכים הקבועים שלו." : "עודכן בהצלחה.");
+                Ui.Notify(this, isNew ? "הנושא נשמר. כעת הוסיפו את התהליכים הקבועים שלו." : "הנושא עודכן.");
                 isNew = false;
                 lblCode.Text = subject.IDSugTik.ToString();
                 UpdateState();

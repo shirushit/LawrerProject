@@ -29,6 +29,7 @@ namespace LawyerProject.GUI
             this.lblPasswordRules = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBoxAdd.SuspendLayout();
+            this.btnResetPassword = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
             // dataGridView1
@@ -49,7 +50,7 @@ namespace LawyerProject.GUI
             this.groupBoxAdd.Controls.Add(this.lblPassword);
             this.groupBoxAdd.Controls.Add(this.txtUserName);
             this.groupBoxAdd.Controls.Add(this.lblUserName);
-            this.groupBoxAdd.Location = new System.Drawing.Point(20, 235);
+            this.groupBoxAdd.Location = new System.Drawing.Point(20, 280);
             this.groupBoxAdd.Name = "groupBoxAdd";
             this.groupBoxAdd.Size = new System.Drawing.Size(420, 230);
             this.groupBoxAdd.TabIndex = 1;
@@ -131,13 +132,24 @@ namespace LawyerProject.GUI
             this.btnAdd.Text = "הוספה";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
+            // btnResetPassword
+            // 
+            this.btnResetPassword.Location = new System.Drawing.Point(270, 230);
+            this.btnResetPassword.Name = "btnResetPassword";
+            this.btnResetPassword.Size = new System.Drawing.Size(170, 36);
+            this.btnResetPassword.TabIndex = 5;
+            this.btnResetPassword.Text = "איפוס סיסמה...";
+            this.btnResetPassword.UseVisualStyleBackColor = true;
+            this.btnResetPassword.Click += new System.EventHandler(this.btnResetPassword_Click);
             //
             // FrmManageUsers
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(460, 485);
+            this.ClientSize = new System.Drawing.Size(460, 530);
             this.Controls.Add(this.groupBoxAdd);
+            this.Controls.Add(this.btnResetPassword);
             this.Controls.Add(this.dataGridView1);
             this.Font = new System.Drawing.Font("Calibri", 12F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -165,6 +177,7 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Label lblRole;
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.Label lblPasswordRules;
+        private System.Windows.Forms.Button btnResetPassword;
         private System.Windows.Forms.Button btnAdd;
     }
 }

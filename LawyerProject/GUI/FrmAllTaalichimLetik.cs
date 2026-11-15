@@ -44,7 +44,7 @@ namespace LawyerProject.GUI
         private void btnAdd_Click(object sender, EventArgs e)
         {
             using (var form = new FrmAddTaalichimLetik())
-                form.ShowDialog();
+                if (form.ShowDialog(this) == DialogResult.OK) Ui.Notify(this, "התהליך נשמר.");
             LoadProcesses();
         }
 
@@ -57,7 +57,8 @@ namespace LawyerProject.GUI
                 return;
             }
             using (var form = new FrmAddTaalichimLetik(id.Value))
-                form.ShowDialog();
+                if (form.ShowDialog(this) == DialogResult.OK)
+                    Ui.Notify(this, "התהליך עודכן. המשך החדש ישמש לתיקים שייפתחו מעכשיו (תיקים קיימים שומרים את המשך שלהם).");
             LoadProcesses();
         }
     }

@@ -44,7 +44,7 @@ namespace LawyerProject.GUI
                     Ui.Error(error);
                     return;
                 }
-                Ui.Info("המשתמש נוסף בהצלחה.");
+                Ui.Notify(this, "המשתמש " + txtUserName.Text.Trim() + " נוסף.");
                 txtUserName.Clear();
                 txtPassword.Clear();
                 LoadUsers();
@@ -52,6 +52,34 @@ namespace LawyerProject.GUI
             catch (Exception ex)
             {
                 Ui.Error("שגיאה בהוספת המשתמש.", ex);
+            }
+        }
+
+        /// <summary>For a user who forgot the password: the manager sets a temporary one and gives it to the user.</summary>
+        private void btnResetPassword_Click(object sender, EventArgs e)
+        {
+            object name = Ui.SelectedValue(dataGridView1, "UserName");
+            if (name == null)
+            {
+                Ui.Error("יש לבחור משתמש מהרשימה.");
+                return;
+            }
+            string password = Ui.AskText(this, "איפוס סיסמה",
+                "סיסמה זמנית חדשה למשתמש " + name + " (לפחות 8 תווים, אות וספרה).\nמסרו אותה למשתמש ובקשו ממנו להחליף אותה במסך הכניסה.", "", 50);
+            if (password == null) return;
+            try
+            {
+                string error = new AuthService(db).ResetPassword(name.ToString(), password);
+                if (error != null)
+                {
+                    Ui.Error(error);
+                    return;
+                }
+                Ui.Notify(this, "הסיסמה של " + name + " אופסה.");
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("הסיסמה לא אופסה.", ex);
             }
         }
 

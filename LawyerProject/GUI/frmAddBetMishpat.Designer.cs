@@ -120,7 +120,7 @@ namespace LawyerProject.GUI
             this.BtnUpDateSubjekt.Name = "BtnUpDateSubjekt";
             this.BtnUpDateSubjekt.Size = new System.Drawing.Size(74, 34);
             this.BtnUpDateSubjekt.TabIndex = 95;
-            this.BtnUpDateSubjekt.Text = "עידכון";
+            this.BtnUpDateSubjekt.Text = "עדכון";
             this.BtnUpDateSubjekt.UseVisualStyleBackColor = false;
             // 
             // btnAddSubjekt

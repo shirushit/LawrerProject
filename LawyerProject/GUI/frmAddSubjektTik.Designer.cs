@@ -128,7 +128,7 @@ namespace LawyerProject.GUI
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 19);
             this.label3.TabIndex = 10;
-            this.label3.Text = "שכר טירחה";
+            this.label3.Text = "שכר טרחה";
             // 
             // txtAgra
             // 
@@ -217,7 +217,7 @@ namespace LawyerProject.GUI
             this.BtnUpDateSubjekt.Name = "BtnUpDateSubjekt";
             this.BtnUpDateSubjekt.Size = new System.Drawing.Size(74, 34);
             this.BtnUpDateSubjekt.TabIndex = 98;
-            this.BtnUpDateSubjekt.Text = "עידכון";
+            this.BtnUpDateSubjekt.Text = "עדכון";
             this.BtnUpDateSubjekt.UseVisualStyleBackColor = false;
             this.BtnUpDateSubjekt.Click += new System.EventHandler(this.BtnUpDateSubjekt_Click);
             // 

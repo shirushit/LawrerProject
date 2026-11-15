@@ -75,7 +75,7 @@ namespace LawyerProject.GUI
                 court.NameBetMishpat = name;
                 if (isNew) db.Bet_Mishpat.Add(court);
                 db.SaveChanges();
-                Ui.Info(isNew ? "בית המשפט נשמר. כעת אפשר להוסיף את נושאי התיקים שהוא מטפל בהם." : "עודכן בהצלחה.");
+                Ui.Notify(this, isNew ? "בית המשפט נשמר. כעת אפשר להוסיף את נושאי התיקים שהוא מטפל בהם." : "בית המשפט עודכן.");
                 isNew = false;
                 lblCode.Text = court.IDBetMishpat.ToString();
                 UpdateState();

@@ -69,7 +69,6 @@ namespace LawyerProject.GUI
                 process.MeshechZmanLetaalich = ((int)numericUpDown1.Value).ToString();
                 if (isNew) db.Taalichim_Letikim.Add(process);
                 db.SaveChanges();
-                Ui.Info(isNew ? "התהליך נשמר." : "התהליך עודכן. המשך החדש ישמש לתיקים שייפתחו מעכשיו.");
                 DialogResult = DialogResult.OK;
                 Close();
             }

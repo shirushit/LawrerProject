@@ -49,6 +49,9 @@ namespace LawyerProject.GUI
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.groupBoxLogin.SuspendLayout();
             this.groupBoxChangePassword.SuspendLayout();
+            this.lblKeyboardWarning = new System.Windows.Forms.Label();
+            this.lblCpUser = new System.Windows.Forms.Label();
+            this.txtCpUser = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             //
             // pictureBoxLogo
@@ -64,6 +67,7 @@ namespace LawyerProject.GUI
             // groupBoxLogin
             //
             this.groupBoxLogin.Controls.Add(this.lnkChangePassword);
+            this.groupBoxLogin.Controls.Add(this.lblKeyboardWarning);
             this.groupBoxLogin.Controls.Add(this.btnLogin);
             this.groupBoxLogin.Controls.Add(this.chkShowPassword);
             this.groupBoxLogin.Controls.Add(this.txtPassword);
@@ -72,7 +76,7 @@ namespace LawyerProject.GUI
             this.groupBoxLogin.Controls.Add(this.lblUserName);
             this.groupBoxLogin.Location = new System.Drawing.Point(20, 130);
             this.groupBoxLogin.Name = "groupBoxLogin";
-            this.groupBoxLogin.Size = new System.Drawing.Size(400, 210);
+            this.groupBoxLogin.Size = new System.Drawing.Size(400, 240);
             this.groupBoxLogin.TabIndex = 1;
             this.groupBoxLogin.TabStop = false;
             this.groupBoxLogin.Text = "כניסת משתמש";
@@ -146,9 +150,37 @@ namespace LawyerProject.GUI
             this.lnkChangePassword.Text = "החלפת סיסמה";
             this.lnkChangePassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkChangePassword_LinkClicked);
             //
-            // groupBoxChangePassword
+                        // 
+            // lblKeyboardWarning
+            // 
+            this.lblKeyboardWarning.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblKeyboardWarning.Location = new System.Drawing.Point(20, 195);
+            this.lblKeyboardWarning.Name = "lblKeyboardWarning";
+            this.lblKeyboardWarning.Size = new System.Drawing.Size(360, 30);
+            this.lblKeyboardWarning.TabIndex = 20;
+            this.lblKeyboardWarning.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblKeyboardWarning.Text = "";
+            // 
+            // lblCpUser
+            // 
+            this.lblCpUser.Location = new System.Drawing.Point(266, 38);
+            this.lblCpUser.Name = "lblCpUser";
+            this.lblCpUser.Size = new System.Drawing.Size(114, 23);
+            this.lblCpUser.TabIndex = 21;
+            this.lblCpUser.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblCpUser.Text = "שם משתמש";
+            // 
+            // txtCpUser
+            // 
+            this.txtCpUser.Location = new System.Drawing.Point(30, 35);
+            this.txtCpUser.Name = "txtCpUser";
+            this.txtCpUser.Size = new System.Drawing.Size(230, 27);
+            this.txtCpUser.TabIndex = 0;
+// groupBoxChangePassword
             //
             this.groupBoxChangePassword.Controls.Add(this.btnCancelPassword);
+            this.groupBoxChangePassword.Controls.Add(this.txtCpUser);
+            this.groupBoxChangePassword.Controls.Add(this.lblCpUser);
             this.groupBoxChangePassword.Controls.Add(this.btnSavePassword);
             this.groupBoxChangePassword.Controls.Add(this.txtConfirmPassword);
             this.groupBoxChangePassword.Controls.Add(this.lblConfirmPassword);
@@ -156,9 +188,9 @@ namespace LawyerProject.GUI
             this.groupBoxChangePassword.Controls.Add(this.lblNewPassword);
             this.groupBoxChangePassword.Controls.Add(this.txtOldPassword);
             this.groupBoxChangePassword.Controls.Add(this.lblOldPassword);
-            this.groupBoxChangePassword.Location = new System.Drawing.Point(20, 350);
+            this.groupBoxChangePassword.Location = new System.Drawing.Point(20, 380);
             this.groupBoxChangePassword.Name = "groupBoxChangePassword";
-            this.groupBoxChangePassword.Size = new System.Drawing.Size(400, 210);
+            this.groupBoxChangePassword.Size = new System.Drawing.Size(400, 250);
             this.groupBoxChangePassword.TabIndex = 2;
             this.groupBoxChangePassword.TabStop = false;
             this.groupBoxChangePassword.Text = "החלפת סיסמה";
@@ -168,7 +200,7 @@ namespace LawyerProject.GUI
             //
             this.lblOldPassword.AutoSize = false;
             this.lblOldPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblOldPassword.Location = new System.Drawing.Point(266, 38);
+            this.lblOldPassword.Location = new System.Drawing.Point(266, 78);
             this.lblOldPassword.Name = "lblOldPassword";
             this.lblOldPassword.Size = new System.Drawing.Size(114, 23);
             this.lblOldPassword.TabIndex = 0;
@@ -176,7 +208,7 @@ namespace LawyerProject.GUI
             //
             // txtOldPassword
             //
-            this.txtOldPassword.Location = new System.Drawing.Point(30, 35);
+            this.txtOldPassword.Location = new System.Drawing.Point(30, 75);
             this.txtOldPassword.MaxLength = 100;
             this.txtOldPassword.Name = "txtOldPassword";
             this.txtOldPassword.Size = new System.Drawing.Size(230, 27);
@@ -187,7 +219,7 @@ namespace LawyerProject.GUI
             //
             this.lblNewPassword.AutoSize = false;
             this.lblNewPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblNewPassword.Location = new System.Drawing.Point(266, 78);
+            this.lblNewPassword.Location = new System.Drawing.Point(266, 118);
             this.lblNewPassword.Name = "lblNewPassword";
             this.lblNewPassword.Size = new System.Drawing.Size(114, 23);
             this.lblNewPassword.TabIndex = 2;
@@ -195,7 +227,7 @@ namespace LawyerProject.GUI
             //
             // txtNewPassword
             //
-            this.txtNewPassword.Location = new System.Drawing.Point(30, 75);
+            this.txtNewPassword.Location = new System.Drawing.Point(30, 115);
             this.txtNewPassword.MaxLength = 100;
             this.txtNewPassword.Name = "txtNewPassword";
             this.txtNewPassword.Size = new System.Drawing.Size(230, 27);
@@ -206,7 +238,7 @@ namespace LawyerProject.GUI
             //
             this.lblConfirmPassword.AutoSize = false;
             this.lblConfirmPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblConfirmPassword.Location = new System.Drawing.Point(266, 118);
+            this.lblConfirmPassword.Location = new System.Drawing.Point(266, 158);
             this.lblConfirmPassword.Name = "lblConfirmPassword";
             this.lblConfirmPassword.Size = new System.Drawing.Size(114, 23);
             this.lblConfirmPassword.TabIndex = 4;
@@ -214,7 +246,7 @@ namespace LawyerProject.GUI
             //
             // txtConfirmPassword
             //
-            this.txtConfirmPassword.Location = new System.Drawing.Point(30, 115);
+            this.txtConfirmPassword.Location = new System.Drawing.Point(30, 155);
             this.txtConfirmPassword.MaxLength = 100;
             this.txtConfirmPassword.Name = "txtConfirmPassword";
             this.txtConfirmPassword.Size = new System.Drawing.Size(230, 27);
@@ -223,7 +255,7 @@ namespace LawyerProject.GUI
             //
             // btnSavePassword
             //
-            this.btnSavePassword.Location = new System.Drawing.Point(150, 155);
+            this.btnSavePassword.Location = new System.Drawing.Point(150, 195);
             this.btnSavePassword.Name = "btnSavePassword";
             this.btnSavePassword.Size = new System.Drawing.Size(110, 38);
             this.btnSavePassword.TabIndex = 6;
@@ -233,7 +265,7 @@ namespace LawyerProject.GUI
             //
             // btnCancelPassword
             //
-            this.btnCancelPassword.Location = new System.Drawing.Point(30, 155);
+            this.btnCancelPassword.Location = new System.Drawing.Point(30, 195);
             this.btnCancelPassword.Name = "btnCancelPassword";
             this.btnCancelPassword.Size = new System.Drawing.Size(110, 38);
             this.btnCancelPassword.TabIndex = 7;
@@ -246,7 +278,7 @@ namespace LawyerProject.GUI
             this.AcceptButton = this.btnLogin;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(440, 360);
+            this.ClientSize = new System.Drawing.Size(440, 390);
             this.Controls.Add(this.groupBoxChangePassword);
             this.Controls.Add(this.groupBoxLogin);
             this.Controls.Add(this.pictureBoxLogo);
@@ -286,6 +318,9 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Label lblConfirmPassword;
         private System.Windows.Forms.TextBox txtConfirmPassword;
         private System.Windows.Forms.Button btnSavePassword;
+        private System.Windows.Forms.Label lblKeyboardWarning;
+        private System.Windows.Forms.Label lblCpUser;
+        private System.Windows.Forms.TextBox txtCpUser;
         private System.Windows.Forms.Button btnCancelPassword;
     }
 }

@@ -41,13 +41,23 @@
             this.lblWelcome = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelToday = new System.Windows.Forms.Panel();
+            this.lblTodayTitle = new System.Windows.Forms.Label();
+            this.lblTodaySub = new System.Windows.Forms.Label();
+            this.gridDue = new System.Windows.Forms.DataGridView();
+            this.lblSetup = new System.Windows.Forms.Label();
+            this.btnSetupGuide = new System.Windows.Forms.Button();
+            this.btnAudit = new System.Windows.Forms.Button();
+            this.btnBackup = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.gridDue)).BeginInit();
+            this.panelToday.SuspendLayout();
             this.SuspendLayout();
             //
             // btnAbout
             //
-            this.btnAbout.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnAbout.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnAbout.Font = new System.Drawing.Font("Calibri", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAbout.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnAbout.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnAbout.Location = new System.Drawing.Point(1075, 44);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Size = new System.Drawing.Size(202, 56);
@@ -58,9 +68,9 @@
             //
             // btnCustomers
             //
-            this.btnCustomers.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnCustomers.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnCustomers.Font = new System.Drawing.Font("Calibri", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCustomers.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnCustomers.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnCustomers.Location = new System.Drawing.Point(815, 44);
             this.btnCustomers.Name = "btnCustomers";
             this.btnCustomers.Size = new System.Drawing.Size(202, 56);
@@ -71,9 +81,9 @@
             //
             // btnTikim
             //
-            this.btnTikim.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnTikim.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnTikim.Font = new System.Drawing.Font("Calibri", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTikim.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnTikim.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnTikim.Location = new System.Drawing.Point(554, 44);
             this.btnTikim.Name = "btnTikim";
             this.btnTikim.Size = new System.Drawing.Size(202, 56);
@@ -84,9 +94,9 @@
             //
             // btnIskaot
             //
-            this.btnIskaot.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnIskaot.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnIskaot.Font = new System.Drawing.Font("Calibri", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnIskaot.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnIskaot.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnIskaot.Location = new System.Drawing.Point(295, 44);
             this.btnIskaot.Name = "btnIskaot";
             this.btnIskaot.Size = new System.Drawing.Size(202, 56);
@@ -97,9 +107,9 @@
             //
             // btnKabalot
             //
-            this.btnKabalot.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnKabalot.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnKabalot.Font = new System.Drawing.Font("Calibri", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnKabalot.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnKabalot.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnKabalot.Location = new System.Drawing.Point(35, 44);
             this.btnKabalot.Name = "btnKabalot";
             this.btnKabalot.Size = new System.Drawing.Size(202, 56);
@@ -110,9 +120,9 @@
             //
             // btnCourts
             //
-            this.btnCourts.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnCourts.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnCourts.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCourts.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnCourts.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnCourts.Location = new System.Drawing.Point(1075, 120);
             this.btnCourts.Name = "btnCourts";
             this.btnCourts.Size = new System.Drawing.Size(202, 46);
@@ -123,9 +133,9 @@
             //
             // btnCaseTypes
             //
-            this.btnCaseTypes.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnCaseTypes.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnCaseTypes.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCaseTypes.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnCaseTypes.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnCaseTypes.Location = new System.Drawing.Point(815, 120);
             this.btnCaseTypes.Name = "btnCaseTypes";
             this.btnCaseTypes.Size = new System.Drawing.Size(202, 46);
@@ -136,9 +146,9 @@
             //
             // btnProcesses
             //
-            this.btnProcesses.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnProcesses.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnProcesses.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnProcesses.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnProcesses.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnProcesses.Location = new System.Drawing.Point(554, 120);
             this.btnProcesses.Name = "btnProcesses";
             this.btnProcesses.Size = new System.Drawing.Size(202, 46);
@@ -149,9 +159,9 @@
             //
             // btnUsers
             //
-            this.btnUsers.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnUsers.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnUsers.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUsers.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnUsers.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnUsers.Location = new System.Drawing.Point(295, 120);
             this.btnUsers.Name = "btnUsers";
             this.btnUsers.Size = new System.Drawing.Size(202, 46);
@@ -162,9 +172,9 @@
             //
             // btnLogout
             //
-            this.btnLogout.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnLogout.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.btnLogout.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLogout.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnLogout.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnLogout.Location = new System.Drawing.Point(35, 120);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(202, 46);
@@ -176,24 +186,121 @@
             // lblWelcome
             //
             this.lblWelcome.AutoSize = true;
-            this.lblWelcome.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.lblWelcome.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.lblWelcome.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold);
-            this.lblWelcome.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.lblWelcome.Location = new System.Drawing.Point(35, 700);
+            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
+            this.lblWelcome.Location = new System.Drawing.Point(180, 700);
             this.lblWelcome.Name = "lblWelcome";
             this.lblWelcome.Size = new System.Drawing.Size(0, 23);
             this.lblWelcome.TabIndex = 10;
+            // 
+            // panelToday
+            // 
+            this.panelToday.BackColor = System.Drawing.Color.White;
+            this.panelToday.Controls.Add(this.lblTodayTitle);
+            this.panelToday.Controls.Add(this.lblTodaySub);
+            this.panelToday.Controls.Add(this.gridDue);
+            this.panelToday.Controls.Add(this.lblSetup);
+            this.panelToday.Location = new System.Drawing.Point(35, 185);
+            this.panelToday.Name = "panelToday";
+            this.panelToday.Size = new System.Drawing.Size(1242, 495);
+            this.panelToday.TabIndex = 20;
+            // 
+            // lblTodayTitle
+            // 
+            this.lblTodayTitle.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTodayTitle.Location = new System.Drawing.Point(732, 10);
+            this.lblTodayTitle.Name = "lblTodayTitle";
+            this.lblTodayTitle.Size = new System.Drawing.Size(500, 32);
+            this.lblTodayTitle.TabIndex = 0;
+            this.lblTodayTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTodayTitle.Text = "מה דחוף היום";
+            // 
+            // lblTodaySub
+            // 
+            this.lblTodaySub.Font = new System.Drawing.Font("Calibri", 11F);
+            this.lblTodaySub.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.lblTodaySub.Location = new System.Drawing.Point(232, 42);
+            this.lblTodaySub.Name = "lblTodaySub";
+            this.lblTodaySub.Size = new System.Drawing.Size(1000, 24);
+            this.lblTodaySub.TabIndex = 1;
+            this.lblTodaySub.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTodaySub.Text = "השלב הבא בכל תיק פתוח שמועדו עבר או מתקרב. לחיצה כפולה פותחת את התיק.";
+            // 
+            // gridDue
+            // 
+            this.gridDue.BackgroundColor = System.Drawing.Color.White;
+            this.gridDue.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridDue.Font = new System.Drawing.Font("Calibri", 11F);
+            this.gridDue.Location = new System.Drawing.Point(10, 72);
+            this.gridDue.Name = "gridDue";
+            this.gridDue.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.gridDue.RowHeadersVisible = false;
+            this.gridDue.Size = new System.Drawing.Size(1222, 360);
+            this.gridDue.TabIndex = 2;
+            this.gridDue.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridDue_CellDoubleClick);
+            // 
+            // lblSetup
+            // 
+            this.lblSetup.BackColor = System.Drawing.Color.LightYellow;
+            this.lblSetup.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblSetup.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.lblSetup.Location = new System.Drawing.Point(10, 442);
+            this.lblSetup.Name = "lblSetup";
+            this.lblSetup.Size = new System.Drawing.Size(1222, 42);
+            this.lblSetup.TabIndex = 3;
+            this.lblSetup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblSetup.Text = "המערכת עדיין לא הוגדרה: אין נושאי תיקים עם תהליכים. לחצו כאן למדריך ההקמה.";
+            this.lblSetup.Visible = false;
+            this.lblSetup.Click += new System.EventHandler(this.btnSetupGuide_Click);
+            // 
+            // btnSetupGuide
+            // 
+            this.btnSetupGuide.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.btnSetupGuide.Location = new System.Drawing.Point(1075, 692);
+            this.btnSetupGuide.Name = "btnSetupGuide";
+            this.btnSetupGuide.Size = new System.Drawing.Size(202, 40);
+            this.btnSetupGuide.TabIndex = 30;
+            this.btnSetupGuide.Text = "מדריך הקמה";
+            this.btnSetupGuide.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.btnSetupGuide.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
+            this.btnSetupGuide.UseVisualStyleBackColor = false;
+            this.btnSetupGuide.Click += new System.EventHandler(this.btnSetupGuide_Click);
+            // 
+            // btnAudit
+            // 
+            this.btnAudit.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.btnAudit.Location = new System.Drawing.Point(815, 692);
+            this.btnAudit.Name = "btnAudit";
+            this.btnAudit.Size = new System.Drawing.Size(202, 40);
+            this.btnAudit.TabIndex = 31;
+            this.btnAudit.Text = "יומן פעולות";
+            this.btnAudit.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.btnAudit.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
+            this.btnAudit.UseVisualStyleBackColor = false;
+            this.btnAudit.Click += new System.EventHandler(this.btnAudit_Click);
+            // 
+            // btnBackup
+            // 
+            this.btnBackup.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.btnBackup.Location = new System.Drawing.Point(554, 692);
+            this.btnBackup.Name = "btnBackup";
+            this.btnBackup.Size = new System.Drawing.Size(202, 40);
+            this.btnBackup.TabIndex = 32;
+            this.btnBackup.Text = "גיבוי נתונים";
+            this.btnBackup.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.btnBackup.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
+            this.btnBackup.UseVisualStyleBackColor = false;
+            this.btnBackup.Click += new System.EventHandler(this.btnBackup_Click);
             //
             // pictureBox1
             //
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.pictureBox1.BackgroundImage = global::LawyerProject.Properties.Resources.לוגו2;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.pictureBox1.Image = global::LawyerProject.Properties.Resources.לוגו2;
+            this.pictureBox1.Location = new System.Drawing.Point(35, 686);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1352, 745);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.Size = new System.Drawing.Size(130, 52);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
             //
@@ -201,7 +308,12 @@
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
             this.ClientSize = new System.Drawing.Size(1352, 745);
+            this.Controls.Add(this.panelToday);
+            this.Controls.Add(this.btnSetupGuide);
+            this.Controls.Add(this.btnAudit);
+            this.Controls.Add(this.btnBackup);
             this.Controls.Add(this.lblWelcome);
             this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.btnUsers);
@@ -218,6 +330,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QUEDIN - דף הבית";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridDue)).EndInit();
+            this.panelToday.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -225,6 +339,14 @@
 
         #endregion
         private System.Windows.Forms.Button btnCustomers;
+        private System.Windows.Forms.Panel panelToday;
+        private System.Windows.Forms.Label lblTodayTitle;
+        private System.Windows.Forms.Label lblTodaySub;
+        private System.Windows.Forms.DataGridView gridDue;
+        private System.Windows.Forms.Label lblSetup;
+        private System.Windows.Forms.Button btnSetupGuide;
+        private System.Windows.Forms.Button btnAudit;
+        private System.Windows.Forms.Button btnBackup;
         private System.Windows.Forms.Button btnKabalot;
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Button btnIskaot;
