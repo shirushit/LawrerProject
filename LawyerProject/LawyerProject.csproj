@@ -82,181 +82,146 @@
     <Compile Include="BLL\PasswordHasher.cs" />
     <Compile Include="BLL\Session.cs" />
     <Compile Include="BLL\Validation.cs" />
-    <Compile Include="DB\Bet_Mishpat.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="DB\AuditEntry.cs" />
+    <Compile Include="DB\CaseStep.cs" />
+    <Compile Include="DB\CaseType.cs" />
+    <Compile Include="DB\CaseTypeStep.cs" />
+    <Compile Include="DB\Court.cs" />
+    <Compile Include="DB\CourtCaseType.cs" />
+    <Compile Include="DB\Customer.cs" />
+    <Compile Include="DB\CustomerExtensions.cs" />
+    <Compile Include="DB\Holiday.cs" />
+    <Compile Include="DB\LegalCase.cs" />
+    <Compile Include="DB\ModelExtensions.cs" />
+    <Compile Include="DB\Payment.cs" />
+    <Compile Include="DB\Procedure.cs" />
+    <Compile Include="DB\QuedinModel.Context.cs" />
+    <Compile Include="DB\QuedinModel.Designer.cs" />
+    <Compile Include="DB\QuedinModel.cs" />
+    <Compile Include="DB\Setting.cs" />
+    <Compile Include="DB\User.cs" />
+    <Compile Include="GUI\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\Bet_Mishpat1.cs" />
-    <Compile Include="DB\Customers.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\AboutForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DB\Customers1.cs" />
-    <Compile Include="DB\LawyerProjekt.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LawyerProjekt.Context.tt</DependentUpon>
+    <Compile Include="GUI\AuditLogForm.cs" />
+    <Compile Include="GUI\CaseForm.Designer.cs">
+      <DependentUpon>CaseForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\LawyerProjekt.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
+    <Compile Include="GUI\CaseForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DB\LawyerProjekt.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypeForm.Designer.cs">
+      <DependentUpon>CaseTypeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\Subjekt_Tik.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypeForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DB\Subjekt_Tik1.cs" />
-    <Compile Include="DB\Subjekts_Shebet_Mishpat_Metapel.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypeStepForm.Designer.cs">
+      <DependentUpon>CaseTypeStepForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\Taalichim_Kvuim_Batik.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypeStepForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DB\Taalichim_Letikim.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypesListForm.Designer.cs">
+      <DependentUpon>CaseTypesListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\Taalichim_Letikim1.cs" />
-    <Compile Include="DB\Tahalich_Tipul_Betik.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DB\Tashlumim_Letik.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DB\Tikim_Letipul_Orech_Din.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DB\Tikim_Letipul_Orech_Din1.cs" />
-    <Compile Include="DB\Users.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DB\Yoman.cs">
-      <DependentUpon>LawyerProjekt.tt</DependentUpon>
+    <Compile Include="GUI\CaseTypesListForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\CaseWindows.cs" />
-    <Compile Include="GUI\FrmAbout.Designer.cs">
-      <DependentUpon>FrmAbout.cs</DependentUpon>
+    <Compile Include="GUI\CasesListForm.Designer.cs">
+      <DependentUpon>CasesListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmAbout.cs">
+    <Compile Include="GUI\CasesListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FrmAddTaalichKavuaBatik.Designer.cs">
-      <DependentUpon>FrmAddTaalichKavuaBatik.cs</DependentUpon>
+    <Compile Include="GUI\CourtCaseTypeForm.Designer.cs">
+      <DependentUpon>CourtCaseTypeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmAddTaalichKavuaBatik.cs">
+    <Compile Include="GUI\CourtCaseTypeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FrmAllPayments.Designer.cs">
-      <DependentUpon>FrmAllPayments.cs</DependentUpon>
+    <Compile Include="GUI\CourtForm.Designer.cs">
+      <DependentUpon>CourtForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmAllPayments.cs">
+    <Compile Include="GUI\CourtForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FrmAllTaalichimLetik.Designer.cs">
-      <DependentUpon>FrmAllTaalichimLetik.cs</DependentUpon>
+    <Compile Include="GUI\CourtsListForm.Designer.cs">
+      <DependentUpon>CourtsListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmAllTaalichimLetik.cs">
+    <Compile Include="GUI\CourtsListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FrmAuditLog.cs" />
-    <Compile Include="GUI\FrmManageUsers.Designer.cs">
-      <DependentUpon>FrmManageUsers.cs</DependentUpon>
+    <Compile Include="GUI\CustomerForm.Designer.cs">
+      <DependentUpon>CustomerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmManageUsers.cs">
+    <Compile Include="GUI\CustomerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FrmSetupGuide.cs" />
-    <Compile Include="GUI\FrmUsers.Designer.cs">
-      <DependentUpon>FrmUsers.cs</DependentUpon>
+    <Compile Include="GUI\CustomersListForm.Designer.cs">
+      <DependentUpon>CustomersListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FrmUsers.cs">
+    <Compile Include="GUI\CustomersListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Nivot.Designer.cs">
-      <DependentUpon>Nivot.cs</DependentUpon>
+    <Compile Include="GUI\DealsListForm.Designer.cs">
+      <DependentUpon>DealsListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Nivot.cs">
+    <Compile Include="GUI\DealsListForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\HomeForm.Designer.cs">
+      <DependentUpon>HomeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\HomeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\PaymentForm.Designer.cs">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\PaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\PaymentsListForm.Designer.cs">
+      <DependentUpon>PaymentsListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\PaymentsListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ProcedureForm.Designer.cs">
+      <DependentUpon>ProcedureForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ProcedureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ProceduresListForm.Designer.cs">
+      <DependentUpon>ProceduresListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ProceduresListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ReceiptForm.Designer.cs">
+      <DependentUpon>ReceiptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ReceiptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\SetupGuideForm.cs" />
     <Compile Include="GUI\Ui.cs" />
-    <Compile Include="GUI\frmAddBetMishpat.Designer.cs">
-      <DependentUpon>frmAddBetMishpat.cs</DependentUpon>
+    <Compile Include="GUI\UsersForm.Designer.cs">
+      <DependentUpon>UsersForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\frmAddBetMishpat.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddCostemer.Designer.cs">
-      <DependentUpon>frmAddCostemer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddCostemer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddSubjektShebetMishpatMetapel.Designer.cs">
-      <DependentUpon>frmAddSubjektShebetMishpatMetapel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddSubjektShebetMishpatMetapel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddSubjektTik.Designer.cs">
-      <DependentUpon>frmAddSubjektTik.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddSubjektTik.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddTaalichimLetik.Designer.cs">
-      <DependentUpon>frmAddTaalichimLetik.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddTaalichimLetik.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddTashlumimLetik.Designer.cs">
-      <DependentUpon>frmAddTashlumimLetik.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddTashlumimLetik.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAddTikLetipulOrechDin.Designer.cs">
-      <DependentUpon>frmAddTikLetipulOrechDin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAddTikLetipulOrechDin.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAllBetMishpat.Designer.cs">
-      <DependentUpon>frmAllBetMishpat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAllBetMishpat.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAllCostemers.Designer.cs">
-      <DependentUpon>frmAllCostemers.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAllCostemers.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAllIskaot.Designer.cs">
-      <DependentUpon>frmAllIskaot.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAllIskaot.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAllSubjektTik.Designer.cs">
-      <DependentUpon>frmAllSubjektTik.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAllSubjektTik.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmAllTikimLetipulOrechDin.Designer.cs">
-      <DependentUpon>frmAllTikimLetipulOrechDin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmAllTikimLetipulOrechDin.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\frmKabala.Designer.cs">
-      <DependentUpon>frmKabala.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\frmKabala.cs">
+    <Compile Include="GUI\UsersForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
@@ -271,71 +236,71 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="GUI\FrmAbout.resx">
-      <DependentUpon>FrmAbout.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FrmAddTaalichKavuaBatik.resx">
-      <DependentUpon>FrmAddTaalichKavuaBatik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CaseForm.resx">
+      <DependentUpon>CaseForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FrmAllTaalichimLetik.resx">
-      <DependentUpon>FrmAllTaalichimLetik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CaseTypeForm.resx">
+      <DependentUpon>CaseTypeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FrmUsers.resx">
-      <DependentUpon>FrmUsers.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CaseTypeStepForm.resx">
+      <DependentUpon>CaseTypeStepForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Nivot.resx">
-      <DependentUpon>Nivot.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CaseTypesListForm.resx">
+      <DependentUpon>CaseTypesListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddBetMishpat.resx">
-      <DependentUpon>frmAddBetMishpat.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CasesListForm.resx">
+      <DependentUpon>CasesListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddCostemer.resx">
-      <DependentUpon>frmAddCostemer.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CourtCaseTypeForm.resx">
+      <DependentUpon>CourtCaseTypeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddSubjektShebetMishpatMetapel.resx">
-      <DependentUpon>frmAddSubjektShebetMishpatMetapel.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CourtForm.resx">
+      <DependentUpon>CourtForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddSubjektTik.resx">
-      <DependentUpon>frmAddSubjektTik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CourtsListForm.resx">
+      <DependentUpon>CourtsListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddTaalichimLetik.resx">
-      <DependentUpon>frmAddTaalichimLetik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CustomerForm.resx">
+      <DependentUpon>CustomerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddTashlumimLetik.resx">
-      <DependentUpon>frmAddTashlumimLetik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\CustomersListForm.resx">
+      <DependentUpon>CustomersListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAddTikLetipulOrechDin.resx">
-      <DependentUpon>frmAddTikLetipulOrechDin.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\DealsListForm.resx">
+      <DependentUpon>DealsListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAllBetMishpat.resx">
-      <DependentUpon>frmAllBetMishpat.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\HomeForm.resx">
+      <DependentUpon>HomeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAllCostemers.resx">
-      <DependentUpon>frmAllCostemers.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAllIskaot.resx">
-      <DependentUpon>frmAllIskaot.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\PaymentForm.resx">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAllSubjektTik.resx">
-      <DependentUpon>frmAllSubjektTik.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\ProcedureForm.resx">
+      <DependentUpon>ProcedureForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmAllTikimLetipulOrechDin.resx">
-      <DependentUpon>frmAllTikimLetipulOrechDin.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\ProceduresListForm.resx">
+      <DependentUpon>ProceduresListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\frmKabala.resx">
-      <DependentUpon>frmKabala.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\ReceiptForm.resx">
+      <DependentUpon>ReceiptForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="DB\LawyerProjekt.edmx">
+    <EntityDeploy Include="DB\QuedinModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>LawyerProjekt.Designer.cs</LastGenOutput>
+      <LastGenOutput>QuedinModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="DB\LawyerProjekt.edmx.diagram">
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
+    <None Include="DB\QuedinModel.edmx.diagram">
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -343,15 +308,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="App.config" />
-    <Content Include="DB\LawyerProjekt.Context.tt">
+    <Content Include="DB\QuedinModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
-      <LastGenOutput>LawyerProjekt.Context.cs</LastGenOutput>
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
+      <LastGenOutput>QuedinModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="DB\LawyerProjekt.tt">
+    <Content Include="DB\QuedinModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LawyerProjekt.edmx</DependentUpon>
-      <LastGenOutput>LawyerProjekt.cs</LastGenOutput>
+      <DependentUpon>QuedinModel.edmx</DependentUpon>
+      <LastGenOutput>QuedinModel.cs</LastGenOutput>
     </Content>
     <None Include="Resources\אודות.PNG" />
     <None Include="Resources\אייקון %282%29.PNG" />

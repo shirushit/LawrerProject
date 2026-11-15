@@ -10,7 +10,7 @@ namespace LawyerProject.GUI
     /// </summary>
     internal static class CaseWindows
     {
-        private static readonly Dictionary<int, frmAddTikLetipulOrechDin> open = new Dictionary<int, frmAddTikLetipulOrechDin>();
+        private static readonly Dictionary<int, CaseForm> open = new Dictionary<int, CaseForm>();
 
         /// <summary>Number of case windows currently open (used to warn before logging out).</summary>
         public static int OpenCount
@@ -21,31 +21,31 @@ namespace LawyerProject.GUI
         /// <summary>Opens an existing case. <paramref name="onChanged"/> runs after the window closes if anything was saved.</summary>
         public static void OpenCase(IWin32Window owner, int id, Action onChanged)
         {
-            frmAddTikLetipulOrechDin existing;
+            CaseForm existing;
             if (open.TryGetValue(id, out existing) && !existing.IsDisposed)
             {
                 if (existing.WindowState == FormWindowState.Minimized) existing.WindowState = FormWindowState.Normal;
                 existing.Activate();
                 return;
             }
-            Show(owner, () => new frmAddTikLetipulOrechDin(id), id, onChanged);
+            Show(owner, () => new CaseForm(id), id, onChanged);
         }
 
         /// <summary>Opens a new court case or property deal.</summary>
         public static void NewCase(IWin32Window owner, bool isDeal, Action onChanged)
         {
-            Show(owner, () => new frmAddTikLetipulOrechDin(isDeal), 0, onChanged);
+            Show(owner, () => new CaseForm(isDeal), 0, onChanged);
         }
 
         public static void CloseAll()
         {
-            foreach (var form in new List<frmAddTikLetipulOrechDin>(open.Values))
+            foreach (var form in new List<CaseForm>(open.Values))
                 if (!form.IsDisposed) form.Close();
         }
 
-        private static void Show(IWin32Window owner, Func<frmAddTikLetipulOrechDin> create, int id, Action onChanged)
+        private static void Show(IWin32Window owner, Func<CaseForm> create, int id, Action onChanged)
         {
-            frmAddTikLetipulOrechDin form;
+            CaseForm form;
             try
             {
                 form = create();

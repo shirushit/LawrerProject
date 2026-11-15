@@ -14,7 +14,7 @@ namespace LawyerProject
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += (s, e) => GUI.Ui.Error("אירעה שגיאה לא צפויה.", e.Exception);
-            Application.Run(new GUI.FrmUsers());
+            Application.Run(new GUI.LoginForm());
         }
     }
 }

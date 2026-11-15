@@ -1,0 +1,942 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="QuedinModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="FailedLogins" Type="int" Nullable="false" />
+          <Property Name="LockedUntil" Type="datetime" />
+        </EntityType>
+        <EntityType Name="AuditLog">
+          <Key>
+            <PropertyRef Name="AuditEntryId" />
+          </Key>
+          <Property Name="AuditEntryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OccurredAt" Type="datetime" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Action" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Entity" Type="nvarchar" MaxLength="50" />
+          <Property Name="EntityId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Details" Type="nvarchar" MaxLength="400" />
+        </EntityType>
+        <EntityType Name="Settings">
+          <Key>
+            <PropertyRef Name="SettingKey" />
+          </Key>
+          <Property Name="SettingKey" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="Holidays">
+          <Key>
+            <PropertyRef Name="HolidayDate" />
+          </Key>
+          <Property Name="HolidayDate" Type="date" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customers">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="Street" Type="nvarchar" MaxLength="50" />
+          <Property Name="HouseNumber" Type="nvarchar" MaxLength="5" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="7" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+          <Property Name="MobilePhone" Type="nvarchar" MaxLength="20" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="BirthDate" Type="date" />
+          <Property Name="PersonType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IdType" Type="nvarchar" MaxLength="20" />
+          <Property Name="RowVersion" Type="rowversion" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Courts">
+          <Key>
+            <PropertyRef Name="CourtId" />
+          </Key>
+          <Property Name="CourtId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CaseTypes">
+          <Key>
+            <PropertyRef Name="CaseTypeId" />
+          </Key>
+          <Property Name="CaseTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BaseFee" Type="money" />
+          <Property Name="CourtFee" Type="money" />
+        </EntityType>
+        <EntityType Name="Procedures">
+          <Key>
+            <PropertyRef Name="ProcedureId" />
+          </Key>
+          <Property Name="ProcedureId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DurationDays" Type="int" Nullable="false" />
+          <Property Name="Category" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CourtCaseTypes">
+          <Key>
+            <PropertyRef Name="CourtCaseTypeId" />
+          </Key>
+          <Property Name="CourtCaseTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourtId" Type="int" Nullable="false" />
+          <Property Name="CaseTypeId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CaseTypeSteps">
+          <Key>
+            <PropertyRef Name="CaseTypeStepId" />
+          </Key>
+          <Property Name="CaseTypeStepId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CaseTypeId" Type="int" Nullable="false" />
+          <Property Name="ProcedureId" Type="int" Nullable="false" />
+          <Property Name="StepOrder" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Cases">
+          <Key>
+            <PropertyRef Name="CaseId" />
+          </Key>
+          <Property Name="CaseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ClientId" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="CaseTypeId" Type="int" Nullable="false" />
+          <Property Name="IsInCourt" Type="bit" />
+          <Property Name="CourtId" Type="int" />
+          <Property Name="CurrentProcedureId" Type="int" Nullable="false" />
+          <Property Name="PowerOfAttorney" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsPaid" Type="bit" Nullable="false" />
+          <Property Name="Advance" Type="money" Nullable="false" />
+          <Property Name="IsAdvancePaid" Type="bit" />
+          <Property Name="Block" Type="nvarchar" MaxLength="50" />
+          <Property Name="Parcel" Type="nvarchar" MaxLength="50" />
+          <Property Name="SubParcel" Type="nvarchar" MaxLength="50" />
+          <Property Name="PropertyAddress" Type="nvarchar" MaxLength="50" />
+          <Property Name="ClaimAmount" Type="money" />
+          <Property Name="AwardedAmount" Type="money" />
+          <Property Name="FeePercent" Type="float" />
+          <Property Name="OpposingLawyerId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="OpposingPartyId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RowVersion" Type="rowversion" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CaseSteps">
+          <Key>
+            <PropertyRef Name="CaseStepId" />
+          </Key>
+          <Property Name="CaseStepId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CaseId" Type="int" Nullable="false" />
+          <Property Name="ProcedureId" Type="int" Nullable="false" />
+          <Property Name="DueDate" Type="date" />
+          <Property Name="DoneDate" Type="date" />
+          <Property Name="IsDone" Type="bit" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="200" />
+          <Property Name="DurationDays" Type="int" />
+          <Property Name="IsFixedDate" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Payments">
+          <Key>
+            <PropertyRef Name="PaymentId" />
+          </Key>
+          <Property Name="PaymentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CaseId" Type="int" Nullable="false" />
+          <Property Name="BalanceAfter" Type="money" Nullable="false" />
+          <Property Name="Method" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CardLast4" Type="nchar" MaxLength="16" />
+          <Property Name="ChequeNumber" Type="nchar" MaxLength="10" />
+          <Property Name="BankNumber" Type="nchar" MaxLength="3" />
+          <Property Name="BranchNumber" Type="nchar" MaxLength="3" />
+          <Property Name="AccountNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="Amount" Type="money" Nullable="false" />
+          <Property Name="PaidOn" Type="date" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+          <Property Name="Reference" Type="nvarchar" MaxLength="50" />
+          <Property Name="ChequeDate" Type="date" />
+          <Property Name="Kind" Type="nvarchar" MaxLength="20" />
+          <Property Name="VatRate" Type="decimal" Precision="5" Scale="4" />
+          <Property Name="IsCancelled" Type="bit" Nullable="false" />
+          <Property Name="CancelsPaymentId" Type="int" />
+        </EntityType>
+        <Association Name="FK_CourtCaseTypes_Courts">
+          <End Role="Courts" Type="Self.Courts" Multiplicity="1" />
+          <End Role="CourtCaseTypes" Type="Self.CourtCaseTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Courts">
+              <PropertyRef Name="CourtId" />
+            </Principal>
+            <Dependent Role="CourtCaseTypes">
+              <PropertyRef Name="CourtId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CourtCaseTypes_CaseTypes">
+          <End Role="CaseTypes" Type="Self.CaseTypes" Multiplicity="1" />
+          <End Role="CourtCaseTypes" Type="Self.CourtCaseTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseTypes">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="CourtCaseTypes">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseTypeSteps_CaseTypes">
+          <End Role="CaseTypes" Type="Self.CaseTypes" Multiplicity="1" />
+          <End Role="CaseTypeSteps" Type="Self.CaseTypeSteps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseTypes">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="CaseTypeSteps">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseTypeSteps_Procedures">
+          <End Role="Procedures" Type="Self.Procedures" Multiplicity="1" />
+          <End Role="CaseTypeSteps" Type="Self.CaseTypeSteps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedures">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="CaseTypeSteps">
+              <PropertyRef Name="ProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseSteps_Cases">
+          <End Role="Cases" Type="Self.Cases" Multiplicity="1" />
+          <End Role="CaseSteps" Type="Self.CaseSteps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cases">
+              <PropertyRef Name="CaseId" />
+            </Principal>
+            <Dependent Role="CaseSteps">
+              <PropertyRef Name="CaseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseSteps_Procedures">
+          <End Role="Procedures" Type="Self.Procedures" Multiplicity="1" />
+          <End Role="CaseSteps" Type="Self.CaseSteps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedures">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="CaseSteps">
+              <PropertyRef Name="ProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payments_Cases">
+          <End Role="Cases" Type="Self.Cases" Multiplicity="1" />
+          <End Role="Payments" Type="Self.Payments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cases">
+              <PropertyRef Name="CaseId" />
+            </Principal>
+            <Dependent Role="Payments">
+              <PropertyRef Name="CaseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_CaseTypes">
+          <End Role="CaseTypes" Type="Self.CaseTypes" Multiplicity="1" />
+          <End Role="Cases" Type="Self.Cases" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseTypes">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="Cases">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Courts">
+          <End Role="Courts" Type="Self.Courts" Multiplicity="0..1" />
+          <End Role="Cases" Type="Self.Cases" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Courts">
+              <PropertyRef Name="CourtId" />
+            </Principal>
+            <Dependent Role="Cases">
+              <PropertyRef Name="CourtId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Procedures_Current">
+          <End Role="Procedures" Type="Self.Procedures" Multiplicity="1" />
+          <End Role="Cases" Type="Self.Cases" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedures">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="Cases">
+              <PropertyRef Name="CurrentProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Customers">
+          <End Role="Customers" Type="Self.Customers" Multiplicity="1" />
+          <End Role="Cases" Type="Self.Cases" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customers">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Cases">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="QuedinModelStoreContainer">
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AuditLog" EntityType="Self.AuditLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Holidays" EntityType="Self.Holidays" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Courts" EntityType="Self.Courts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CaseTypes" EntityType="Self.CaseTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Procedures" EntityType="Self.Procedures" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CourtCaseTypes" EntityType="Self.CourtCaseTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CaseTypeSteps" EntityType="Self.CaseTypeSteps" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Cases" EntityType="Self.Cases" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CaseSteps" EntityType="Self.CaseSteps" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CourtCaseTypes_Courts" Association="Self.FK_CourtCaseTypes_Courts">
+            <End Role="Courts" EntitySet="Courts" />
+            <End Role="CourtCaseTypes" EntitySet="CourtCaseTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CourtCaseTypes_CaseTypes" Association="Self.FK_CourtCaseTypes_CaseTypes">
+            <End Role="CaseTypes" EntitySet="CaseTypes" />
+            <End Role="CourtCaseTypes" EntitySet="CourtCaseTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseTypeSteps_CaseTypes" Association="Self.FK_CaseTypeSteps_CaseTypes">
+            <End Role="CaseTypes" EntitySet="CaseTypes" />
+            <End Role="CaseTypeSteps" EntitySet="CaseTypeSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseTypeSteps_Procedures" Association="Self.FK_CaseTypeSteps_Procedures">
+            <End Role="Procedures" EntitySet="Procedures" />
+            <End Role="CaseTypeSteps" EntitySet="CaseTypeSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseSteps_Cases" Association="Self.FK_CaseSteps_Cases">
+            <End Role="Cases" EntitySet="Cases" />
+            <End Role="CaseSteps" EntitySet="CaseSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseSteps_Procedures" Association="Self.FK_CaseSteps_Procedures">
+            <End Role="Procedures" EntitySet="Procedures" />
+            <End Role="CaseSteps" EntitySet="CaseSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payments_Cases" Association="Self.FK_Payments_Cases">
+            <End Role="Cases" EntitySet="Cases" />
+            <End Role="Payments" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_CaseTypes" Association="Self.FK_Cases_CaseTypes">
+            <End Role="CaseTypes" EntitySet="CaseTypes" />
+            <End Role="Cases" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Courts" Association="Self.FK_Cases_Courts">
+            <End Role="Courts" EntitySet="Courts" />
+            <End Role="Cases" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Procedures_Current" Association="Self.FK_Cases_Procedures_Current">
+            <End Role="Procedures" EntitySet="Procedures" />
+            <End Role="Cases" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Customers" Association="Self.FK_Cases_Customers">
+            <End Role="Customers" EntitySet="Customers" />
+            <End Role="Cases" EntitySet="Cases" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+    <Schema Namespace="QuedinModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="FailedLogins" Type="Int32" Nullable="false" />
+          <Property Name="LockedUntil" Type="DateTime" Precision="3" Nullable="true" />
+        </EntityType>
+        <EntityType Name="AuditEntry">
+          <Key>
+            <PropertyRef Name="AuditEntryId" />
+          </Key>
+          <Property Name="AuditEntryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OccurredAt" Type="DateTime" Precision="3" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Entity" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="EntityId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Details" Type="String" MaxLength="400" FixedLength="false" Unicode="true" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Setting">
+          <Key>
+            <PropertyRef Name="SettingKey" />
+          </Key>
+          <Property Name="SettingKey" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Value" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Holiday">
+          <Key>
+            <PropertyRef Name="HolidayDate" />
+          </Key>
+          <Property Name="HolidayDate" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Street" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="HouseNumber" Type="String" MaxLength="5" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="7" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="MobilePhone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="BirthDate" Type="DateTime" Precision="0" Nullable="true" />
+          <Property Name="PersonType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
+          <NavigationProperty Name="Cases" Relationship="Self.FK_Cases_Customers" FromRole="Customer" ToRole="LegalCase" />
+        </EntityType>
+        <EntityType Name="Court">
+          <Key>
+            <PropertyRef Name="CourtId" />
+          </Key>
+          <Property Name="CourtId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="CourtCaseTypes" Relationship="Self.FK_CourtCaseTypes_Courts" FromRole="Court" ToRole="CourtCaseType" />
+          <NavigationProperty Name="Cases" Relationship="Self.FK_Cases_Courts" FromRole="Court" ToRole="LegalCase" />
+        </EntityType>
+        <EntityType Name="CaseType">
+          <Key>
+            <PropertyRef Name="CaseTypeId" />
+          </Key>
+          <Property Name="CaseTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BaseFee" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
+          <Property Name="CourtFee" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
+          <NavigationProperty Name="CourtCaseTypes" Relationship="Self.FK_CourtCaseTypes_CaseTypes" FromRole="CaseType" ToRole="CourtCaseType" />
+          <NavigationProperty Name="Steps" Relationship="Self.FK_CaseTypeSteps_CaseTypes" FromRole="CaseType" ToRole="CaseTypeStep" />
+          <NavigationProperty Name="Cases" Relationship="Self.FK_Cases_CaseTypes" FromRole="CaseType" ToRole="LegalCase" />
+        </EntityType>
+        <EntityType Name="Procedure">
+          <Key>
+            <PropertyRef Name="ProcedureId" />
+          </Key>
+          <Property Name="ProcedureId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DurationDays" Type="Int32" Nullable="false" />
+          <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="CaseTypeSteps" Relationship="Self.FK_CaseTypeSteps_Procedures" FromRole="Procedure" ToRole="CaseTypeStep" />
+          <NavigationProperty Name="CaseSteps" Relationship="Self.FK_CaseSteps_Procedures" FromRole="Procedure" ToRole="CaseStep" />
+          <NavigationProperty Name="CurrentCases" Relationship="Self.FK_Cases_Procedures_Current" FromRole="Procedure" ToRole="LegalCase" />
+        </EntityType>
+        <EntityType Name="CourtCaseType">
+          <Key>
+            <PropertyRef Name="CourtCaseTypeId" />
+          </Key>
+          <Property Name="CourtCaseTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourtId" Type="Int32" Nullable="false" />
+          <Property Name="CaseTypeId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Court" Relationship="Self.FK_CourtCaseTypes_Courts" FromRole="CourtCaseType" ToRole="Court" />
+          <NavigationProperty Name="CaseType" Relationship="Self.FK_CourtCaseTypes_CaseTypes" FromRole="CourtCaseType" ToRole="CaseType" />
+        </EntityType>
+        <EntityType Name="CaseTypeStep">
+          <Key>
+            <PropertyRef Name="CaseTypeStepId" />
+          </Key>
+          <Property Name="CaseTypeStepId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CaseTypeId" Type="Int32" Nullable="false" />
+          <Property Name="ProcedureId" Type="Int32" Nullable="false" />
+          <Property Name="StepOrder" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CaseType" Relationship="Self.FK_CaseTypeSteps_CaseTypes" FromRole="CaseTypeStep" ToRole="CaseType" />
+          <NavigationProperty Name="Procedure" Relationship="Self.FK_CaseTypeSteps_Procedures" FromRole="CaseTypeStep" ToRole="Procedure" />
+        </EntityType>
+        <EntityType Name="LegalCase">
+          <Key>
+            <PropertyRef Name="CaseId" />
+          </Key>
+          <Property Name="CaseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ClientId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CaseTypeId" Type="Int32" Nullable="false" />
+          <Property Name="IsInCourt" Type="Boolean" Nullable="true" />
+          <Property Name="CourtId" Type="Int32" Nullable="true" />
+          <Property Name="CurrentProcedureId" Type="Int32" Nullable="false" />
+          <Property Name="PowerOfAttorney" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsPaid" Type="Boolean" Nullable="false" />
+          <Property Name="Advance" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="IsAdvancePaid" Type="Boolean" Nullable="true" />
+          <Property Name="Block" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Parcel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="SubParcel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="PropertyAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="ClaimAmount" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
+          <Property Name="AwardedAmount" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
+          <Property Name="FeePercent" Type="Double" Nullable="true" />
+          <Property Name="OpposingLawyerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OpposingPartyId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
+          <NavigationProperty Name="Steps" Relationship="Self.FK_CaseSteps_Cases" FromRole="LegalCase" ToRole="CaseStep" />
+          <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Cases" FromRole="LegalCase" ToRole="Payment" />
+          <NavigationProperty Name="CaseType" Relationship="Self.FK_Cases_CaseTypes" FromRole="LegalCase" ToRole="CaseType" />
+          <NavigationProperty Name="Court" Relationship="Self.FK_Cases_Courts" FromRole="LegalCase" ToRole="Court" />
+          <NavigationProperty Name="CurrentProcedure" Relationship="Self.FK_Cases_Procedures_Current" FromRole="LegalCase" ToRole="Procedure" />
+          <NavigationProperty Name="Client" Relationship="Self.FK_Cases_Customers" FromRole="LegalCase" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="CaseStep">
+          <Key>
+            <PropertyRef Name="CaseStepId" />
+          </Key>
+          <Property Name="CaseStepId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CaseId" Type="Int32" Nullable="false" />
+          <Property Name="ProcedureId" Type="Int32" Nullable="false" />
+          <Property Name="DueDate" Type="DateTime" Precision="0" Nullable="true" />
+          <Property Name="DoneDate" Type="DateTime" Precision="0" Nullable="true" />
+          <Property Name="IsDone" Type="Boolean" Nullable="true" />
+          <Property Name="Notes" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="DurationDays" Type="Int32" Nullable="true" />
+          <Property Name="IsFixedDate" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Case" Relationship="Self.FK_CaseSteps_Cases" FromRole="CaseStep" ToRole="LegalCase" />
+          <NavigationProperty Name="Procedure" Relationship="Self.FK_CaseSteps_Procedures" FromRole="CaseStep" ToRole="Procedure" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="PaymentId" />
+          </Key>
+          <Property Name="PaymentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CaseId" Type="Int32" Nullable="false" />
+          <Property Name="BalanceAfter" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="Method" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CardLast4" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="true" />
+          <Property Name="ChequeNumber" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="true" />
+          <Property Name="BankNumber" Type="String" MaxLength="3" FixedLength="true" Unicode="true" Nullable="true" />
+          <Property Name="BranchNumber" Type="String" MaxLength="3" FixedLength="true" Unicode="true" Nullable="true" />
+          <Property Name="AccountNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="PaidOn" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="Reference" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="ChequeDate" Type="DateTime" Precision="0" Nullable="true" />
+          <Property Name="Kind" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="VatRate" Type="Decimal" Precision="5" Scale="4" Nullable="true" />
+          <Property Name="IsCancelled" Type="Boolean" Nullable="false" />
+          <Property Name="CancelsPaymentId" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="Case" Relationship="Self.FK_Payments_Cases" FromRole="Payment" ToRole="LegalCase" />
+        </EntityType>
+        <Association Name="FK_CourtCaseTypes_Courts">
+          <End Role="Court" Type="Self.Court" Multiplicity="1" />
+          <End Role="CourtCaseType" Type="Self.CourtCaseType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Court">
+              <PropertyRef Name="CourtId" />
+            </Principal>
+            <Dependent Role="CourtCaseType">
+              <PropertyRef Name="CourtId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CourtCaseTypes_CaseTypes">
+          <End Role="CaseType" Type="Self.CaseType" Multiplicity="1" />
+          <End Role="CourtCaseType" Type="Self.CourtCaseType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseType">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="CourtCaseType">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseTypeSteps_CaseTypes">
+          <End Role="CaseType" Type="Self.CaseType" Multiplicity="1" />
+          <End Role="CaseTypeStep" Type="Self.CaseTypeStep" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseType">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="CaseTypeStep">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseTypeSteps_Procedures">
+          <End Role="Procedure" Type="Self.Procedure" Multiplicity="1" />
+          <End Role="CaseTypeStep" Type="Self.CaseTypeStep" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedure">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="CaseTypeStep">
+              <PropertyRef Name="ProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseSteps_Cases">
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="1" />
+          <End Role="CaseStep" Type="Self.CaseStep" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LegalCase">
+              <PropertyRef Name="CaseId" />
+            </Principal>
+            <Dependent Role="CaseStep">
+              <PropertyRef Name="CaseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CaseSteps_Procedures">
+          <End Role="Procedure" Type="Self.Procedure" Multiplicity="1" />
+          <End Role="CaseStep" Type="Self.CaseStep" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedure">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="CaseStep">
+              <PropertyRef Name="ProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Payments_Cases">
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="1" />
+          <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LegalCase">
+              <PropertyRef Name="CaseId" />
+            </Principal>
+            <Dependent Role="Payment">
+              <PropertyRef Name="CaseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_CaseTypes">
+          <End Role="CaseType" Type="Self.CaseType" Multiplicity="1" />
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CaseType">
+              <PropertyRef Name="CaseTypeId" />
+            </Principal>
+            <Dependent Role="LegalCase">
+              <PropertyRef Name="CaseTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Courts">
+          <End Role="Court" Type="Self.Court" Multiplicity="0..1" />
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Court">
+              <PropertyRef Name="CourtId" />
+            </Principal>
+            <Dependent Role="LegalCase">
+              <PropertyRef Name="CourtId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Procedures_Current">
+          <End Role="Procedure" Type="Self.Procedure" Multiplicity="1" />
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Procedure">
+              <PropertyRef Name="ProcedureId" />
+            </Principal>
+            <Dependent Role="LegalCase">
+              <PropertyRef Name="CurrentProcedureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Cases_Customers">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="LegalCase" Type="Self.LegalCase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="LegalCase">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="QuedinDbContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="AuditLog" EntityType="Self.AuditEntry" />
+          <EntitySet Name="Settings" EntityType="Self.Setting" />
+          <EntitySet Name="Holidays" EntityType="Self.Holiday" />
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <EntitySet Name="Courts" EntityType="Self.Court" />
+          <EntitySet Name="CaseTypes" EntityType="Self.CaseType" />
+          <EntitySet Name="Procedures" EntityType="Self.Procedure" />
+          <EntitySet Name="CourtCaseTypes" EntityType="Self.CourtCaseType" />
+          <EntitySet Name="CaseTypeSteps" EntityType="Self.CaseTypeStep" />
+          <EntitySet Name="Cases" EntityType="Self.LegalCase" />
+          <EntitySet Name="CaseSteps" EntityType="Self.CaseStep" />
+          <EntitySet Name="Payments" EntityType="Self.Payment" />
+          <AssociationSet Name="FK_CourtCaseTypes_Courts" Association="Self.FK_CourtCaseTypes_Courts">
+            <End Role="Court" EntitySet="Courts" />
+            <End Role="CourtCaseType" EntitySet="CourtCaseTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CourtCaseTypes_CaseTypes" Association="Self.FK_CourtCaseTypes_CaseTypes">
+            <End Role="CaseType" EntitySet="CaseTypes" />
+            <End Role="CourtCaseType" EntitySet="CourtCaseTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseTypeSteps_CaseTypes" Association="Self.FK_CaseTypeSteps_CaseTypes">
+            <End Role="CaseType" EntitySet="CaseTypes" />
+            <End Role="CaseTypeStep" EntitySet="CaseTypeSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseTypeSteps_Procedures" Association="Self.FK_CaseTypeSteps_Procedures">
+            <End Role="Procedure" EntitySet="Procedures" />
+            <End Role="CaseTypeStep" EntitySet="CaseTypeSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseSteps_Cases" Association="Self.FK_CaseSteps_Cases">
+            <End Role="LegalCase" EntitySet="Cases" />
+            <End Role="CaseStep" EntitySet="CaseSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CaseSteps_Procedures" Association="Self.FK_CaseSteps_Procedures">
+            <End Role="Procedure" EntitySet="Procedures" />
+            <End Role="CaseStep" EntitySet="CaseSteps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Payments_Cases" Association="Self.FK_Payments_Cases">
+            <End Role="LegalCase" EntitySet="Cases" />
+            <End Role="Payment" EntitySet="Payments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_CaseTypes" Association="Self.FK_Cases_CaseTypes">
+            <End Role="CaseType" EntitySet="CaseTypes" />
+            <End Role="LegalCase" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Courts" Association="Self.FK_Cases_Courts">
+            <End Role="Court" EntitySet="Courts" />
+            <End Role="LegalCase" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Procedures_Current" Association="Self.FK_Cases_Procedures_Current">
+            <End Role="Procedure" EntitySet="Procedures" />
+            <End Role="LegalCase" EntitySet="Cases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Cases_Customers" Association="Self.FK_Cases_Customers">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="LegalCase" EntitySet="Cases" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="QuedinModelStoreContainer" CdmEntityContainer="QuedinDbContext">
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="QuedinModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="FailedLogins" ColumnName="FailedLogins" />
+                <ScalarProperty Name="LockedUntil" ColumnName="LockedUntil" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AuditLog">
+            <EntityTypeMapping TypeName="QuedinModel.AuditEntry">
+              <MappingFragment StoreEntitySet="AuditLog">
+                <ScalarProperty Name="AuditEntryId" ColumnName="AuditEntryId" />
+                <ScalarProperty Name="OccurredAt" ColumnName="OccurredAt" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="Entity" ColumnName="Entity" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="Details" ColumnName="Details" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Settings">
+            <EntityTypeMapping TypeName="QuedinModel.Setting">
+              <MappingFragment StoreEntitySet="Settings">
+                <ScalarProperty Name="SettingKey" ColumnName="SettingKey" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Holidays">
+            <EntityTypeMapping TypeName="QuedinModel.Holiday">
+              <MappingFragment StoreEntitySet="Holidays">
+                <ScalarProperty Name="HolidayDate" ColumnName="HolidayDate" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="QuedinModel.Customer">
+              <MappingFragment StoreEntitySet="Customers">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="HouseNumber" ColumnName="HouseNumber" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
+                <ScalarProperty Name="PersonType" ColumnName="PersonType" />
+                <ScalarProperty Name="IdType" ColumnName="IdType" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Courts">
+            <EntityTypeMapping TypeName="QuedinModel.Court">
+              <MappingFragment StoreEntitySet="Courts">
+                <ScalarProperty Name="CourtId" ColumnName="CourtId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CaseTypes">
+            <EntityTypeMapping TypeName="QuedinModel.CaseType">
+              <MappingFragment StoreEntitySet="CaseTypes">
+                <ScalarProperty Name="CaseTypeId" ColumnName="CaseTypeId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="BaseFee" ColumnName="BaseFee" />
+                <ScalarProperty Name="CourtFee" ColumnName="CourtFee" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Procedures">
+            <EntityTypeMapping TypeName="QuedinModel.Procedure">
+              <MappingFragment StoreEntitySet="Procedures">
+                <ScalarProperty Name="ProcedureId" ColumnName="ProcedureId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DurationDays" ColumnName="DurationDays" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CourtCaseTypes">
+            <EntityTypeMapping TypeName="QuedinModel.CourtCaseType">
+              <MappingFragment StoreEntitySet="CourtCaseTypes">
+                <ScalarProperty Name="CourtCaseTypeId" ColumnName="CourtCaseTypeId" />
+                <ScalarProperty Name="CourtId" ColumnName="CourtId" />
+                <ScalarProperty Name="CaseTypeId" ColumnName="CaseTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CaseTypeSteps">
+            <EntityTypeMapping TypeName="QuedinModel.CaseTypeStep">
+              <MappingFragment StoreEntitySet="CaseTypeSteps">
+                <ScalarProperty Name="CaseTypeStepId" ColumnName="CaseTypeStepId" />
+                <ScalarProperty Name="CaseTypeId" ColumnName="CaseTypeId" />
+                <ScalarProperty Name="ProcedureId" ColumnName="ProcedureId" />
+                <ScalarProperty Name="StepOrder" ColumnName="StepOrder" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Cases">
+            <EntityTypeMapping TypeName="QuedinModel.LegalCase">
+              <MappingFragment StoreEntitySet="Cases">
+                <ScalarProperty Name="CaseId" ColumnName="CaseId" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="CaseTypeId" ColumnName="CaseTypeId" />
+                <ScalarProperty Name="IsInCourt" ColumnName="IsInCourt" />
+                <ScalarProperty Name="CourtId" ColumnName="CourtId" />
+                <ScalarProperty Name="CurrentProcedureId" ColumnName="CurrentProcedureId" />
+                <ScalarProperty Name="PowerOfAttorney" ColumnName="PowerOfAttorney" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="Advance" ColumnName="Advance" />
+                <ScalarProperty Name="IsAdvancePaid" ColumnName="IsAdvancePaid" />
+                <ScalarProperty Name="Block" ColumnName="Block" />
+                <ScalarProperty Name="Parcel" ColumnName="Parcel" />
+                <ScalarProperty Name="SubParcel" ColumnName="SubParcel" />
+                <ScalarProperty Name="PropertyAddress" ColumnName="PropertyAddress" />
+                <ScalarProperty Name="ClaimAmount" ColumnName="ClaimAmount" />
+                <ScalarProperty Name="AwardedAmount" ColumnName="AwardedAmount" />
+                <ScalarProperty Name="FeePercent" ColumnName="FeePercent" />
+                <ScalarProperty Name="OpposingLawyerId" ColumnName="OpposingLawyerId" />
+                <ScalarProperty Name="OpposingPartyId" ColumnName="OpposingPartyId" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CaseSteps">
+            <EntityTypeMapping TypeName="QuedinModel.CaseStep">
+              <MappingFragment StoreEntitySet="CaseSteps">
+                <ScalarProperty Name="CaseStepId" ColumnName="CaseStepId" />
+                <ScalarProperty Name="CaseId" ColumnName="CaseId" />
+                <ScalarProperty Name="ProcedureId" ColumnName="ProcedureId" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="DoneDate" ColumnName="DoneDate" />
+                <ScalarProperty Name="IsDone" ColumnName="IsDone" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="DurationDays" ColumnName="DurationDays" />
+                <ScalarProperty Name="IsFixedDate" ColumnName="IsFixedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Payments">
+            <EntityTypeMapping TypeName="QuedinModel.Payment">
+              <MappingFragment StoreEntitySet="Payments">
+                <ScalarProperty Name="PaymentId" ColumnName="PaymentId" />
+                <ScalarProperty Name="CaseId" ColumnName="CaseId" />
+                <ScalarProperty Name="BalanceAfter" ColumnName="BalanceAfter" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="CardLast4" ColumnName="CardLast4" />
+                <ScalarProperty Name="ChequeNumber" ColumnName="ChequeNumber" />
+                <ScalarProperty Name="BankNumber" ColumnName="BankNumber" />
+                <ScalarProperty Name="BranchNumber" ColumnName="BranchNumber" />
+                <ScalarProperty Name="AccountNumber" ColumnName="AccountNumber" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PaidOn" ColumnName="PaidOn" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Reference" ColumnName="Reference" />
+                <ScalarProperty Name="ChequeDate" ColumnName="ChequeDate" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="VatRate" ColumnName="VatRate" />
+                <ScalarProperty Name="IsCancelled" ColumnName="IsCancelled" />
+                <ScalarProperty Name="CancelsPaymentId" ColumnName="CancelsPaymentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

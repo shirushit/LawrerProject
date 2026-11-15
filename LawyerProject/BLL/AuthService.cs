@@ -6,29 +6,29 @@ namespace LawyerProject.BLL
     /// <summary>Login, user creation and password changes. Passwords are stored hashed only.</summary>
     public class AuthService
     {
-        private readonly LawyerDBEntities1 db;
+        private readonly QuedinDbContext db;
 
-        public AuthService(LawyerDBEntities1 db)
+        public AuthService(QuedinDbContext db)
         {
             this.db = db;
         }
 
         /// <summary>Returns the user when the credentials are correct, otherwise null.</summary>
-        public Users Login(string userName, string password)
+        public User Login(string userName, string password)
         {
             if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(password)) return null;
 
             string name = userName.Trim();
-            Users user = db.Users.FirstOrDefault(u => u.UserName == name);
+            User user = db.Users.FirstOrDefault(u => u.UserName == name);
             if (user == null) return null;
 
-            if (IsHashed(user.PasswordWorker))
-                return PasswordHasher.Verify(password, user.PasswordWorker) ? user : null;
+            if (IsHashed(user.PasswordHash))
+                return PasswordHasher.Verify(password, user.PasswordHash) ? user : null;
 
             // A database created by the original 2024 version still holds plain-text
             // passwords. Accept the old password once and replace it with a hash.
-            if (user.PasswordWorker != password) return null;
-            user.PasswordWorker = PasswordHasher.Hash(password);
+            if (user.PasswordHash != password) return null;
+            user.PasswordHash = PasswordHasher.Hash(password);
             db.SaveChanges();
             return user;
         }
@@ -46,11 +46,11 @@ namespace LawyerProject.BLL
             string passwordError = Validation.GetPasswordError(password);
             if (passwordError != null) return passwordError;
 
-            db.Users.Add(new Users
+            db.Users.Add(new User
             {
                 UserName = name,
-                PasswordWorker = PasswordHasher.Hash(password),
-                KindWorker = role
+                PasswordHash = PasswordHasher.Hash(password),
+                Role = role
             });
             AuditService.Log(db, AuditActions.UserAdded, "משתמש", name, role);
             db.SaveChanges();
@@ -60,7 +60,7 @@ namespace LawyerProject.BLL
         /// <summary>Changes a password after verifying the old one. Returns null on success or an error message.</summary>
         public string ChangePassword(string userName, string oldPassword, string newPassword, string confirmPassword)
         {
-            Users user = Login(userName, oldPassword);
+            User user = Login(userName, oldPassword);
             if (user == null) return "שם המשתמש או הסיסמה הנוכחית שגויים.";
             if (newPassword != confirmPassword) return "הסיסמאות החדשות אינן תואמות.";
             if (newPassword == oldPassword) return "הסיסמה החדשה זהה לסיסמה הנוכחית.";
@@ -68,7 +68,7 @@ namespace LawyerProject.BLL
             string passwordError = Validation.GetPasswordError(newPassword);
             if (passwordError != null) return passwordError;
 
-            user.PasswordWorker = PasswordHasher.Hash(newPassword);
+            user.PasswordHash = PasswordHasher.Hash(newPassword);
             AuditService.Log(db, AuditActions.PasswordChanged, "משתמש", user.UserName, null);
             db.SaveChanges();
             return null;
@@ -79,12 +79,12 @@ namespace LawyerProject.BLL
         {
             if (!Session.IsManager) return "רק מנהל יכול לאפס סיסמה.";
             string name = (userName ?? string.Empty).Trim();
-            Users user = db.Users.FirstOrDefault(u => u.UserName == name);
+            User user = db.Users.FirstOrDefault(u => u.UserName == name);
             if (user == null) return "המשתמש לא נמצא.";
             string passwordError = Validation.GetPasswordError(newPassword);
             if (passwordError != null) return passwordError;
 
-            user.PasswordWorker = PasswordHasher.Hash(newPassword);
+            user.PasswordHash = PasswordHasher.Hash(newPassword);
             AuditService.Log(db, AuditActions.PasswordReset, "משתמש", user.UserName, null);
             db.SaveChanges();
             return null;

@@ -5,7 +5,7 @@ namespace LawyerProject.BLL
     /// <summary>The user who is logged in to this running instance of the app.</summary>
     public static class Session
     {
-        public static Users CurrentUser { get; private set; }
+        public static User CurrentUser { get; private set; }
 
         public static bool IsLoggedIn
         {
@@ -14,10 +14,10 @@ namespace LawyerProject.BLL
 
         public static bool IsManager
         {
-            get { return CurrentUser != null && CurrentUser.KindWorker == Roles.Manager; }
+            get { return CurrentUser != null && CurrentUser.Role == Roles.Manager; }
         }
 
-        public static void SignIn(Users user)
+        public static void SignIn(User user)
         {
             CurrentUser = user;
         }

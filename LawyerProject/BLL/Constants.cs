@@ -1,6 +1,6 @@
 namespace LawyerProject.BLL
 {
-    /// <summary>Values stored in Customers.SugPerson. One table holds all three kinds of people.</summary>
+    /// <summary>Values stored in Customer.PersonType. One table holds all three kinds of people.</summary>
     public static class PersonTypes
     {
         public const string Client = "לקוח";
@@ -10,7 +10,7 @@ namespace LawyerProject.BLL
         public static readonly string[] All = { Client, OpposingClient, OpposingLawyer };
     }
 
-    /// <summary>Values stored in Users.KindWorker.</summary>
+    /// <summary>Values stored in User.Role.</summary>
     public static class Roles
     {
         public const string Manager = "מנהל";
@@ -19,7 +19,7 @@ namespace LawyerProject.BLL
         public static readonly string[] All = { Manager, Worker };
     }
 
-    /// <summary>Values stored in Tashlumim_Letik.EmzhaeyTashlum.</summary>
+    /// <summary>Values stored in Payment.Method.</summary>
     public static class PaymentMethods
     {
         public const string Cash = "מזומן";
@@ -28,7 +28,7 @@ namespace LawyerProject.BLL
         public const string Check = "צ'ק";
     }
 
-    /// <summary>Values stored in Customers.SugMezahe (what IDcustemer contains).</summary>
+    /// <summary>Values stored in Customer.IdType (what CustomerId contains).</summary>
     public static class IdTypes
     {
         public const string IsraeliId = "ת.ז.";
@@ -39,7 +39,7 @@ namespace LawyerProject.BLL
         public static readonly string[] All = { IsraeliId, CompanyNumber, Passport, None };
     }
 
-    /// <summary>Values stored in Tashlumim_Letik.SugTashlum. Only fees carry VAT.</summary>
+    /// <summary>Values stored in Payment.Kind. Only fees carry VAT.</summary>
     public static class PaymentKinds
     {
         public const string Fee = "שכר טרחה";
@@ -48,7 +48,7 @@ namespace LawyerProject.BLL
         public static readonly string[] All = { Fee, Expenses };
     }
 
-    /// <summary>Actions written to the audit log (Yoman.Peula).</summary>
+    /// <summary>Actions written to the audit log (AuditEntry.Action).</summary>
     public static class AuditActions
     {
         public const string CaseOpened = "פתיחת תיק";

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="fc626a3f72e84f6caec162160c140693" Name="Diagram1">
+        <EntityTypeShape EntityType="QuedinModel.User" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.AuditEntry" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Setting" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Holiday" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Customer" Width="1.5" PointX="0.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Court" Width="1.5" PointX="3.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.CaseType" Width="1.5" PointX="6.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Procedure" Width="1.5" PointX="9.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.CourtCaseType" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.CaseTypeStep" Width="1.5" PointX="3.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.LegalCase" Width="1.5" PointX="6.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.CaseStep" Width="1.5" PointX="9.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuedinModel.Payment" Width="1.5" PointX="0.75" PointY="14.25" IsExpanded="true" />
+        <AssociationConnector Association="QuedinModel.FK_CourtCaseTypes_Courts" />
+        <AssociationConnector Association="QuedinModel.FK_CourtCaseTypes_CaseTypes" />
+        <AssociationConnector Association="QuedinModel.FK_CaseTypeSteps_CaseTypes" />
+        <AssociationConnector Association="QuedinModel.FK_CaseTypeSteps_Procedures" />
+        <AssociationConnector Association="QuedinModel.FK_CaseSteps_Cases" />
+        <AssociationConnector Association="QuedinModel.FK_CaseSteps_Procedures" />
+        <AssociationConnector Association="QuedinModel.FK_Payments_Cases" />
+        <AssociationConnector Association="QuedinModel.FK_Cases_CaseTypes" />
+        <AssociationConnector Association="QuedinModel.FK_Cases_Courts" />
+        <AssociationConnector Association="QuedinModel.FK_Cases_Procedures_Current" />
+        <AssociationConnector Association="QuedinModel.FK_Cases_Customers" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

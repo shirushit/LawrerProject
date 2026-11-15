@@ -17,14 +17,14 @@ namespace Quedin.IntegrationTests
     public class DataLayerTests
     {
         private TransactionScope scope;
-        private LawyerDBEntities1 db;
+        private QuedinDbContext db;
 
         [TestInitialize]
         public void Setup()
         {
             scope = new TransactionScope(TransactionScopeOption.RequiresNew,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted });
-            db = new LawyerDBEntities1();
+            db = new QuedinDbContext();
             try
             {
                 if (!db.Users.Any()) Assert.Inconclusive("QuedinDB has no users - run database/create-database.sql.");
@@ -49,10 +49,10 @@ namespace Quedin.IntegrationTests
         public void Login_DemoUsers()
         {
             var auth = new AuthService(db);
-            Users admin = auth.Login("admin", "Quedin2024");
+            User admin = auth.Login("admin", "Quedin2024");
 
             Assert.IsNotNull(admin);
-            Assert.AreEqual(Roles.Manager, admin.KindWorker);
+            Assert.AreEqual(Roles.Manager, admin.Role);
             Assert.IsNotNull(auth.Login("worker", "Worker2024"));
             Assert.IsNull(auth.Login("admin", "wrong-password"));
             Assert.IsNull(auth.Login("nobody", "Quedin2024"));
@@ -61,13 +61,13 @@ namespace Quedin.IntegrationTests
         [TestMethod]
         public void Login_UpgradesLegacyPlainTextPassword()
         {
-            db.Users.Add(new Users { UserName = "legacy", PasswordWorker = "12345", KindWorker = Roles.Worker });
+            db.Users.Add(new User { UserName = "legacy", PasswordHash = "12345", Role = Roles.Worker });
             db.SaveChanges();
 
-            Users user = new AuthService(db).Login("legacy", "12345");
+            User user = new AuthService(db).Login("legacy", "12345");
 
             Assert.IsNotNull(user);
-            Assert.IsTrue(user.PasswordWorker.StartsWith("pbkdf2$"), "password should be re-stored as a hash");
+            Assert.IsTrue(user.PasswordHash.StartsWith("pbkdf2$"), "password should be re-stored as a hash");
             Assert.IsNotNull(new AuthService(db).Login("legacy", "12345"), "login still works after the upgrade");
         }
 
@@ -81,8 +81,8 @@ namespace Quedin.IntegrationTests
             Assert.IsNull(auth.AddUser("new.user", "Secret2024", Roles.Worker));
             Assert.IsNotNull(auth.AddUser("new.user", "Secret2024", Roles.Worker), "duplicate user name must be refused");
 
-            Users created = db.Users.Single(u => u.UserName == "new.user");
-            Assert.AreNotEqual("Secret2024", created.PasswordWorker);
+            User created = db.Users.Single(u => u.UserName == "new.user");
+            Assert.AreNotEqual("Secret2024", created.PasswordHash);
             Assert.IsNotNull(auth.Login("new.user", "Secret2024"));
         }
 
@@ -98,58 +98,58 @@ namespace Quedin.IntegrationTests
 
         // ------------------------------------------------------------------ cases
 
-        private Tikim_Letipul_Orech_Din NewCourtCase(int subjectId)
+        private LegalCase NewCourtCase(int subjectId)
         {
-            Customers client = db.Customers.First(c => c.SugPerson == PersonTypes.Client);
-            Customers opposing = db.Customers.First(c => c.SugPerson == PersonTypes.OpposingClient);
-            Customers lawyer = db.Customers.First(c => c.SugPerson == PersonTypes.OpposingLawyer);
-            return new Tikim_Letipul_Orech_Din
+            Customer client = db.Customers.First(c => c.PersonType == PersonTypes.Client);
+            Customer opposing = db.Customers.First(c => c.PersonType == PersonTypes.OpposingClient);
+            Customer lawyer = db.Customers.First(c => c.PersonType == PersonTypes.OpposingLawyer);
+            return new LegalCase
             {
-                IDCostemer = client.IDcustemer,
-                IDSubjektTik = subjectId,
-                IsTheTikMenualInBETMishpat = true,
-                IDBetMishpat = db.Bet_Mishpat.First().IDBetMishpat,
-                IpuiKohach = "TEST",
-                SchumLetvia = 10000m,
-                AchuzRevachim = 10,
-                Mikdama = 0m,
-                KodLakoachNegdi = opposing.IDcustemer,
-                KodOrechDinNegdi = lawyer.IDcustemer
+                ClientId = client.CustomerId,
+                CaseTypeId = subjectId,
+                IsInCourt = true,
+                CourtId = db.Courts.First().CourtId,
+                PowerOfAttorney = "TEST",
+                ClaimAmount = 10000m,
+                FeePercent = 10,
+                Advance = 0m,
+                OpposingPartyId = opposing.CustomerId,
+                OpposingLawyerId = lawyer.CustomerId
             };
         }
 
         [TestMethod]
         public void OpenCase_CreatesTimelineFromCaseType()
         {
-            Subjekt_Tik type = db.Subjekt_Tik.First(s => s.Taalichim_Kvuim_Batik.Any());
-            int expectedSteps = type.Taalichim_Kvuim_Batik.Count;
+            CaseType type = db.CaseTypes.First(s => s.Steps.Any());
+            int expectedSteps = type.Steps.Count;
             var service = new CaseService(db);
-            Tikim_Letipul_Orech_Din tik = NewCourtCase(type.IDSugTik);
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
             DateTime opened = new DateTime(2025, 1, 1);
 
-            Assert.IsNull(service.CreatePlan(tik, opened));
-            db.Tikim_Letipul_Orech_Din.Add(tik);
+            Assert.IsNull(service.CreatePlan(legalCase, opened));
+            db.Cases.Add(legalCase);
             db.SaveChanges();
 
-            var saved = db.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == tik.IDTik);
+            var saved = db.Cases.Single(t => t.CaseId == legalCase.CaseId);
             var steps = CaseService.OrderedSteps(saved);
-            Taalichim_Kvuim_Batik first = type.Taalichim_Kvuim_Batik.OrderBy(k => k.NumLevel).First();
+            CaseTypeStep first = type.Steps.OrderBy(k => k.StepOrder).First();
 
             Assert.AreEqual(expectedSteps, steps.Count);
-            Assert.AreEqual(first.IDTaalich, saved.StatusTik);
-            Assert.AreEqual(BusinessCalendar.NextWorkday(opened.AddDays(CaseService.ParseDays(db.Taalichim_Letikim.Find(first.IDTaalich).MeshechZmanLetaalich))), steps[0].TaharichMeshoar);
-            Assert.IsTrue(steps.All(s => s.MeshechYamim.HasValue), "durations are kept with the case");
-            Assert.IsTrue(steps.All(s => s.Buzha == false && s.TaharichBizhua == null));
+            Assert.AreEqual(first.ProcedureId, saved.CurrentProcedureId);
+            Assert.AreEqual(BusinessCalendar.NextWorkday(opened.AddDays(db.Procedures.Find(first.ProcedureId).DurationDays)), steps[0].DueDate);
+            Assert.IsTrue(steps.All(s => s.DurationDays.HasValue), "durations are kept with the case");
+            Assert.IsTrue(steps.All(s => s.IsDone == false && s.DoneDate == null));
         }
 
         [TestMethod]
         public void OpenCase_WithoutFixedSteps_IsRefused()
         {
-            var empty = new Subjekt_Tik { NameSugTik = "TEST-EMPTY", ScharTircha = 0m, Agra = 0m };
-            db.Subjekt_Tik.Add(empty);
+            var empty = new CaseType { Name = "TEST-EMPTY", BaseFee = 0m, CourtFee = 0m };
+            db.CaseTypes.Add(empty);
             db.SaveChanges();
 
-            string error = new CaseService(db).CreatePlan(NewCourtCase(empty.IDSugTik), DateTime.Today);
+            string error = new CaseService(db).CreatePlan(NewCourtCase(empty.CaseTypeId), DateTime.Today);
 
             Assert.IsNotNull(error);
         }
@@ -157,27 +157,27 @@ namespace Quedin.IntegrationTests
         [TestMethod]
         public void CompleteStep_PushesFollowingDatesInDatabase()
         {
-            Subjekt_Tik type = db.Subjekt_Tik.First(s => s.Taalichim_Kvuim_Batik.Count >= 3);
+            CaseType type = db.CaseTypes.First(s => s.Steps.Count >= 3);
             var service = new CaseService(db);
-            Tikim_Letipul_Orech_Din tik = NewCourtCase(type.IDSugTik);
-            service.CreatePlan(tik, new DateTime(2025, 1, 1));
-            db.Tikim_Letipul_Orech_Din.Add(tik);
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+            service.CreatePlan(legalCase, new DateTime(2025, 1, 1));
+            db.Cases.Add(legalCase);
             db.SaveChanges();
 
-            var steps = CaseService.OrderedSteps(tik);
+            var steps = CaseService.OrderedSteps(legalCase);
             DateTime doneOn = new DateTime(2025, 2, 1);
-            int secondDuration = CaseService.ParseDays(db.Taalichim_Letikim.Find(steps[1].IDTahalich).MeshechZmanLetaalich);
+            int secondDuration = db.Procedures.Find(steps[1].ProcedureId).DurationDays;
 
-            Assert.IsNotNull(service.CompleteStep(tik, steps[1].IDTahalichTipulLetik, doneOn), "skipping must be refused");
-            Assert.IsNull(service.CompleteStep(tik, steps[0].IDTahalichTipulLetik, doneOn));
+            Assert.IsNotNull(service.CompleteStep(legalCase, steps[1].CaseStepId, doneOn), "skipping must be refused");
+            Assert.IsNull(service.CompleteStep(legalCase, steps[0].CaseStepId, doneOn));
 
-            using (var fresh = new LawyerDBEntities1())
+            using (var fresh = new QuedinDbContext())
             {
-                var reloaded = CaseService.OrderedSteps(fresh.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == tik.IDTik));
-                Assert.AreEqual(true, reloaded[0].Buzha);
-                Assert.AreEqual(doneOn, reloaded[0].TaharichBizhua);
-                Assert.AreEqual(BusinessCalendar.NextWorkday(doneOn.AddDays(secondDuration)), reloaded[1].TaharichMeshoar);
-                Assert.AreEqual(reloaded[1].IDTahalich, fresh.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == tik.IDTik).StatusTik);
+                var reloaded = CaseService.OrderedSteps(fresh.Cases.Single(t => t.CaseId == legalCase.CaseId));
+                Assert.AreEqual(true, reloaded[0].IsDone);
+                Assert.AreEqual(doneOn, reloaded[0].DoneDate);
+                Assert.AreEqual(BusinessCalendar.NextWorkday(doneOn.AddDays(secondDuration)), reloaded[1].DueDate);
+                Assert.AreEqual(reloaded[1].ProcedureId, fresh.Cases.Single(t => t.CaseId == legalCase.CaseId).CurrentProcedureId);
             }
         }
 
@@ -187,108 +187,108 @@ namespace Quedin.IntegrationTests
         public void OpenBalance_DemoCases()
         {
             // Demo case 1: 85,000 x 20% + 1,200 court fee = 18,200; paid 3,000 + 5,000.
-            Assert.AreEqual(10200m, CaseService.OpenBalance(db.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == 1)));
+            Assert.AreEqual(10200m, CaseService.OpenBalance(db.Cases.Single(t => t.CaseId == 1)));
             // Demo case 2: 42,000 x 25% + 0 = 10,500; no payments yet.
-            Assert.AreEqual(10500m, CaseService.OpenBalance(db.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == 2)));
+            Assert.AreEqual(10500m, CaseService.OpenBalance(db.Cases.Single(t => t.CaseId == 2)));
             // Demo case 5 is fully paid.
-            Assert.AreEqual(0m, CaseService.OpenBalance(db.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == 5)));
+            Assert.AreEqual(0m, CaseService.OpenBalance(db.Cases.Single(t => t.CaseId == 5)));
         }
 
         [TestMethod]
         public void DemoData_StatusMatchesNextPendingStep()
         {
-            foreach (var tik in db.Tikim_Letipul_Orech_Din.ToList())
+            foreach (var legalCase in db.Cases.ToList())
             {
-                var next = CaseService.OrderedSteps(tik).FirstOrDefault(s => s.Buzha != true);
-                if (next != null) Assert.AreEqual(next.IDTahalich, tik.StatusTik, "case " + tik.IDTik);
+                var next = CaseService.OrderedSteps(legalCase).FirstOrDefault(s => s.IsDone != true);
+                if (next != null) Assert.AreEqual(next.ProcedureId, legalCase.CurrentProcedureId, "case " + legalCase.CaseId);
             }
         }
 
         // ------------------------------------------------------------------ v1.2 rules
 
-        private Tikim_Letipul_Orech_Din SavedCase()
+        private LegalCase SavedCase()
         {
-            Subjekt_Tik type = db.Subjekt_Tik.First(s => s.Taalichim_Kvuim_Batik.Count >= 2);
-            Tikim_Letipul_Orech_Din tik = NewCourtCase(type.IDSugTik);
-            tik.SchumLetvia = 10000m;
-            tik.AchuzRevachim = 10;
-            new CaseService(db).CreatePlan(tik, new DateTime(2025, 1, 5));
-            db.Tikim_Letipul_Orech_Din.Add(tik);
+            CaseType type = db.CaseTypes.First(s => s.Steps.Count >= 2);
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+            legalCase.ClaimAmount = 10000m;
+            legalCase.FeePercent = 10;
+            new CaseService(db).CreatePlan(legalCase, new DateTime(2025, 1, 5));
+            db.Cases.Add(legalCase);
             db.SaveChanges();
-            return tik;
+            return legalCase;
         }
 
         [TestMethod]
         public void Payment_StoresVatAndBalance_AndCancellationAddsReversal()
         {
-            Tikim_Letipul_Orech_Din tik = SavedCase();
+            LegalCase legalCase = SavedCase();
             var service = new CaseService(db);
-            decimal total = CaseService.CaseTotal(tik);
+            decimal total = CaseService.CaseTotal(legalCase);
 
-            var payment = new Tashlumim_Letik { Schum = 500m, SugTashlum = PaymentKinds.Fee, EmzhaeyTashlum = "מזומן", TaarichTashlum = DateTime.Today, Teur = "מקדמה" };
-            Assert.IsNull(service.AddPayment(tik, payment));
-            Assert.AreEqual(total - 500m, payment.Itra);
+            var payment = new Payment { Amount = 500m, Kind = PaymentKinds.Fee, Method = "מזומן", PaidOn = DateTime.Today, Description = "מקדמה" };
+            Assert.IsNull(service.AddPayment(legalCase, payment));
+            Assert.AreEqual(total - 500m, payment.BalanceAfter);
             Assert.AreEqual(AppSettings.VatRate, payment.VatRate);
 
-            Assert.IsNotNull(service.AddPayment(tik, new Tashlumim_Letik { Schum = total, SugTashlum = PaymentKinds.Fee }), "overpayment refused");
-            Assert.IsNull(service.CancelPayment(tik, payment.IDTashlum, "נרשם בטעות"));
-            Assert.IsNotNull(service.CancelPayment(tik, payment.IDTashlum, null), "cannot cancel twice");
+            Assert.IsNotNull(service.AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee }), "overpayment refused");
+            Assert.IsNull(service.CancelPayment(legalCase, payment.PaymentId, "נרשם בטעות"));
+            Assert.IsNotNull(service.CancelPayment(legalCase, payment.PaymentId, null), "cannot cancel twice");
 
-            using (var fresh = new LawyerDBEntities1())
+            using (var fresh = new QuedinDbContext())
             {
-                var t = fresh.Tikim_Letipul_Orech_Din.Single(x => x.IDTik == tik.IDTik);
-                Assert.AreEqual(2, t.Tashlumim_Letik.Count);
-                Assert.IsTrue(t.Tashlumim_Letik.Single(p => p.IDTashlum == payment.IDTashlum).Mevutal);
-                Assert.AreEqual(-500m, t.Tashlumim_Letik.Single(p => p.MevatelTashlum == payment.IDTashlum).Schum);
+                var t = fresh.Cases.Single(x => x.CaseId == legalCase.CaseId);
+                Assert.AreEqual(2, t.Payments.Count);
+                Assert.IsTrue(t.Payments.Single(p => p.PaymentId == payment.PaymentId).IsCancelled);
+                Assert.AreEqual(-500m, t.Payments.Single(p => p.CancelsPaymentId == payment.PaymentId).Amount);
                 Assert.AreEqual(total, CaseService.OpenBalance(t));
-                Assert.IsTrue(fresh.Yoman.Any(y => y.Peula == AuditActions.PaymentCancelled && y.KodYeshut == payment.IDTashlum.ToString()));
+                Assert.IsTrue(fresh.AuditLog.Any(y => y.Action == AuditActions.PaymentCancelled && y.EntityId == payment.PaymentId.ToString()));
             }
         }
 
         [TestMethod]
         public void FullPayment_SetsPaidFlag()
         {
-            Tikim_Letipul_Orech_Din tik = SavedCase();
-            decimal total = CaseService.CaseTotal(tik);
-            Assert.IsNull(new CaseService(db).AddPayment(tik, new Tashlumim_Letik { Schum = total, SugTashlum = PaymentKinds.Fee, TaarichTashlum = DateTime.Today }));
-            Assert.IsTrue(tik.Shulam);
-            Assert.AreEqual(0m, CaseService.OpenBalance(tik));
+            LegalCase legalCase = SavedCase();
+            decimal total = CaseService.CaseTotal(legalCase);
+            Assert.IsNull(new CaseService(db).AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, PaidOn = DateTime.Today }));
+            Assert.IsTrue(legalCase.IsPaid);
+            Assert.AreEqual(0m, CaseService.OpenBalance(legalCase));
         }
 
         [TestMethod]
         public void ConcurrentEdit_OfTheSameCase_IsDetected()
         {
-            Tikim_Letipul_Orech_Din tik = SavedCase();
-            using (var other = new LawyerDBEntities1())
+            LegalCase legalCase = SavedCase();
+            using (var other = new QuedinDbContext())
             {
-                var copy = other.Tikim_Letipul_Orech_Din.Single(t => t.IDTik == tik.IDTik);
-                copy.AdressNeches = "שונה על ידי משתמש אחר";
+                var copy = other.Cases.Single(t => t.CaseId == legalCase.CaseId);
+                copy.PropertyAddress = "שונה על ידי משתמש אחר";
                 other.SaveChanges();
             }
-            tik.AdressNeches = "השינוי שלי";
+            legalCase.PropertyAddress = "השינוי שלי";
             Assert.ThrowsException<System.Data.Entity.Infrastructure.DbUpdateConcurrencyException>(() => db.SaveChanges());
         }
 
         [TestMethod]
         public void RescheduleAndUndo_UpdateTheDatabase()
         {
-            Tikim_Letipul_Orech_Din tik = SavedCase();
+            LegalCase legalCase = SavedCase();
             var service = new CaseService(db);
-            var steps = CaseService.OrderedSteps(tik);
+            var steps = CaseService.OrderedSteps(legalCase);
             DateTime hearing = new DateTime(2025, 6, 3);
 
-            Assert.IsNull(service.RescheduleStep(tik, steps[1].IDTahalichTipulLetik, hearing, "נקבע ע\"י בית המשפט"));
-            Assert.AreEqual(hearing, steps[1].TaharichMeshoar);
-            Assert.AreEqual("נקבע ע\"י בית המשפט", steps[1].Hearot);
+            Assert.IsNull(service.RescheduleStep(legalCase, steps[1].CaseStepId, hearing, "נקבע ע\"י בית המשפט"));
+            Assert.AreEqual(hearing, steps[1].DueDate);
+            Assert.AreEqual("נקבע ע\"י בית המשפט", steps[1].Notes);
 
-            Assert.IsNull(service.CompleteStep(tik, steps[0].IDTahalichTipulLetik, new DateTime(2025, 1, 20)));
+            Assert.IsNull(service.CompleteStep(legalCase, steps[0].CaseStepId, new DateTime(2025, 1, 20)));
             Session.SignOut();
-            Assert.IsNotNull(service.UndoLastStep(tik), "only a manager may undo");
-            Session.SignIn(new Users { UserName = "test-manager", KindWorker = Roles.Manager });
+            Assert.IsNotNull(service.UndoLastStep(legalCase), "only a manager may undo");
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager });
             try
             {
-                Assert.IsNull(service.UndoLastStep(tik));
-                Assert.AreEqual(false, steps[0].Buzha);
+                Assert.IsNull(service.UndoLastStep(legalCase));
+                Assert.AreEqual(false, steps[0].IsDone);
             }
             finally
             {
@@ -299,18 +299,18 @@ namespace Quedin.IntegrationTests
         [TestMethod]
         public void DeleteCase_OnlyWhenNothingHappenedYet()
         {
-            Session.SignIn(new Users { UserName = "test-manager", KindWorker = Roles.Manager });
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager });
             try
             {
-                Tikim_Letipul_Orech_Din paid = SavedCase();
+                LegalCase paid = SavedCase();
                 var service = new CaseService(db);
-                service.AddPayment(paid, new Tashlumim_Letik { Schum = 1m, SugTashlum = PaymentKinds.Fee, TaarichTashlum = DateTime.Today });
+                service.AddPayment(paid, new Payment { Amount = 1m, Kind = PaymentKinds.Fee, PaidOn = DateTime.Today });
                 Assert.IsNotNull(service.DeleteCase(paid));
 
-                Tikim_Letipul_Orech_Din mistake = SavedCase();
-                int id = mistake.IDTik;
+                LegalCase mistake = SavedCase();
+                int id = mistake.CaseId;
                 Assert.IsNull(service.DeleteCase(mistake));
-                Assert.IsFalse(db.Tikim_Letipul_Orech_Din.Any(t => t.IDTik == id));
+                Assert.IsFalse(db.Cases.Any(t => t.CaseId == id));
             }
             finally
             {
