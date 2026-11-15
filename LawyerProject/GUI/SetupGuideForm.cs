@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -51,8 +51,9 @@ namespace LawyerProject.GUI
                     IsDone = db => db.CourtCaseTypes.Any(), Open = () => new CourtsListForm() },
                 new Step { Title = "6. משתמשים", Help = "משתמש לכל עובד/ת. הסיסמה הראשונית נמסרת לעובד, והוא מחליף אותה במסך הכניסה.",
                     IsDone = db => db.Users.Count() > 1, Open = () => new UsersForm() },
-                new Step { Title = "7. פרטי המשרד לקבלות", Help = "שם, כתובת, טלפון ומספר עוסק מורשה - בקובץ ההגדרות LawyerProject.exe.config (OfficeName, OfficeAddress, OfficePhone, OfficeTaxId).",
-                    IsDone = db => AppSettings.OfficeTaxId.Length > 0, Open = null },
+                new Step { Title = "7. פרטי המשרד ומע\"מ", Help = "שם, כתובת, טלפון ומספר עוסק מורשה לקבלות, ושיעור המע\"מ. משותף לכל עמדות המשרד.",
+                    IsDone = db => db.Settings.Any(x => x.SettingKey == AppSettings.OfficeTaxIdKey && x.Value != null && x.Value != ""),
+                    Open = () => new SettingsForm() },
                 new Step { Title = "8. גיבוי ראשון", Help = "כפתור \"גיבוי נתונים\" בדף הבית. מומלץ לגבות בסוף כל יום עבודה.",
                     IsDone = db => db.AuditLog.Any(entry => entry.Action == AuditActions.Backup), Open = null },
             };

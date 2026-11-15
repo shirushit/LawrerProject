@@ -1,4 +1,4 @@
-namespace LawyerProject.GUI
+﻿namespace LawyerProject.GUI
 {
     partial class UsersForm
     {
@@ -30,6 +30,7 @@ namespace LawyerProject.GUI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBoxAdd.SuspendLayout();
             this.btnResetPassword = new System.Windows.Forms.Button();
+            this.btnToggleActive = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
             // dataGridView1
@@ -142,6 +143,16 @@ namespace LawyerProject.GUI
             this.btnResetPassword.Text = "איפוס סיסמה...";
             this.btnResetPassword.UseVisualStyleBackColor = true;
             this.btnResetPassword.Click += new System.EventHandler(this.btnResetPassword_Click);
+            // 
+            // btnToggleActive
+            // 
+            this.btnToggleActive.Location = new System.Drawing.Point(90, 230);
+            this.btnToggleActive.Name = "btnToggleActive";
+            this.btnToggleActive.Size = new System.Drawing.Size(170, 36);
+            this.btnToggleActive.TabIndex = 6;
+            this.btnToggleActive.Text = "השבתה / הפעלה";
+            this.btnToggleActive.UseVisualStyleBackColor = true;
+            this.btnToggleActive.Click += new System.EventHandler(this.btnToggleActive_Click);
             //
             // UsersForm
             //
@@ -150,6 +161,7 @@ namespace LawyerProject.GUI
             this.ClientSize = new System.Drawing.Size(460, 530);
             this.Controls.Add(this.groupBoxAdd);
             this.Controls.Add(this.btnResetPassword);
+            this.Controls.Add(this.btnToggleActive);
             this.Controls.Add(this.dataGridView1);
             this.Font = new System.Drawing.Font("Calibri", 12F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -178,6 +190,7 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.Label lblPasswordRules;
         private System.Windows.Forms.Button btnResetPassword;
+        private System.Windows.Forms.Button btnToggleActive;
         private System.Windows.Forms.Button btnAdd;
     }
 }

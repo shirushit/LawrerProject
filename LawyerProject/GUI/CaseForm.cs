@@ -19,6 +19,17 @@ namespace LawyerProject.GUI
         private LegalCase legalCase;
         private bool isNew;
         private bool loading;
+        private bool dirty;
+        private byte[] loadedVersion;
+
+        /// <summary>True when the user changed a field that was not saved yet.</summary>
+        public bool HasUnsavedChanges
+        {
+            get { return dirty; }
+        }
+
+        /// <summary>Set before closing on logout, so the window closes without asking about unsaved changes.</summary>
+        public bool DiscardChangesOnClose { get; set; }
 
         /// <summary>New court case.</summary>
         public CaseForm() : this(false)
@@ -36,6 +47,8 @@ namespace LawyerProject.GUI
             rbDeal.Checked = isDeal;
             rbCourt.Checked = !isDeal;
             UpdateMode();
+            TrackChanges(this);
+            dirty = false;
         }
 
         /// <summary>Existing case.</summary>
@@ -43,6 +56,94 @@ namespace LawyerProject.GUI
         {
             InitializeComponent();
             LoadCase(id);
+            TrackChanges(this);
+            Activated += (s, e) => CheckForOutsideChanges();
+        }
+
+        /// <summary>Marks the form dirty when the user edits any input of the case details.</summary>
+        private void TrackChanges(Control parent)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c == tabControl1) continue; // steps and payments are saved immediately
+                if (c is TextBox || c is MaskedTextBox) c.TextChanged += MarkDirty;
+                else if (c is ComboBox) ((ComboBox)c).SelectedIndexChanged += MarkDirty;
+                else if (c is CheckBox) ((CheckBox)c).CheckedChanged += MarkDirty;
+                else if (c is RadioButton) ((RadioButton)c).CheckedChanged += MarkDirty;
+                else if (c is DateTimePicker) ((DateTimePicker)c).ValueChanged += MarkDirty;
+                if (c.HasChildren) TrackChanges(c);
+            }
+        }
+
+        private void MarkDirty(object sender, EventArgs e)
+        {
+            if (!loading) dirty = true;
+        }
+
+        /// <summary>
+        /// When the window gets focus again, checks whether another user changed or deleted the case
+        /// in the meantime. Without local edits the case is reloaded; with local edits the user is told.
+        /// </summary>
+        private void CheckForOutsideChanges()
+        {
+            if (isNew || loadedVersion == null) return;
+            byte[] current;
+            try
+            {
+                current = new CaseService(db).CurrentVersion(legalCase.CaseId);
+            }
+            catch (Exception)
+            {
+                return; // no connection right now; the next save will report it
+            }
+            if (current == null)
+            {
+                CaseDeleted();
+                return;
+            }
+            if (current.SequenceEqual(loadedVersion)) return;
+            if (dirty)
+            {
+                Ui.Notify(this, "שימו לב: משתמש אחר עדכן את התיק. שמירה של השינויים שלך תיחסם - כדאי לרשום אותם בצד.");
+                return;
+            }
+            LoadCase(legalCase.CaseId);
+            Ui.Notify(this, "התיק עודכן על ידי משתמש אחר ונטען מחדש.");
+        }
+
+        /// <summary>The case no longer exists (a manager deleted it while this window was open).</summary>
+        private void CaseDeleted()
+        {
+            Ui.Error("תיק מספר " + legalCase.CaseId + " נמחק על ידי משתמש אחר. החלון ייסגר.");
+            dirty = false;
+            Changed = true;
+            DiscardChangesOnClose = true;
+            BeginInvoke((Action)Close);
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (dirty && !DiscardChangesOnClose && e.CloseReason == CloseReason.UserClosing)
+            {
+                DialogResult answer = MessageBox.Show(this, "יש שינויים בתיק שלא נשמרו. לשמור אותם לפני הסגירה?", "שינויים שלא נשמרו",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1,
+                    MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign);
+                if (answer == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                if (answer == DialogResult.Yes)
+                {
+                    btnSave_Click(this, EventArgs.Empty);
+                    if (dirty)
+                    {
+                        e.Cancel = true; // the save failed or was refused; stay open
+                        return;
+                    }
+                }
+            }
+            base.OnFormClosing(e);
         }
 
         // ------------------------------------------------------------------ loading
@@ -54,11 +155,15 @@ namespace LawyerProject.GUI
             legalCase = db.Cases.FirstOrDefault(t => t.CaseId == id);
             if (legalCase == null) throw new ArgumentException("Case not found: " + id);
             isNew = false;
+            loadedVersion = legalCase.RowVersion;
+            loading = true;
             LoadLists();
             FillControls();
             FillSteps();
             FillPayments();
             UpdateMode();
+            loading = false;
+            dirty = false;
         }
 
         private void LoadLists()
@@ -127,7 +232,7 @@ namespace LawyerProject.GUI
             rbDeal.Checked = !legalCase.IsCourtCase;
             DateTime signed;
             chkPowerOfAttorney.Checked = TryReadSigned(legalCase.PowerOfAttorney, out signed);
-            dtpPowerOfAttorney.Value = chkPowerOfAttorney.Checked ? signed : DateTime.Today;
+            dtpPowerOfAttorney.Value = chkPowerOfAttorney.Checked ? signed : Clock.Today;
             dtpPowerOfAttorney.Enabled = chkPowerOfAttorney.Checked;
 
             string money = legalCase.ClaimAmount.HasValue ? legalCase.ClaimAmount.Value.ToString("0.##", CultureInfo.InvariantCulture) : "";
@@ -154,12 +259,12 @@ namespace LawyerProject.GUI
         /// <summary>Power of attorney is stored as "נחתם dd/MM/yyyy", or "" when not signed yet.</summary>
         private static bool TryReadSigned(string value, out DateTime date)
         {
-            date = DateTime.Today;
+            date = Clock.Today;
             if (string.IsNullOrWhiteSpace(value)) return false;
             string v = value.Trim();
             if (v.StartsWith(SignedPrefix)) v = v.Substring(SignedPrefix.Length);
             if (DateTime.TryParseExact(v, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date)) return true;
-            date = DateTime.Today;
+            date = Clock.Today;
             return true; // older free text such as "כן" counts as signed
         }
 
@@ -183,7 +288,7 @@ namespace LawyerProject.GUI
         private void FillSteps()
         {
             listView1.Items.Clear();
-            DateTime today = DateTime.Today;
+            DateTime today = Clock.Today;
             CaseStep next = CaseService.OrderedSteps(legalCase).FirstOrDefault(s => s.IsDone != true);
             int number = 1;
             foreach (CaseStep step in CaseService.OrderedSteps(legalCase))
@@ -191,6 +296,7 @@ namespace LawyerProject.GUI
                 bool done = step.IsDone == true;
                 bool late = !done && step.DueDate.HasValue && step.DueDate.Value.Date < today;
                 string status = done ? "בוצע" : late ? "באיחור" : (step == next ? "השלב הבא" : "ממתין");
+                if (!done && step.IsFixedDate) status += " · מועד קבוע";
                 string lateText = "";
                 if (late) lateText = CaseScheduler.DaysLate(step.DueDate.Value, today) + " ימים";
                 else if (done && step.DoneDate.HasValue && step.DueDate.HasValue && step.DoneDate.Value > step.DueDate.Value)
@@ -243,6 +349,7 @@ namespace LawyerProject.GUI
             }
             btnReceipt.Enabled = listView2.Items.Count > 0;
             btnCancelPayment.Enabled = listView2.Items.Count > 0;
+            btnRefund.Visible = !isNew && CaseService.OpenBalance(legalCase) < 0;
         }
 
         // ------------------------------------------------------------------ UI state
@@ -375,7 +482,7 @@ namespace LawyerProject.GUI
             if (opposingLawyer == null) fail(cmbOpposingLawyer, "יש לבחור עורך דין נגדי");
             if (client != null && opposingClient != null && client.CustomerId == opposingClient.CustomerId)
                 fail(cmbOpposingParty, "הלקוח והצד שכנגד הם אותו אדם");
-            if (chkPowerOfAttorney.Checked && Validation.IsFutureDate(dtpPowerOfAttorney.Value, DateTime.Today))
+            if (chkPowerOfAttorney.Checked && Validation.IsFutureDate(dtpPowerOfAttorney.Value, Clock.Today))
                 fail(dtpPowerOfAttorney, "תאריך חתימה עתידי");
 
             decimal? claim = null, awarded = null, propertyValue = null;
@@ -410,7 +517,25 @@ namespace LawyerProject.GUI
                 else advance = m.Value;
             }
 
+            if (ok && subject != null)
+            {
+                decimal total = FeeCalculator.CaseTotal(isCourt ? (claim ?? 0m) : (propertyValue ?? 0m), percent.Value, subject.CourtFee ?? 0m);
+                if (advance > total && total > 0) fail(txtAdvance, "המקדמה גדולה מסכום התיק (" + Ui.FormatMoney(total) + ")");
+                decimal paid = isNew ? 0m : CaseService.PaidTotal(legalCase);
+                if (ok && paid > total && !Ui.Confirm("סכום התיק החדש (" + Ui.FormatMoney(total) + ") נמוך ממה שהלקוח כבר שילם (" +
+                        Ui.FormatMoney(paid) + ").\nאחרי השמירה אפשר לרשום החזר של העודף בלשונית התשלומים. להמשיך?"))
+                    return false;
+            }
+
             if (!ok) return false;
+
+            if (client != null && subject != null)
+            {
+                LegalCase duplicate = new CaseService(db).FindOpenDuplicate(client.CustomerId, subject.CaseTypeId, isNew ? 0 : legalCase.CaseId);
+                if (duplicate != null && (isNew || legalCase.ClientId != client.CustomerId || legalCase.CaseTypeId != subject.CaseTypeId) &&
+                    !Ui.Confirm("ללקוח זה כבר יש תיק פתוח מאותו נושא (תיק מספר " + duplicate.CaseId + "). לפתוח תיק נוסף?"))
+                    return false;
+            }
 
             legalCase.ClientId = client.CustomerId;
             legalCase.CaseTypeId = subject.CaseTypeId;
@@ -438,7 +563,7 @@ namespace LawyerProject.GUI
             {
                 if (isNew)
                 {
-                    string error = new CaseService(db).CreatePlan(legalCase, DateTime.Today);
+                    string error = new CaseService(db).CreatePlan(legalCase, Clock.Today);
                     if (error != null)
                     {
                         Ui.Error(error);
@@ -449,9 +574,11 @@ namespace LawyerProject.GUI
                 bool wasNew = isNew;
                 AuditService.Log(db, wasNew ? AuditActions.CaseOpened : AuditActions.CaseUpdated, "תיק", legalCase.CaseId == 0 ? null : (object)legalCase.CaseId, null);
                 db.SaveChanges();
+                dirty = false;
                 LoadCase(legalCase.CaseId);
                 Ui.Notify(this, wasNew ? "התיק נפתח. מספר תיק: " + legalCase.CaseId : "התיק עודכן.");
                 Changed = true;
+                WarnAboutConflicts();
             }
             catch (Exception ex)
             {
@@ -468,9 +595,42 @@ namespace LawyerProject.GUI
         /// </summary>
         private void HandleError(string message, Exception ex)
         {
+            bool conflict = ex is System.Data.Entity.Infrastructure.DbUpdateConcurrencyException || ex is System.Data.Entity.Infrastructure.DbUpdateException;
+            if (!isNew && conflict)
+            {
+                bool exists;
+                try
+                {
+                    using (var check = new QuedinDbContext())
+                        exists = new CaseService(check).CaseExists(legalCase.CaseId);
+                }
+                catch (Exception)
+                {
+                    exists = true; // cannot tell; show the original error
+                }
+                if (!exists)
+                {
+                    CaseDeleted();
+                    return;
+                }
+            }
             Ui.Error(message, ex);
-            if (!isNew && (ex is System.Data.Entity.Infrastructure.DbUpdateConcurrencyException || ex is System.Data.Entity.Infrastructure.DbUpdateException))
+            if (!isNew && conflict)
+            {
+                dirty = false;
                 LoadCase(legalCase.CaseId);
+            }
+        }
+
+        /// <summary>Warns when a calculated step now falls after a court-set date (the office must decide what to do).</summary>
+        private void WarnAboutConflicts()
+        {
+            if (isNew) return;
+            List<CaseStep> conflicts = new CaseService(db).ScheduleConflicts(legalCase);
+            if (conflicts.Count == 0) return;
+            Ui.Error("שימו לב: לפי החישוב, השלבים הבאים יגיעו אחרי מועד שקבע בית המשפט:\n" +
+                     string.Join("\n", conflicts.Select(c => "• " + StepName(c) + " - " + Ui.FormatDate(c.DueDate))) +
+                     "\nכדאי לקבוע להם מועד ידני או לבקש דחייה.");
         }
 
         /// <summary>Runs a case operation, shows its error or a short confirmation and reloads the case.</summary>
@@ -489,6 +649,7 @@ namespace LawyerProject.GUI
                     Changed = true;
                     LoadCase(legalCase.CaseId);
                     Ui.Notify(this, done);
+                    WarnAboutConflicts();
                 }
                 tabControl1.SelectedTab = tab;
             }
@@ -545,7 +706,7 @@ namespace LawyerProject.GUI
             string unused;
             if (!Ui.AskDate(this, "סימון שלב כבוצע",
                     "באיזה תאריך בוצע השלב \"" + StepName(next) + "\"?\nהמועדים של כל השלבים הבאים יחושבו מתאריך זה.",
-                    DateTime.Today, min, DateTime.Today, null, null, out doneOn, out unused)) return;
+                    Clock.Today, min, Clock.Today, null, null, out doneOn, out unused)) return;
 
             RunOperation(svc => svc.CompleteStep(legalCase, next.CaseStepId, doneOn),
                 "השלב \"" + StepName(next) + "\" סומן כבוצע.", tabSteps);
@@ -560,10 +721,14 @@ namespace LawyerProject.GUI
             DateTime newDate;
             string note;
             if (!Ui.AskDate(this, "שינוי מועד",
-                    "מועד חדש לשלב \"" + StepName(step) + "\" (למשל מועד דיון שנקבע ע\"י בית המשפט).\nהשלבים הבאים יחושבו מהמועד החדש.",
-                    step.DueDate ?? DateTime.Today, null, null, "סיבת השינוי (לא חובה)", step.Notes, out newDate, out note)) return;
+                    "מועד חדש לשלב \"" + StepName(step) + "\" (למשל מועד דיון שנקבע ע\"י בית המשפט).\nהמועד יסומן כקבוע: החישוב האוטומטי לא יזיז אותו, והשלבים הבאים יחושבו ממנו.",
+                    step.DueDate ?? Clock.Today, null, null, "סיבת השינוי (לא חובה)", step.Notes, out newDate, out note)) return;
 
-            if (!BusinessCalendar.IsWorkday(newDate) && !Ui.Confirm("המועד שנבחר הוא " + Ui.DayName(newDate) + ". לשמור בכל זאת?")) return;
+            if (!BusinessCalendar.IsWorkday(newDate))
+            {
+                string holiday = BusinessCalendar.HolidayName(newDate);
+                if (!Ui.Confirm("המועד שנבחר הוא " + (holiday ?? Ui.DayName(newDate)) + ". לשמור בכל זאת?")) return;
+            }
 
             RunOperation(svc => svc.RescheduleStep(legalCase, step.CaseStepId, newDate, note),
                 "המועד עודכן ל-" + newDate.ToString("dd/MM/yyyy") + ".", tabSteps);
@@ -617,6 +782,20 @@ namespace LawyerProject.GUI
                 "", 40);
             if (reason == null) return;
             RunOperation(svc => svc.CancelPayment(legalCase, id, reason), "התשלום בוטל ונרשם זיכוי.", tabPayments);
+            Payment cancelled = legalCase.Payments.FirstOrDefault(x => x.PaymentId == id);
+            if (cancelled != null && cancelled.IsCancelled && Ui.Confirm("לרשום עכשיו את התשלום הנכון במקום זה שבוטל?"))
+                btnAddPayment_Click(sender, e);
+        }
+
+        private void btnRefund_Click(object sender, EventArgs e)
+        {
+            decimal overpaid = -CaseService.OpenBalance(legalCase);
+            if (overpaid <= 0) return;
+            string method = Ui.AskChoice(this, "החזר עודף ללקוח",
+                "הלקוח שילם " + Ui.FormatMoney(overpaid) + " מעבר לסכום התיק.\nתירשם קבלת זיכוי על הסכום. באיזה אמצעי מוחזר הכסף?",
+                PaymentMethods.All, PaymentMethods.BankTransfer);
+            if (method == null) return;
+            RunOperation(svc => svc.RefundOverpayment(legalCase, method, null), "נרשם החזר של " + Ui.FormatMoney(overpaid) + " ללקוח.", tabPayments);
         }
 
         private void btnReceipt_Click(object sender, EventArgs e)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -23,15 +23,55 @@ namespace LawyerProject.GUI
         private void LoadUsers()
         {
             // The password hash is never loaded into the grid.
+            DateTime now = Clock.Now;
             dataGridView1.DataSource = db.Users
                 .OrderBy(u => u.UserName)
-                .Select(u => new { u.UserId, u.UserName, u.Role })
+                .Select(u => new { u.UserId, u.UserName, u.Role, u.IsActive, u.LockedUntil })
+                .ToList()
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.UserName,
+                    u.Role,
+                    Status = !u.IsActive ? "מושבת" : LoginPolicy.IsLocked(u.LockedUntil, now) ? "נעול עד " + u.LockedUntil.Value.ToString("HH:mm") : "פעיל"
+                })
                 .ToList();
             Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
             {
                 { "UserName", "שם משתמש" },
-                { "Role", "סוג משתמש" }
+                { "Role", "סוג משתמש" },
+                { "Status", "מצב" }
             });
+        }
+
+        /// <summary>Turns a user's access off (for example an employee who left) or back on.</summary>
+        private void btnToggleActive_Click(object sender, EventArgs e)
+        {
+            object name = Ui.SelectedValue(dataGridView1, "UserName");
+            if (name == null)
+            {
+                Ui.Error("יש לבחור משתמש מהרשימה.");
+                return;
+            }
+            User user = db.Users.FirstOrDefault(u => u.UserName == (string)name);
+            if (user == null) return;
+            bool activate = !user.IsActive;
+            if (!Ui.Confirm(activate ? "להפעיל מחדש את המשתמש " + name + "?" : "להשבית את המשתמש " + name + "? הוא לא יוכל להיכנס למערכת עד שיופעל מחדש.")) return;
+            try
+            {
+                string error = new AuthService(db).SetActive((string)name, activate);
+                if (error != null)
+                {
+                    Ui.Error(error);
+                    return;
+                }
+                LoadUsers();
+                Ui.Notify(this, activate ? "המשתמש הופעל." : "המשתמש הושבת.");
+            }
+            catch (Exception ex)
+            {
+                Ui.Error("השינוי לא נשמר.", ex);
+            }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -75,7 +115,8 @@ namespace LawyerProject.GUI
                     Ui.Error(error);
                     return;
                 }
-                Ui.Notify(this, "הסיסמה של " + name + " אופסה.");
+                LoadUsers();
+                Ui.Notify(this, "הסיסמה של " + name + " אופסה (ונעילה, אם הייתה, שוחררה).");
             }
             catch (Exception ex)
             {

@@ -49,6 +49,7 @@
             this.btnSetupGuide = new System.Windows.Forms.Button();
             this.btnAudit = new System.Windows.Forms.Button();
             this.btnBackup = new System.Windows.Forms.Button();
+            this.btnSettings = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gridDue)).BeginInit();
             this.panelToday.SuspendLayout();
             this.SuspendLayout();
@@ -252,7 +253,7 @@
             this.lblSetup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblSetup.Text = "המערכת עדיין לא הוגדרה: אין נושאי תיקים עם תהליכים. לחצו כאן למדריך ההקמה.";
             this.lblSetup.Visible = false;
-            this.lblSetup.Click += new System.EventHandler(this.btnSetupGuide_Click);
+            this.lblSetup.Click += new System.EventHandler(this.lblSetup_Click);
             // 
             // btnSetupGuide
             // 
@@ -292,6 +293,19 @@
             this.btnBackup.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
             this.btnBackup.UseVisualStyleBackColor = false;
             this.btnBackup.Click += new System.EventHandler(this.btnBackup_Click);
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.btnSettings.Location = new System.Drawing.Point(294, 692);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(202, 40);
+            this.btnSettings.TabIndex = 33;
+            this.btnSettings.Text = "הגדרות משרד";
+            this.btnSettings.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.btnSettings.ForeColor = System.Drawing.Color.FromArgb(235, 200, 110);
+            this.btnSettings.UseVisualStyleBackColor = false;
+            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
             //
             // pictureBox1
             //
@@ -314,6 +328,7 @@
             this.Controls.Add(this.btnSetupGuide);
             this.Controls.Add(this.btnAudit);
             this.Controls.Add(this.btnBackup);
+            this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.lblWelcome);
             this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.btnUsers);
@@ -347,6 +362,7 @@
         private System.Windows.Forms.Button btnSetupGuide;
         private System.Windows.Forms.Button btnAudit;
         private System.Windows.Forms.Button btnBackup;
+        private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnPayments;
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Button btnDeals;

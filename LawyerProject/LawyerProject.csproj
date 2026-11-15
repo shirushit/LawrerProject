@@ -218,6 +218,7 @@
     <Compile Include="GUI\ReceiptForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\SettingsForm.cs" />
     <Compile Include="GUI\SetupGuideForm.cs" />
     <Compile Include="GUI\Ui.cs" />
     <Compile Include="GUI\UsersForm.Designer.cs">

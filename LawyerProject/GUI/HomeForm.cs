@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -30,6 +30,7 @@ namespace LawyerProject.GUI
             btnSetupGuide.Visible = manager;
             btnAudit.Visible = manager;
             btnBackup.Visible = manager;
+            btnSettings.Visible = manager;
 
             if (Session.CurrentUser != null)
                 lblWelcome.Text = "שלום " + Session.CurrentUser.UserName + " (" + Session.CurrentUser.Role + ")";
@@ -63,10 +64,25 @@ namespace LawyerProject.GUI
                 {
                     bool configured = db.CaseTypes.Any(t => t.Steps.Any());
                     lblSetup.Visible = !configured;
+                    backupBanner = false;
+                    if (configured && Session.IsManager)
+                    {
+                        // Remind managers when the last backup is more than a day old.
+                        DateTime? lastBackup = db.AuditLog.Where(a => a.Action == AuditActions.Backup)
+                            .OrderByDescending(a => a.AuditEntryId).Select(a => (DateTime?)a.OccurredAt).FirstOrDefault();
+                        if (!lastBackup.HasValue || (Clock.Now - lastBackup.Value).TotalHours > 24)
+                        {
+                            backupBanner = true;
+                            lblSetup.Text = lastBackup.HasValue
+                                ? "הגיבוי האחרון בוצע ב-" + lastBackup.Value.ToString("dd/MM/yyyy") + ". לחצו כאן לגיבוי עכשיו."
+                                : "עדיין לא בוצע גיבוי של הנתונים. לחצו כאן לגיבוי עכשיו.";
+                            lblSetup.Visible = true;
+                        }
+                    }
                     if (!configured && !Session.IsManager)
                         lblSetup.Text = "המערכת עדיין לא הוגדרה. פנו למנהלת המשרד כדי להגדיר נושאי תיקים ותהליכים.";
 
-                    List<DueItem> items = new CaseService(db).DueSteps(DateTime.Today, AppSettings.DueSoonDays);
+                    List<DueItem> items = new CaseService(db).DueSteps(Clock.Today, AppSettings.DueSoonDays);
                     gridDue.DataSource = items.Select(i => new DueRow
                     {
                         CaseId = i.CaseId,
@@ -151,6 +167,16 @@ namespace LawyerProject.GUI
 
         private void btnUsers_Click(object sender, EventArgs e) { Open(() => new UsersForm()); }
 
+        private bool backupBanner;
+
+        private void lblSetup_Click(object sender, EventArgs e)
+        {
+            if (backupBanner) btnBackup_Click(sender, e);
+            else btnSetupGuide_Click(sender, e);
+        }
+
+        private void btnSettings_Click(object sender, EventArgs e) { Open(() => new SettingsForm()); }
+
         private void btnSetupGuide_Click(object sender, EventArgs e)
         {
             if (!Session.IsManager) return;
@@ -171,6 +197,8 @@ namespace LawyerProject.GUI
                     {
                         string path = BackupService.Backup(db, dialog.SelectedPath);
                         Ui.Notify(this, "הגיבוי נשמר: " + path);
+                        lastRefresh = DateTime.MinValue;
+                        RefreshToday();
                     }
                 }
                 catch (Exception ex)
@@ -206,9 +234,10 @@ namespace LawyerProject.GUI
 
         private static bool ConfirmExit()
         {
-            string message = "להתנתק מהמערכת?";
-            if (CaseWindows.OpenCount > 0)
-                message += "\nפתוחים " + CaseWindows.OpenCount + " חלונות של תיקים - שינויים שלא נשמרו בהם יאבדו.";
+            int unsaved = CaseWindows.UnsavedCount;
+            string message = unsaved == 0
+                ? "להתנתק מהמערכת?"
+                : "ב-" + unsaved + " חלונות תיקים יש שינויים שלא נשמרו, והם יאבדו.\nלהתנתק בכל זאת?";
             return Ui.Confirm(message);
         }
     }

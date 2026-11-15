@@ -33,9 +33,9 @@ namespace LawyerProject.GUI
             cmbMethod.SelectedItem = PaymentMethods.Cash;
             cmbKind.Items.AddRange(PaymentKinds.All);
             cmbKind.SelectedItem = PaymentKinds.Fee;
-            dtpPaidOn.Value = DateTime.Today;
-            dtpPaidOn.MaxDate = DateTime.Today;
-            dtpChequeDate.Value = DateTime.Today;
+            dtpPaidOn.Value = Clock.Today;
+            dtpPaidOn.MaxDate = Clock.Today;
+            dtpChequeDate.Value = Clock.Today;
 
             if (openBalance <= 0)
             {

@@ -1,4 +1,4 @@
-namespace LawyerProject.GUI
+﻿namespace LawyerProject.GUI
 {
     partial class CaseForm
     {
@@ -117,6 +117,7 @@ namespace LawyerProject.GUI
             this.btnAddPayment = new System.Windows.Forms.Button();
             this.btnReceipt = new System.Windows.Forms.Button();
             this.btnCancelPayment = new System.Windows.Forms.Button();
+            this.btnRefund = new System.Windows.Forms.Button();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.groupBoxDetails.SuspendLayout();
@@ -903,6 +904,7 @@ namespace LawyerProject.GUI
             this.tabPayments.Controls.Add(this.btnAddPayment);
             this.tabPayments.Controls.Add(this.btnReceipt);
             this.tabPayments.Controls.Add(this.btnCancelPayment);
+            this.tabPayments.Controls.Add(this.btnRefund);
             this.tabPayments.Location = new System.Drawing.Point(4, 28);
             this.tabPayments.Name = "tabPayments";
             this.tabPayments.Size = new System.Drawing.Size(952, 268);
@@ -1001,6 +1003,17 @@ namespace LawyerProject.GUI
             this.btnCancelPayment.Text = "ביטול תשלום...";
             this.btnCancelPayment.UseVisualStyleBackColor = true;
             this.btnCancelPayment.Click += new System.EventHandler(this.btnCancelPayment_Click);
+            // 
+            // btnRefund
+            // 
+            this.btnRefund.Location = new System.Drawing.Point(316, 224);
+            this.btnRefund.Name = "btnRefund";
+            this.btnRefund.Size = new System.Drawing.Size(150, 36);
+            this.btnRefund.TabIndex = 73;
+            this.btnRefund.Text = "החזר עודף...";
+            this.btnRefund.UseVisualStyleBackColor = true;
+            this.btnRefund.Visible = false;
+            this.btnRefund.Click += new System.EventHandler(this.btnRefund_Click);
             // 
             // errorProvider1
             // 
@@ -1138,6 +1151,7 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Button btnAddPayment;
         private System.Windows.Forms.Button btnReceipt;
         private System.Windows.Forms.Button btnCancelPayment;
+        private System.Windows.Forms.Button btnRefund;
         private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }

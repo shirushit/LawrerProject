@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Drawing;
@@ -34,7 +34,7 @@ namespace LawyerProject.GUI
         }
 
         public const string ConcurrencyMessage =
-            "משתמש אחר עדכן את התיק בזמן שעבדת עליו, ולכן השינוי שלך לא נשמר.\nהתיק ייטען מחדש עם הנתונים העדכניים - יש לבצע את השינוי שוב.";
+            "משתמש אחר עדכן את הרשומה בזמן שעבדת עליה, ולכן השינוי שלך לא נשמר.\nהרשומה תיטען מחדש עם הנתונים העדכניים - יש לבצע את השינוי שוב.";
 
         /// <summary>Translates the common technical failures into words an office worker can act on.</summary>
         public static string FriendlyReason(Exception ex)
@@ -165,6 +165,34 @@ namespace LawyerProject.GUI
                 date = picker.Value.Date;
                 note = noteBox != null ? noteBox.Text.Trim() : null;
                 return true;
+            }
+        }
+
+        /// <summary>Asks the user to pick one of <paramref name="options"/>. Returns null when cancelled.</summary>
+        public static string AskChoice(IWin32Window owner, string title, string prompt, string[] options, string selected)
+        {
+            using (var f = new Form())
+            {
+                f.Text = title;
+                f.RightToLeft = RightToLeft.Yes;
+                f.RightToLeftLayout = true;
+                f.FormBorderStyle = FormBorderStyle.FixedDialog;
+                f.StartPosition = FormStartPosition.CenterParent;
+                f.MinimizeBox = f.MaximizeBox = false;
+                f.ShowInTaskbar = false;
+                f.Font = new Font("Calibri", 11F);
+                f.ClientSize = new Size(440, 160);
+                var lbl = new Label { Text = prompt, Location = new Point(15, 12), Size = new Size(410, 60) };
+                var combo = new ComboBox { Location = new Point(15, 75), Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+                combo.Items.AddRange(options);
+                combo.SelectedItem = selected;
+                if (combo.SelectedIndex < 0 && combo.Items.Count > 0) combo.SelectedIndex = 0;
+                var ok = new Button { Text = "אישור", DialogResult = DialogResult.OK, Location = new Point(15, 112), Size = new Size(110, 36) };
+                var cancel = new Button { Text = "ביטול", DialogResult = DialogResult.Cancel, Location = new Point(135, 112), Size = new Size(110, 36) };
+                f.Controls.AddRange(new Control[] { lbl, combo, ok, cancel });
+                f.AcceptButton = ok;
+                f.CancelButton = cancel;
+                return f.ShowDialog(owner) == DialogResult.OK ? combo.SelectedItem as string : null;
             }
         }
 

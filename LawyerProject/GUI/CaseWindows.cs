@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -37,10 +37,27 @@ namespace LawyerProject.GUI
             Show(owner, () => new CaseForm(isDeal), 0, onChanged);
         }
 
+        /// <summary>Number of open case windows with changes that were not saved.</summary>
+        public static int UnsavedCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (CaseForm form in open.Values)
+                    if (!form.IsDisposed && form.HasUnsavedChanges) count++;
+                return count;
+            }
+        }
+
+        /// <summary>Closes every case window without asking again (the user already confirmed on logout).</summary>
         public static void CloseAll()
         {
             foreach (var form in new List<CaseForm>(open.Values))
-                if (!form.IsDisposed) form.Close();
+            {
+                if (form.IsDisposed) continue;
+                form.DiscardChangesOnClose = true;
+                form.Close();
+            }
         }
 
         private static void Show(IWin32Window owner, Func<CaseForm> create, int id, Action onChanged)

@@ -83,7 +83,7 @@ namespace LawyerProject.GUI
                 all = cases.Select(t =>
                 {
                     CaseStep next = CaseService.OrderedSteps(t).FirstOrDefault(s => s.IsDone != true);
-                    int late = next != null && next.DueDate.HasValue ? CaseScheduler.DaysLate(next.DueDate.Value, DateTime.Today) : 0;
+                    int late = next != null && next.DueDate.HasValue ? CaseScheduler.DaysLate(next.DueDate.Value, Clock.Today) : 0;
                     var row = new CaseRow
                     {
                         CaseId = t.CaseId,
@@ -204,7 +204,7 @@ namespace LawyerProject.GUI
 
         private void Highlight()
         {
-            DateTime today = DateTime.Today;
+            DateTime today = Clock.Today;
             int days = AppSettings.DueSoonDays;
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {

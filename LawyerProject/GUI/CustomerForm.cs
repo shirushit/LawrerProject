@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -248,8 +248,8 @@ namespace LawyerProject.GUI
             {
                 DateTime parsed;
                 if (!Validation.TryParseDate(mtbBirthDate.Text, out parsed)) fail(mtbBirthDate, "תאריך לא תקין");
-                else if (Validation.IsFutureDate(parsed, DateTime.Today)) fail(mtbBirthDate, "תאריך לידה עתידי");
-                else if (client && !Validation.IsAdultBirthDate(parsed, DateTime.Today)) fail(mtbBirthDate, "לקוח חייב להיות בן 18 ומעלה");
+                else if (Validation.IsFutureDate(parsed, Clock.Today)) fail(mtbBirthDate, "תאריך לידה עתידי");
+                else if (client && !Validation.IsAdultBirthDate(parsed, Clock.Today)) fail(mtbBirthDate, "לקוח חייב להיות בן 18 ומעלה");
                 else birthDate = parsed;
             }
 
@@ -285,10 +285,27 @@ namespace LawyerProject.GUI
             try
             {
                 if (isNew) db.Customers.Add(customer);
+                else AuditService.Log(db, AuditActions.CustomerUpdated, "לקוח", customer.CustomerId, null);
                 db.SaveChanges();
                 SavedId = customer.CustomerId;
                 DialogResult = DialogResult.OK;
                 Close();
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateConcurrencyException ex)
+            {
+                // Another user saved this person after the window was opened: show their version.
+                Ui.Error("הנתונים לא נשמרו.", ex);
+                var entry = db.Entry(customer);
+                if (entry.State == System.Data.Entity.EntityState.Deleted || db.Customers.AsNoTracking().All(c => c.CustomerId != customer.CustomerId))
+                {
+                    Close();
+                    return;
+                }
+                entry.Reload();
+                loading = true;
+                FillControls();
+                loading = false;
+                ApplyRules();
             }
             catch (Exception ex)
             {

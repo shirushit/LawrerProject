@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using LawyerProject.BLL;
 using LawyerProject.DB;
@@ -35,19 +36,25 @@ namespace LawyerProject.GUI
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            TimeSpan clockGap;
             try
             {
                 using (var db = new QuedinDbContext())
                 {
-                    User user = new AuthService(db).Login(txtUserName.Text, txtPassword.Text);
+                    // Use the server's clock, not this PC's, for "today" everywhere in the app.
+                    clockGap = Clock.SetServerTime(db.Database.SqlQuery<DateTime>("SELECT SYSDATETIME()").First());
+
+                    string error;
+                    User user = new AuthService(db).Login(txtUserName.Text, txtPassword.Text, out error);
                     if (user == null)
                     {
-                        Ui.Error("שם המשתמש או הסיסמה שגויים.");
+                        Ui.Error(error);
                         txtPassword.Clear();
                         txtPassword.Focus();
                         return;
                     }
                     Session.SignIn(user);
+                    AppSettings.Load(db);
                 }
             }
             catch (Exception ex)
@@ -55,6 +62,10 @@ namespace LawyerProject.GUI
                 Ui.Error("לא ניתן להתחבר למערכת.", ex);
                 return;
             }
+
+            if (Math.Abs(clockGap.TotalMinutes) >= 5)
+                Ui.Error("השעון של המחשב הזה שונה בכ-" + (int)Math.Round(Math.Abs(clockGap.TotalMinutes)) +
+                         " דקות משעון השרת. המערכת תשתמש בשעון השרת, אבל כדאי לתקן את השעון במחשב.");
 
             txtPassword.Clear();
             Hide();
