@@ -1,7 +1,41 @@
 # Changelog
 
-## v1.3.1 — Screen polish (2026)
+## v1.3.1 — Independent code review and screen polish (2026)
 
+### Code review findings
+- **Bug — a retried save doubled a new case's timeline:** when saving a new case failed (for example a
+  typo that overflowed the amount column) and the user pressed Save again, every step was added twice.
+  Saving a case now lives in `CaseService.SaveCase`; a failed save is rolled back in the database and
+  in memory, so a retry starts clean.
+- **Bug — a failed save left changes behind:** after a lost connection or a timeout, the unsaved payment
+  (or step change) stayed in the screen's context and was written by the next save, e.g. a payment
+  recorded twice. Every failed save now discards its pending changes (`ChangeDiscarder`), and the payment
+  window reloads the current balance.
+- **Security — a worker could make themselves a manager through SQL:** `security.sql` let workers read
+  every password hash and update the `Users` table. Workers now have no access to `Users`: login and
+  password change run as stored procedures that compare the hash inside the database and count failed
+  attempts. Workers can only set the "cancelled" flag of a payment, a trigger refuses any change to a
+  recorded payment, and only a manager can re-open a completed step. CI checks all of this as a worker.
+- The "case opened" audit entry now records the new case number.
+- An Israeli ID with or without its leading 0 is the same customer (stored as 9 digits).
+- Case rules (amounts, percentages, client ≠ opposing party) are checked in `CaseService`, not only in
+  the form. Catalogue changes (courts, case types, procedures, holidays) check the manager role in the
+  business layer and are written to the audit log.
+- Amounts are capped at 1,000,000,000 ₪; a step date more than 20 years away is refused as a typo.
+- The case type's fee is now a real **minimum fee**: the case total is never below it.
+- Login gives the same answer, in the same time, for an unknown user and a wrong password; a
+  deactivated user is told so only after typing the right password.
+- A new case window is found by its case number after its first save, so the same case does not open twice.
+- Database: foreign keys for the opposing party and lawyer and for credit notes, a payment can be
+  cancelled only once, `CHECK` constraints on amounts, percentages, roles and VAT.
+- Code: generic control names (`button1`, `dataGridView1`, `listView2`, `btnOK_Click_1`) and leftover
+  names (`subject`, `process`, `StatusId`) renamed; one "late / due soon" rule shared by every screen;
+  the model and SQL generators are now in `tools/`; image resources have English names.
+- Tests: 134 unit and 31 integration tests. New: retry after a failed save, audit entry of a new case,
+  manager-only catalogue, payment immutability, login salt for unknown users, minimum fee, ID
+  normalisation, money limits. Misplaced and weak tests were fixed.
+
+### Screen polish
 Found while taking the README screenshots on Windows:
 - **Unreadable text on the dark list screens:** the cases list (and the other dark lists) inherited a
   light text color, so rows, the color legend and the "clear filter" button showed light text on a light

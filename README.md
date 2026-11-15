@@ -2,12 +2,12 @@
 
 <img src="docs/banner.svg" alt="QUEDIN: case and deadline management for a law office" width="100%">
 
-[![build](https://github.com/shirushit/LawrerProject/actions/workflows/build.yml/badge.svg)](https://github.com/shirushit/LawrerProject/actions/workflows/build.yml)
+[![build](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml/badge.svg)](https://github.com/shirushit/quedin-law-office-manager/actions/workflows/build.yml)
 ![C#](https://img.shields.io/badge/C%23-.NET%20Framework%204.7.2-512BD4)
 ![WinForms](https://img.shields.io/badge/UI-WinForms%20(RTL%20Hebrew)-blue)
 ![EF6](https://img.shields.io/badge/ORM-Entity%20Framework%206-6DB33F)
 ![SQL Server](https://img.shields.io/badge/DB-SQL%20Server%20LocalDB-CC2927)
-![tests](https://img.shields.io/badge/tests-115%20unit%20%2B%2024%20integration-brightgreen)
+![tests](https://img.shields.io/badge/tests-134%20unit%20%2B%2031%20integration-brightgreen)
 
 **English** · [עברית](#עברית)
 
@@ -26,7 +26,9 @@ extracted the business rules into a tested layer and made the project runnable f
 today" home screen, court-set dates, payment cancellation by credit note, an audit log, optimistic
 concurrency and strict money parsing. **v1.3** renames the whole code base and database to English
 and closes every edge case from a second review (two users on one case, holidays, refunds, lockout,
-server time). See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
+server time). **v1.3.1** fixes the findings of an independent code review: password checks moved into the
+database, recorded payments cannot be edited, a failed save leaves nothing behind, plus screen polish.
+See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
 
 ## 📸 Screenshots
 
@@ -60,15 +62,15 @@ Five minutes with the project? These files show the most:
 | | |
 |---|---|
 | 📅 **Automatic case timeline** | Opening a case creates its steps from the case type (e.g. *filing → defence → pre-trial → evidence → ruling*), each with an estimated date. |
-| 🔁 **Deadlines that move** | Completing a step (on the real date) pushes every later step. A date set by the court is kept fixed and later steps count from it. Deadlines never fall on a weekend or a Jewish holiday. Steps cannot be skipped; a manager can undo the last one. |
+| 🔁 **Deadlines that move** | Completing a step (on the real date) pushes every later step. A date set by the court is kept fixed and later steps count from it. The app never sets a deadline on a weekend or a Jewish holiday. Steps cannot be skipped; a manager can undo the last one. |
 | 🚦 **"What's urgent today"** | The home screen lists the next step of every open case that is late or due this week. The cases list shows days late, with free search and a colour legend. |
-| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value) + court fee. The balance is always computed from the payments. Receipts store the VAT rate of the day; court fees carry no VAT. A payment is cancelled with a credit note, never deleted. |
+| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value), at least the case type's minimum fee, + court fee. The balance is always computed from the payments. Receipts store the VAT rate of the day; court fees carry no VAT. A payment is cancelled with a credit note, never deleted. |
 | 🧾 **Audit log & backup** | Every payment, cancellation, step change and user change is logged with user and time. Managers can back up the database from the home screen. |
 | 🤝 **Concurrent users** | Two people editing the same case or customer: the second save is refused (optimistic concurrency with `rowversion`) and the record reloads instead of silently overwriting. An open window notices changes or deletion by someone else, and closing it with unsaved changes asks first. |
 | ⚙️ **Office settings** | VAT rate, office details and extra non-working days are stored in the database and shared by every workstation. Users are locked after 5 wrong passwords and can be deactivated. |
 | 🏛️ **Court cases & property deals** | Court, claim and award amounts for litigation; address and land-registry numbers (gush/chelka) for real-estate deals. |
 | 👥 **Roles** | Managers configure courts, case types, processes and users; regular users work on clients, cases and payments. |
-| 🔒 **Security** | Salted PBKDF2-SHA256 password hashes; card payments keep only the last 4 digits. |
+| 🔒 **Security** | Salted PBKDF2-SHA256 password hashes, checked inside the database; card payments keep only the last 4 digits. See [Security](#-security). |
 
 ## 🧠 How the timeline engine works
 
@@ -122,7 +124,9 @@ flowchart LR
     classDef pure fill:#e8f5e9,stroke:#43a047
 ```
 
-Green classes are pure and unit-tested; the forms only collect input and show results.
+Green classes are pure and unit-tested. The forms collect input and show results; business rules and
+permission checks live in the BLL services (`CaseService`, `AuthService`, `CatalogService`), and the
+database enforces the critical ones again (see [Security](#-security)).
 
 ## 🗃️ Data model
 
@@ -154,8 +158,9 @@ erDiagram
 | `Users`, `AuditLog` | Users (hash, role, lockout) and an append-only log of every change |
 | `Settings`, `Holidays` | Office-wide settings and the office's extra non-working days |
 
-The whole model (SQL tables, EF mapping and entity classes) is generated from one spec, so the three
-cannot drift apart.
+The whole model (SQL tables, EF mapping and entity classes) is generated from one spec,
+[`tools/gen_model.py`](tools/gen_model.py), and [`tools/gen_sql.py`](tools/gen_sql.py) writes the
+database script from it, so the three cannot drift apart.
 
 ## 🚀 Getting started
 
@@ -163,8 +168,8 @@ cannot drift apart.
 (it includes SQL Server Express LocalDB).
 
 ```powershell
-git clone https://github.com/shirushit/LawrerProject.git
-cd LawrerProject
+git clone https://github.com/shirushit/quedin-law-office-manager.git
+cd quedin-law-office-manager
 
 # create the database with demo data
 sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
@@ -183,12 +188,27 @@ Then open `LawyerProject.sln` and press **F5** (NuGet restores Entity Framework 
 The demo data is fictional. Its deadlines are relative to the day you run the script,
 so some steps show as late and some as due soon right away.
 
+> These are demo passwords, published here. Before using QUEDIN with real data, log in as each user
+> and change the password (login screen → **החלפת סיסמה**), or add new users and deactivate the demo ones.
+
+## 🔐 Security
+
+| Threat | What stops it |
+|---|---|
+| Stolen database file | Passwords are salted PBKDF2-SHA256 (100,000 iterations); legacy plain-text passwords are re-hashed at the first login. |
+| An employee opens the database directly (SSMS, Excel) | With [`security.sql`](database/security.sql), workers cannot read or change the `Users` table: login and password change go through stored procedures (`usp_GetLoginSalt`, `usp_TryLogin`, `usp_ChangeOwnPassword`) that compare the hash inside the database and count failures. Workers cannot delete, cannot change the catalogue and can only set the "cancelled" flag of a payment. CI connects as a worker and checks that each of these is refused. |
+| Editing a receipt after the fact | A trigger refuses any change to a recorded payment's amount, date or method, even for the owner. Corrections are credit notes. |
+| Re-opening a completed step | Only a manager (app check, plus a trigger with `security.sql`). |
+| Covering one's tracks | The audit log is append-only (trigger + `DENY`). |
+| Guessing passwords | 5 wrong passwords lock the user for 15 minutes; the lock is counted by the database. Login answers the same for an unknown user and a wrong password, and takes the same time. |
+| A typo or a retry corrupting data | Amounts are capped at 1,000,000,000 ₪, the database checks amounts, percentages and links (foreign keys and `CHECK` constraints), and a failed save is rolled back in memory too, so a retry never saves a payment or a timeline twice. |
+
 ## 🏢 Running it in a real office
 
 | Topic | What to do |
 |---|---|
 | **Office details** | Log in as a manager → **הגדרות משרד**: office name, address, tax ID and VAT rate (shared by all workstations). The **מדריך הקמה** screen walks through the rest of the setup. |
-| **Permissions in the database** | Run [`database/security.sql`](database/security.sql) and map each employee's Windows account to `QuedinWorker` or `QuedinManager`. Then the rules hold even outside the app (no deletes for workers; nobody can edit the audit log). |
+| **Permissions in the database** | Run [`database/security.sql`](database/security.sql) and map each employee's Windows account to `QuedinWorker` or `QuedinManager`. Then the rules hold even outside the app (see [Security](#-security)). Re-run it after re-running `create-database.sql`. |
 | **Backups** | Managers have a backup button and a reminder when the last backup is older than a day. For a nightly automatic backup, schedule [`database/backup-nightly.cmd`](database/backup-nightly.cmd); restore instructions are inside it. |
 | **Two people on one case** | Safe: the second save is refused and the case reloads with the other person's changes. |
 | **Wrong PC clock** | The app takes "today" from the database server and warns at login when the PC clock is off by 5 minutes or more. |
@@ -197,8 +217,8 @@ so some steps show as late and some as due soon right away.
 
 | Suite | What it covers | Runs |
 |---|---|---|
-| [`Quedin.Tests`](tests/Quedin.Tests) — 115 unit tests | Timeline engine (weekends, holidays, fixed court dates, reschedule, undo, conflicts), fee/VAT/balance/refund math, login lockout, server clock, password hashing, validation (ID / company / passport, Israeli and international phones, strict money parsing) | anywhere: `dotnet test tests/Quedin.Tests` |
-| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 24 tests | The real data layer against QuedinDB: login, lockout and deactivation, users, opening a case, completing/rescheduling/undoing steps, fixed court dates, payments, cancellations and refunds, concurrent edits of cases and customers, case deletion, shared settings, append-only audit log | Windows + LocalDB, after running the database script. Each test is rolled back. |
+| [`Quedin.Tests`](tests/Quedin.Tests) — 134 unit tests | Timeline engine (weekends, holidays, fixed court dates, reschedule, undo, conflicts), fee/VAT/balance/refund math, login lockout, server clock, password hashing, validation (ID / company / passport, Israeli and international phones, strict money parsing) | anywhere: `dotnet test tests/Quedin.Tests` |
+| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 31 tests | The real data layer against QuedinDB: login through the database procedures, lockout and deactivation, users, a failed save that is retried (no duplicate steps or payments), manager-only catalogue changes, payments that cannot be edited, opening a case, completing/rescheduling/undoing steps, fixed court dates, payments, cancellations and refunds, concurrent edits of cases and customers, case deletion, shared settings, append-only audit log | Windows + LocalDB, after running the database script. Each test is rolled back. |
 | CI `database` job | Runs `create-database.sql` twice on SQL Server 2022, verifies the demo data and that the audit log refuses deletes | every push |
 
 In Visual Studio: **Test → Run All Tests**. Without the database, the integration tests are
@@ -213,6 +233,7 @@ LawyerProject/
 ├── GUI/          WinForms screens (Hebrew, right-to-left)
 └── App.config    connection string and defaults for a new database
 database/         create-database.sql (schema + demo data), security.sql (roles), backup-nightly.cmd
+tools/            generators: EF model and SQL script from one spec, the .csproj file list
 tests/            unit tests (.NET 8) and integration tests (.NET Framework + LocalDB)
 docs/             diagrams from the original project book
 ```
@@ -243,9 +264,10 @@ docs/             diagrams from the original project book
 גרסה 1.1 היא בדיקה ושכתוב של הפרויקט: תיקון באגים, אבטחת סיסמאות ונתוני תשלום, שכבת לוגיקה נפרדת עם בדיקות יחידה, וסקריפט שמקים את מסד הנתונים עם נתוני דמה.
 גרסה 1.2 מתקנת את כל הממצאים מבדיקת שימושיות ומסקירת קוד: מסך "מה דחוף היום", מועדים שנקבעו בבית המשפט, ביטול תשלום בקבלת זיכוי, יומן פעולות, הגנה מעריכה מקבילה ופענוח סכומים קפדני.
 גרסה 1.3 מעבירה את כל הקוד ומסד הנתונים לשמות באנגלית (הממשק נשאר בעברית), ומטפלת בכל מקרי הקצה מהדוח: שני משתמשים על אותו תיק, חגים, מועדים קבועים של בית משפט, החזר כספי, נעילת משתמשים ושעון השרת.
+גרסה 1.3.1 מתקנת את ממצאי סקירת קוד עצמאית: בדיקת הסיסמה עברה לתוך מסד הנתונים, תשלום שנרשם אינו ניתן לעריכה, שמירה שנכשלה לא משאירה שאריות, ושיפורי תצוגה (ניגודיות, ערכים חתוכים, עיצוב טבלאות).
 
 **הרצה:** להריץ את `database/create-database.sql`, לפתוח את `LawyerProject.sln` ב-Visual Studio 2022 וללחוץ F5.
-כניסה עם `admin` / `Quedin2024`.
+כניסה עם `admin` / `Quedin2024` (סיסמת דמו - יש להחליף לפני שימוש אמיתי).
 
 </div>
 
