@@ -33,6 +33,30 @@ namespace LawyerProject.BLL
                 Convert.ToBase64String(salt), Convert.ToBase64String(hash));
         }
 
+        /// <summary>
+        /// Hashes a password with a given salt prefix ("pbkdf2$&lt;iterations&gt;$&lt;base64 salt&gt;$"), giving the
+        /// full stored form, so the database can compare it with what it keeps. Returns null for a bad prefix.
+        /// </summary>
+        public static string HashWithSalt(string password, string saltPrefix)
+        {
+            if (password == null || string.IsNullOrEmpty(saltPrefix)) return null;
+            string[] parts = saltPrefix.Split('$');
+            if (parts.Length != 4 || parts[0] != Prefix || parts[3].Length != 0) return null;
+
+            int iterations;
+            if (!int.TryParse(parts[1], out iterations) || iterations <= 0) return null;
+            byte[] salt;
+            try
+            {
+                salt = Convert.FromBase64String(parts[2]);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
+            return saltPrefix + Convert.ToBase64String(Derive(password, salt, iterations));
+        }
+
         public static bool Verify(string password, string stored)
         {
             if (password == null || string.IsNullOrEmpty(stored)) return false;

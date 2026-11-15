@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using LawyerProject.BLL;
 using LawyerProject.DB;
 
 namespace LawyerProject.GUI
 {
-    /// <summary>Adds a fixed step (process + order) to a case type.</summary>
+    /// <summary>Adds a fixed step (procedure + order) to a case type.</summary>
     public partial class CaseTypeStepForm : Form
     {
         private QuedinDbContext db = new QuedinDbContext();
@@ -13,12 +14,12 @@ namespace LawyerProject.GUI
         private readonly bool isNew;
 
         /// <summary>New fixed step for the given case type.</summary>
-        public CaseTypeStepForm(int subjectId)
+        public CaseTypeStepForm(int caseTypeId)
         {
             InitializeComponent();
             isNew = true;
-            step = new CaseTypeStep { CaseTypeId = subjectId };
-            int last = db.CaseTypeSteps.Where(k => k.CaseTypeId == subjectId).Select(k => (int?)k.StepOrder).Max() ?? 0;
+            step = new CaseTypeStep { CaseTypeId = caseTypeId };
+            int last = db.CaseTypeSteps.Where(k => k.CaseTypeId == caseTypeId).Select(k => (int?)k.StepOrder).Max() ?? 0;
             nudStepOrder.Value = Math.Min(nudStepOrder.Maximum, last + 1);
             Init();
         }
@@ -49,8 +50,8 @@ namespace LawyerProject.GUI
 
         private void Init()
         {
-            CaseType subject = db.CaseTypes.Find(step.CaseTypeId);
-            lblCaseTypeId.Text = subject != null ? subject.Name : step.CaseTypeId.ToString();
+            CaseType caseType = db.CaseTypes.Find(step.CaseTypeId);
+            lblCaseTypeId.Text = caseType != null ? caseType.Name : step.CaseTypeId.ToString();
             cmbProcedure.DataSource = db.Procedures.OrderBy(t => t.Name).ToList();
             if (isNew) cmbProcedure.SelectedIndex = -1;
             Text = isNew ? "הוספת תהליך קבוע" : "עדכון תהליך קבוע";
@@ -59,8 +60,8 @@ namespace LawyerProject.GUI
         private void btnAddStep_Click(object sender, EventArgs e)
         {
             errorProvider1.Clear();
-            var process = cmbProcedure.SelectedItem as Procedure;
-            if (process == null)
+            var procedure = cmbProcedure.SelectedItem as Procedure;
+            if (procedure == null)
             {
                 errorProvider1.SetError(cmbProcedure, "יש לבחור תהליך");
                 return;
@@ -74,10 +75,10 @@ namespace LawyerProject.GUI
 
             try
             {
-                step.ProcedureId = process.ProcedureId;
+                step.ProcedureId = procedure.ProcedureId;
                 step.StepOrder = level;
                 if (isNew) db.CaseTypeSteps.Add(step);
-                db.SaveChanges();
+                CatalogService.Save(db, "נושא תיק", "תהליך " + procedure.Name + " בשלב " + level);
                 DialogResult = DialogResult.OK;
                 Close();
             }

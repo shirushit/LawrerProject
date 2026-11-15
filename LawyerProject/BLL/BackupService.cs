@@ -15,7 +15,7 @@ namespace LawyerProject.BLL
         /// <summary>Backs up the database into <paramref name="folder"/>. Returns the file path, or throws with the SQL error.</summary>
         public static string Backup(QuedinDbContext db, string folder)
         {
-            if (!Session.IsManager) throw new InvalidOperationException("רק מנהלת יכולה לגבות את המערכת.");
+            if (!Session.IsManager) throw new InvalidOperationException("רק מנהל/ת יכול/ה לגבות את המערכת.");
             string path = Path.Combine(folder, DefaultFileName(Clock.Now));
             string dbName = db.Database.Connection.Database;
             // BACKUP cannot run inside a transaction; the database name cannot be a parameter, so quote it.

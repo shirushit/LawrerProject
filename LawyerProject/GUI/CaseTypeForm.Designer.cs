@@ -39,11 +39,11 @@ namespace LawyerProject.GUI
             this.txtCourtFee = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.listSteps = new System.Windows.Forms.ListView();
             this.gridSteps = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnAddStep = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
-            this.btnSaveDetails = new System.Windows.Forms.Button();
+            this.btnEditStep = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,7 +58,7 @@ namespace LawyerProject.GUI
             this.btnOK.TabIndex = 9;
             this.btnOK.Text = "אישור";
             this.btnOK.UseVisualStyleBackColor = false;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click_1);
+            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // txtCaseTypeName
             // 
@@ -128,7 +128,7 @@ namespace LawyerProject.GUI
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 19);
             this.label3.TabIndex = 10;
-            this.label3.Text = "שכר טרחה";
+            this.label3.Text = "שכר טרחה מינימלי";
             // 
             // txtCourtFee
             // 
@@ -157,43 +157,43 @@ namespace LawyerProject.GUI
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // listView1
+            // listSteps
             // 
-            this.listView1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.listSteps.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.listSteps.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.gridSteps});
-            this.listView1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.listView1.FullRowSelect = true;
-            this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.LabelEdit = true;
-            this.listView1.Location = new System.Drawing.Point(22, 18);
-            this.listView1.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.listView1.Size = new System.Drawing.Size(208, 429);
-            this.listView1.TabIndex = 14;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listSteps.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.listSteps.FullRowSelect = true;
+            this.listSteps.GridLines = true;
+            this.listSteps.HideSelection = false;
+            this.listSteps.LabelEdit = true;
+            this.listSteps.Location = new System.Drawing.Point(22, 18);
+            this.listSteps.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.listSteps.MultiSelect = false;
+            this.listSteps.Name = "listSteps";
+            this.listSteps.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.listSteps.Size = new System.Drawing.Size(208, 429);
+            this.listSteps.TabIndex = 14;
+            this.listSteps.UseCompatibleStateImageBehavior = false;
+            this.listSteps.View = System.Windows.Forms.View.Details;
             // 
             // gridSteps
             // 
             this.gridSteps.Text = "תהליכים בתיק";
             this.gridSteps.Width = 98;
             // 
-            // button1
+            // btnAddStep
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Location = new System.Drawing.Point(190, 481);
-            this.button1.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(118, 34);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "הוספת תהליך";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnAddStep.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnAddStep.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnAddStep.Location = new System.Drawing.Point(190, 481);
+            this.btnAddStep.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.btnAddStep.Name = "btnAddStep";
+            this.btnAddStep.Size = new System.Drawing.Size(118, 34);
+            this.btnAddStep.TabIndex = 16;
+            this.btnAddStep.Text = "הוספת תהליך";
+            this.btnAddStep.UseVisualStyleBackColor = false;
+            this.btnAddStep.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnRemove
             // 
@@ -208,18 +208,18 @@ namespace LawyerProject.GUI
             this.btnRemove.UseVisualStyleBackColor = false;
             this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
-            // btnSaveDetails
+            // btnEditStep
             // 
-            this.btnSaveDetails.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.btnSaveDetails.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnSaveDetails.Location = new System.Drawing.Point(106, 481);
-            this.btnSaveDetails.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.btnSaveDetails.Name = "btnSaveDetails";
-            this.btnSaveDetails.Size = new System.Drawing.Size(74, 34);
-            this.btnSaveDetails.TabIndex = 98;
-            this.btnSaveDetails.Text = "עדכון";
-            this.btnSaveDetails.UseVisualStyleBackColor = false;
-            this.btnSaveDetails.Click += new System.EventHandler(this.btnSaveDetails_Click);
+            this.btnEditStep.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnEditStep.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnEditStep.Location = new System.Drawing.Point(106, 481);
+            this.btnEditStep.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.btnEditStep.Name = "btnEditStep";
+            this.btnEditStep.Size = new System.Drawing.Size(74, 34);
+            this.btnEditStep.TabIndex = 98;
+            this.btnEditStep.Text = "עדכון";
+            this.btnEditStep.UseVisualStyleBackColor = false;
+            this.btnEditStep.Click += new System.EventHandler(this.btnEditStep_Click);
             // 
             // CaseTypeForm
             // 
@@ -228,9 +228,9 @@ namespace LawyerProject.GUI
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(645, 550);
             this.Controls.Add(this.btnRemove);
-            this.Controls.Add(this.btnSaveDetails);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.btnEditStep);
+            this.Controls.Add(this.btnAddStep);
+            this.Controls.Add(this.listSteps);
             this.Controls.Add(this.txtCourtFee);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtBaseFee);
@@ -262,10 +262,10 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.TextBox txtCourtFee;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView listSteps;
         private System.Windows.Forms.ColumnHeader gridSteps;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnAddStep;
         private System.Windows.Forms.Button btnRemove;
-        private System.Windows.Forms.Button btnSaveDetails;
+        private System.Windows.Forms.Button btnEditStep;
     }
 }

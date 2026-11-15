@@ -12,6 +12,9 @@ namespace LawyerProject.BLL
     {
         public const int MinPasswordLength = 8;
 
+        /// <summary>The largest amount the office ever records (one billion). Stops typos from overflowing the money columns.</summary>
+        public const decimal MaxMoney = 1000000000m;
+
         private static readonly Regex LandlineRegex = new Regex(@"^0(2|3|4|8|9|7[2-9])-?\d{7}$", RegexOptions.Compiled);
         private static readonly Regex CellPhoneRegex = new Regex(@"^05\d-?\d{7}$", RegexOptions.Compiled);
         private static readonly Regex EmailRegex = new Regex(@"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$", RegexOptions.Compiled);
@@ -43,6 +46,19 @@ namespace LawyerProject.BLL
                 sum += k;
             }
             return sum % 10 == 0;
+        }
+
+        /// <summary>
+        /// The stored form of an Israeli ID or company number: digits padded to 9, so "12345674" and
+        /// "012345674" are the same person. Other identifiers (passport) are only trimmed.
+        /// </summary>
+        public static string NormalizeIdNumber(string id)
+        {
+            string t = (id ?? string.Empty).Trim();
+            if (t.Length == 0 || t.Length > 9) return t;
+            foreach (char ch in t)
+                if (ch < '0' || ch > '9') return t;
+            return t.PadLeft(9, '0');
         }
 
         /// <summary>Israeli landline: 02/03/04/08/09/07x, with or without a dash.</summary>
@@ -179,7 +195,13 @@ namespace LawyerProject.BLL
             string t = (text ?? string.Empty).Trim();
             if (!MoneyRegex.IsMatch(t)) return false;
             return decimal.TryParse(t.Replace(",", string.Empty), NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture, out amount);
+                CultureInfo.InvariantCulture, out amount) && amount <= MaxMoney;
+        }
+
+        /// <summary>True for an amount between 0 and <see cref="MaxMoney"/>.</summary>
+        public static bool IsMoneyInRange(decimal amount)
+        {
+            return amount >= 0m && amount <= MaxMoney;
         }
 
         /// <summary>A payment amount: at least 0.01.</summary>

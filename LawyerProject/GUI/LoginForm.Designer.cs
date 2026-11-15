@@ -56,7 +56,7 @@ namespace LawyerProject.GUI
             //
             // pictureBoxLogo
             //
-            this.pictureBoxLogo.Image = global::LawyerProject.Properties.Resources.לוגו;
+            this.pictureBoxLogo.Image = global::LawyerProject.Properties.Resources.Logo;
             this.pictureBoxLogo.Location = new System.Drawing.Point(20, 12);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
             this.pictureBoxLogo.Size = new System.Drawing.Size(400, 110);

@@ -32,7 +32,7 @@ namespace LawyerProject.GUI
             this.lblCode = new System.Windows.Forms.Label();
             this.txtCourtName = new System.Windows.Forms.TextBox();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.listView2 = new System.Windows.Forms.ListView();
+            this.listCaseTypes = new System.Windows.Forms.ListView();
             this.CourtCaseTypeId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colCaseTypeName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnRemove = new System.Windows.Forms.Button();
@@ -68,24 +68,24 @@ namespace LawyerProject.GUI
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // listView2
+            // listCaseTypes
             // 
-            this.listView2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.listCaseTypes.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.listCaseTypes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.CourtCaseTypeId,
             this.colCaseTypeName});
-            this.listView2.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.listView2.FullRowSelect = true;
-            this.listView2.GridLines = true;
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(32, 37);
-            this.listView2.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.listView2.MultiSelect = false;
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(276, 505);
-            this.listView2.TabIndex = 5;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.View = System.Windows.Forms.View.Details;
+            this.listCaseTypes.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.listCaseTypes.FullRowSelect = true;
+            this.listCaseTypes.GridLines = true;
+            this.listCaseTypes.HideSelection = false;
+            this.listCaseTypes.Location = new System.Drawing.Point(32, 37);
+            this.listCaseTypes.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            this.listCaseTypes.MultiSelect = false;
+            this.listCaseTypes.Name = "listCaseTypes";
+            this.listCaseTypes.Size = new System.Drawing.Size(276, 505);
+            this.listCaseTypes.TabIndex = 5;
+            this.listCaseTypes.UseCompatibleStateImageBehavior = false;
+            this.listCaseTypes.View = System.Windows.Forms.View.Details;
             // 
             // CourtCaseTypeId
             // 
@@ -185,7 +185,7 @@ namespace LawyerProject.GUI
             this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.btnSaveDetails);
             this.Controls.Add(this.btnAddCaseType);
-            this.Controls.Add(this.listView2);
+            this.Controls.Add(this.listCaseTypes);
             this.Controls.Add(this.txtCourtName);
             this.Controls.Add(this.lblCode);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -202,7 +202,7 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Label lblCode;
         private System.Windows.Forms.TextBox txtCourtName;
         private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.ListView listView2;
+        private System.Windows.Forms.ListView listCaseTypes;
         private System.Windows.Forms.ColumnHeader CourtCaseTypeId;
         private System.Windows.Forms.ColumnHeader colCaseTypeName;
         private System.Windows.Forms.Button btnRemove;

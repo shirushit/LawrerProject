@@ -112,5 +112,14 @@ namespace Quedin.Tests
             Assert.AreEqual(250m, FeeCalculator.Overpaid(1000m, new[] { 1250m }), "claim lowered after payment");
             Assert.AreEqual(0m, FeeCalculator.Overpaid(1000m, new[] { 1250m, -250m }), "after the refund");
         }
+
+        [TestMethod]
+        public void CaseTotal_NeverBelowTheMinimumFee()
+        {
+            Assert.AreEqual(16200m, FeeCalculator.CaseTotal(60000m, 20, 1200m, 15000m), "20% is 12,000 - the minimum 15,000 applies");
+            Assert.AreEqual(18200m, FeeCalculator.CaseTotal(85000m, 20, 1200m, 15000m), "20% is 17,000 - above the minimum");
+            Assert.AreEqual(15000m, FeeCalculator.CaseTotal(0m, 20, 0m, 15000m));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => FeeCalculator.CaseTotal(100m, 10, 0m, -1m));
+        }
     }
 }

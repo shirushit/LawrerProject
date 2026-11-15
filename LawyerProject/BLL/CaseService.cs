@@ -26,6 +26,9 @@ namespace LawyerProject.BLL
     {
         private readonly QuedinDbContext db;
 
+        /// <summary>A step date further than this from today is surely a typo (and the Hebrew calendar ends in 2239).</summary>
+        public const int MaxYearsAway = 20;
+
         public CaseService(QuedinDbContext db)
         {
             this.db = db;
@@ -44,28 +47,28 @@ namespace LawyerProject.BLL
                 .ToList()
                 .Select(k => new StepTemplate
                 {
-                    ProcessId = k.ProcedureId,
+                    ProcedureId = k.ProcedureId,
                     Level = k.StepOrder,
                     DurationDays = k.Procedure.DurationDays
                 })
                 .ToList();
 
             if (templates.Count == 0)
-                return "לא הוגדרו תהליכים קבועים לנושא התיק שנבחר. מנהלת המשרד מגדירה אותם במסך \"נושאי תיקים\".";
+                return "לא הוגדרו תהליכים קבועים לנושא התיק שנבחר. מנהל/ת המשרד מגדיר/ה אותם במסך \"נושאי תיקים\".";
 
             List<ScheduledStep> plan = CaseScheduler.BuildPlan(templates, openedOn);
             foreach (ScheduledStep step in plan)
             {
                 legalCase.Steps.Add(new CaseStep
                 {
-                    ProcedureId = step.ProcessId,
+                    ProcedureId = step.ProcedureId,
                     DueDate = step.EstimatedDate,
                     DoneDate = null,
                     IsDone = false,
                     DurationDays = step.DurationDays
                 });
             }
-            legalCase.CurrentProcedureId = plan[0].ProcessId;
+            legalCase.CurrentProcedureId = plan[0].ProcedureId;
             return null;
         }
 
@@ -80,19 +83,21 @@ namespace LawyerProject.BLL
         /// <summary>Sets an open step to a date decided outside the office (e.g. by the court) and pushes later dates.</summary>
         public string RescheduleStep(LegalCase legalCase, int stepId, DateTime newDate, string note)
         {
+            if (Math.Abs((newDate.Date - Clock.Today).TotalDays) > MaxYearsAway * 366)
+                return "המועד רחוק מדי (יותר מ-" + MaxYearsAway + " שנים). ייתכן שנפלה טעות בהקלדה.";
             string error = ApplyToTimeline(legalCase, stepId, (steps, target) => CaseScheduler.Reschedule(steps, target, newDate),
                 AuditActions.StepRescheduled, "מועד חדש " + newDate.ToString("dd/MM/yyyy"), save: false);
             if (error != null) return error;
             if (!string.IsNullOrWhiteSpace(note))
                 SetNoteNoSave(legalCase, stepId, note);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
         /// <summary>Re-opens the most recently completed step (managers only).</summary>
         public string UndoLastStep(LegalCase legalCase)
         {
-            if (!Session.IsManager) return "רק מנהלת יכולה לבטל סימון של שלב.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה לבטל סימון של שלב.";
             List<CaseStep> entities = legalCase.Steps.ToList();
             Dictionary<int, ScheduledStep> map = entities.ToDictionary(e => e.CaseStepId, ToScheduled);
             ScheduledStep undone;
@@ -106,7 +111,7 @@ namespace LawyerProject.BLL
             }
             WriteBack(legalCase, entities, map);
             AuditService.Log(db, AuditActions.StepUndone, "תיק", legalCase.CaseId, "שלב " + undone.Id);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -115,7 +120,7 @@ namespace LawyerProject.BLL
         {
             string error = SetNoteNoSave(legalCase, stepId, note);
             if (error != null) return error;
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -124,7 +129,7 @@ namespace LawyerProject.BLL
             CaseStep step = legalCase.Steps.FirstOrDefault(s => s.CaseStepId == stepId);
             if (step == null) return "התהליך שנבחר אינו שייך לתיק.";
             string text = (note ?? string.Empty).Trim();
-            step.Notes = text.Length == 0 ? null : (text.Length > 200 ? text.Substring(0, 200) : text);
+            step.Notes = text.Length == 0 ? null : (text.Length > ColumnLengths.StepNotes ? text.Substring(0, ColumnLengths.StepNotes) : text);
             AuditService.Log(db, AuditActions.StepNote, "תיק", legalCase.CaseId, step.Notes);
             TouchCase(legalCase);
             return null;
@@ -150,7 +155,7 @@ namespace LawyerProject.BLL
 
             WriteBack(legalCase, entities, map);
             AuditService.Log(db, action, "תיק", legalCase.CaseId, details);
-            if (save) db.SaveChanges();
+            if (save) ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -166,7 +171,7 @@ namespace LawyerProject.BLL
             }
             ScheduledStep next = CaseScheduler.NextPending(map.Values);
             ScheduledStep last = CaseScheduler.Ordered(map.Values).LastOrDefault();
-            legalCase.CurrentProcedureId = next != null ? next.ProcessId : (last != null ? last.ProcessId : legalCase.CurrentProcedureId);
+            legalCase.CurrentProcedureId = next != null ? next.ProcedureId : (last != null ? last.ProcedureId : legalCase.CurrentProcedureId);
             TouchCase(legalCase);
         }
 
@@ -199,6 +204,7 @@ namespace LawyerProject.BLL
         {
             DateTime limit = today.Date.AddDays(days);
             var cases = db.Cases
+                .Include("Client").Include("Steps.Procedure") // one query instead of one per case
                 .Where(t => t.Steps.Any(s => s.IsDone != true && s.DueDate <= limit))
                 .ToList();
 
@@ -206,7 +212,7 @@ namespace LawyerProject.BLL
             foreach (LegalCase t in cases)
             {
                 CaseStep next = OrderedSteps(t).FirstOrDefault(s => s.IsDone != true);
-                if (next == null || !next.DueDate.HasValue || next.DueDate.Value > limit) continue;
+                if (next == null || CaseScheduler.UrgencyOf(next.DueDate, false, today, days) == Urgency.None) continue;
                 items.Add(new DueItem
                 {
                     CaseId = t.CaseId,
@@ -222,12 +228,17 @@ namespace LawyerProject.BLL
 
         // ------------------------------------------------------------------ money
 
-        /// <summary>Total the office charges: agreed % of the claim (or property value) + the case type's court fee.</summary>
+        /// <summary>
+        /// Total the office charges: agreed % of the claim (or property value), at least the case type's
+        /// minimum fee, plus the case type's court fee.
+        /// </summary>
         public static decimal CaseTotal(LegalCase legalCase)
         {
-            decimal courtFee = legalCase.CaseType != null ? (legalCase.CaseType.CourtFee ?? 0m) : 0m;
+            CaseType type = legalCase.CaseType;
+            decimal courtFee = type != null ? Math.Max(0m, type.CourtFee ?? 0m) : 0m;
+            decimal minimumFee = type != null ? Math.Max(0m, type.BaseFee ?? 0m) : 0m;
             double percent = Math.Min(100, Math.Max(0, legalCase.FeePercent ?? 0d));
-            return FeeCalculator.CaseTotal(Math.Max(0m, legalCase.ClaimAmount ?? 0m), percent, courtFee);
+            return FeeCalculator.CaseTotal(Math.Max(0m, legalCase.ClaimAmount ?? 0m), percent, courtFee, minimumFee);
         }
 
         /// <summary>Sum of all payments (cancellations are negative).</summary>
@@ -272,7 +283,7 @@ namespace LawyerProject.BLL
             TouchCase(legalCase);
             AuditService.Log(db, AuditActions.PaymentAdded, "תיק", legalCase.CaseId,
                 payment.Kind + " " + payment.Amount.ToString("0.00") + " " + payment.Method);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -296,7 +307,7 @@ namespace LawyerProject.BLL
                 VatRate = original.VatRate,
                 Method = original.Method,
                 PaidOn = Clock.Today,
-                Description = Truncate("ביטול קבלה " + original.PaymentId + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), 50),
+                Description = Truncate("ביטול קבלה " + original.PaymentId + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), ColumnLengths.PaymentDescription),
                 CancelsPaymentId = original.PaymentId,
                 IsCancelled = false
             };
@@ -305,7 +316,7 @@ namespace LawyerProject.BLL
             RefreshPaymentFlags(legalCase);
             TouchCase(legalCase);
             AuditService.Log(db, AuditActions.PaymentCancelled, "תשלום", original.PaymentId, reason);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -327,7 +338,7 @@ namespace LawyerProject.BLL
                 VatRate = AppSettings.VatRate,
                 Method = method,
                 PaidOn = Clock.Today,
-                Description = Truncate("החזר עודף ללקוח" + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), 50),
+                Description = Truncate("החזר עודף ללקוח" + (string.IsNullOrWhiteSpace(reason) ? "" : ": " + reason.Trim()), ColumnLengths.PaymentDescription),
                 IsCancelled = false,
                 BalanceAfter = 0m
             };
@@ -335,11 +346,104 @@ namespace LawyerProject.BLL
             RefreshPaymentFlags(legalCase);
             TouchCase(legalCase);
             AuditService.Log(db, AuditActions.Refund, "תיק", legalCase.CaseId, overpaid.ToString("0.00") + " " + method);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
         // ------------------------------------------------------------------ case lifecycle
+
+        /// <summary>
+        /// The rules every case must keep, whatever screen saves it. Returns null when the case is valid
+        /// or a Hebrew message. <paramref name="caseType"/> is the selected case type (for its court fee).
+        /// </summary>
+        public static string CheckCase(LegalCase c, CaseType caseType)
+        {
+            if (string.IsNullOrWhiteSpace(c.ClientId)) return "יש לבחור לקוח.";
+            if (caseType == null || c.CaseTypeId != caseType.CaseTypeId) return "יש לבחור נושא תיק.";
+            if (string.IsNullOrWhiteSpace(c.OpposingPartyId)) return "יש לבחור את הצד שכנגד.";
+            if (string.IsNullOrWhiteSpace(c.OpposingLawyerId)) return "יש לבחור עורך דין נגדי.";
+            if (c.ClientId == c.OpposingPartyId) return "הלקוח והצד שכנגד הם אותו אדם.";
+
+            decimal amount = c.ClaimAmount ?? 0m;
+            if (amount <= 0m || !Validation.IsMoneyInRange(amount))
+                return c.IsInCourt == true ? "סכום התביעה חייב להיות בין 0.01 ל-1,000,000,000 ₪." : "שווי הנכס חייב להיות בין 0.01 ל-1,000,000,000 ₪.";
+            if (c.IsInCourt == true)
+            {
+                if (!c.CourtId.HasValue) return "יש לבחור בית משפט.";
+                if (c.AwardedAmount.HasValue && !Validation.IsMoneyInRange(c.AwardedAmount.Value)) return "הסכום שנפסק אינו תקין.";
+            }
+            else if (string.IsNullOrWhiteSpace(c.PropertyAddress) || string.IsNullOrWhiteSpace(c.Block) || string.IsNullOrWhiteSpace(c.Parcel))
+            {
+                return "בעסקת נכס יש להזין כתובת, גוש וחלקה.";
+            }
+
+            if (!c.FeePercent.HasValue || !Validation.IsPercent(c.FeePercent.Value)) return "אחוז שכר הטרחה חייב להיות בין 0 ל-100.";
+            decimal advance = c.Advance;
+            if (!Validation.IsMoneyInRange(advance)) return "המקדמה אינה תקינה.";
+            decimal total = FeeCalculator.CaseTotal(amount, c.FeePercent.Value, caseType.CourtFee ?? 0m, caseType.BaseFee ?? 0m);
+            if (total > 0m && advance > total) return "המקדמה גדולה מסכום התיק (" + total.ToString("#,##0.00") + " ₪).";
+            return null;
+        }
+
+        /// <summary>
+        /// Checks and saves a case. A new case gets its timeline from the case type. The audit entry is
+        /// written after the insert (so it carries the new case number), in the same transaction.
+        /// If anything fails nothing is saved and the case can be saved again without duplicate steps.
+        /// </summary>
+        public string SaveCase(LegalCase legalCase, CaseType caseType, bool isNew, DateTime today)
+        {
+            string error = CheckCase(legalCase, caseType);
+            if (error != null)
+            {
+                if (!isNew) ChangeDiscarder.DiscardChanges(db); // do not leave invalid values for the next save
+                return error;
+            }
+
+            if (isNew)
+            {
+                error = CreatePlan(legalCase, today);
+                if (error != null)
+                {
+                    legalCase.Steps.Clear();
+                    return error;
+                }
+                db.Cases.Add(legalCase);
+            }
+
+            // The case and its audit entry are saved together. Under an outer TransactionScope (the
+            // integration tests) that scope is the transaction; otherwise the service opens its own.
+            System.Data.Entity.DbContextTransaction transaction =
+                System.Transactions.Transaction.Current == null ? db.Database.BeginTransaction() : null;
+            try
+            {
+                db.SaveChanges();
+                AuditService.Log(db, isNew ? AuditActions.CaseOpened : AuditActions.CaseUpdated, "תיק", legalCase.CaseId, null);
+                db.SaveChanges();
+                if (transaction != null) transaction.Commit();
+            }
+            catch
+            {
+                if (transaction != null) transaction.Rollback();
+                ChangeDiscarder.DiscardChanges(db);
+                if (isNew) ForgetNewCase(legalCase);
+                throw;
+            }
+            finally
+            {
+                if (transaction != null) transaction.Dispose();
+            }
+            return null;
+        }
+
+        /// <summary>After a failed insert: takes the case and its steps out of the context, as if never added.</summary>
+        private void ForgetNewCase(LegalCase legalCase)
+        {
+            foreach (CaseStep step in legalCase.Steps.ToList())
+                db.Entry(step).State = System.Data.Entity.EntityState.Detached;
+            db.Entry(legalCase).State = System.Data.Entity.EntityState.Detached;
+            legalCase.Steps.Clear();
+            legalCase.CaseId = 0;
+        }
 
         /// <summary>False when the case was deleted (for example by another user while it was open).</summary>
         public bool CaseExists(int caseId)
@@ -366,7 +470,7 @@ namespace LawyerProject.BLL
         /// <summary>A case opened by mistake can be deleted by a manager while nothing was paid or completed.</summary>
         public string DeleteCase(LegalCase legalCase)
         {
-            if (!Session.IsManager) return "רק מנהלת יכולה למחוק תיק.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה למחוק תיק.";
             if (legalCase.Payments.Any()) return "לא ניתן למחוק תיק שנרשמו בו תשלומים.";
             if (legalCase.Steps.Any(s => s.IsDone == true)) return "לא ניתן למחוק תיק שסומנו בו שלבים כבוצעים.";
 
@@ -375,7 +479,7 @@ namespace LawyerProject.BLL
                 db.CaseSteps.Remove(step);
             db.Cases.Remove(legalCase);
             AuditService.Log(db, AuditActions.CaseDeleted, "תיק", id, null);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -406,16 +510,16 @@ namespace LawyerProject.BLL
             else
             {
                 // Steps created before v1.2 have no snapshot; fall back to the catalogue.
-                Procedure process = e.Procedure ?? db.Procedures.Find(e.ProcedureId);
-                days = process != null ? process.DurationDays : 0;
+                Procedure procedure = e.Procedure ?? db.Procedures.Find(e.ProcedureId);
+                days = procedure != null ? procedure.DurationDays : 0;
                 e.DurationDays = days; // keep it from now on, so a later catalogue change does not move this case
             }
             return new ScheduledStep
             {
                 Id = e.CaseStepId,
-                ProcessId = e.ProcedureId,
+                ProcedureId = e.ProcedureId,
                 DurationDays = days,
-                EstimatedDate = e.DueDate ?? DateTime.MaxValue.Date,
+                EstimatedDate = e.DueDate ?? Clock.Today, // never empty in practice; MaxValue would overflow when dates are pushed
                 DoneDate = e.DoneDate,
                 IsDone = e.IsDone == true,
                 IsFixed = e.IsFixedDate

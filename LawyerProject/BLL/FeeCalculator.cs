@@ -16,16 +16,17 @@ namespace LawyerProject.BLL
     public static class FeeCalculator
     {
         /// <summary>
-        /// Total the office charges for a case: the agreed percentage of the
-        /// claim (or property value) plus the court fee for the case type.
+        /// Total the office charges for a case: the agreed percentage of the claim (or property value),
+        /// but never less than the case type's minimum fee, plus the court fee for the case type.
         /// </summary>
-        public static decimal CaseTotal(decimal claimAmount, double profitPercent, decimal courtFee)
+        public static decimal CaseTotal(decimal claimAmount, double profitPercent, decimal courtFee, decimal minimumFee = 0m)
         {
             if (claimAmount < 0) throw new ArgumentOutOfRangeException(nameof(claimAmount));
             if (profitPercent < 0 || profitPercent > 100) throw new ArgumentOutOfRangeException(nameof(profitPercent));
             if (courtFee < 0) throw new ArgumentOutOfRangeException(nameof(courtFee));
+            if (minimumFee < 0) throw new ArgumentOutOfRangeException(nameof(minimumFee));
 
-            decimal share = claimAmount * (decimal)profitPercent / 100m;
+            decimal share = Math.Max(claimAmount * (decimal)profitPercent / 100m, minimumFee);
             return Round(share + courtFee);
         }
 

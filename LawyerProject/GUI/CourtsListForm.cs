@@ -28,11 +28,11 @@ namespace LawyerProject.GUI
         private void ApplyFilter()
         {
             string text = txtCourtName.Text.Trim();
-            dataGridView1.DataSource = all
+            gridCourts.DataSource = all
                 .Where(b => text.Length == 0 || b.Name.Contains(text))
                 .Select(b => new { b.CourtId, b.Name })
                 .ToList();
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridCourts, new Dictionary<string, string>
             {
                 { "CourtId", "קוד" },
                 { "Name", "שם בית משפט" }
@@ -58,7 +58,7 @@ namespace LawyerProject.GUI
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            int? id = Ui.SelectedInt(dataGridView1, "CourtId");
+            int? id = Ui.SelectedInt(gridCourts, "CourtId");
             if (id == null)
             {
                 Ui.Error("יש לבחור בית משפט מהרשימה.");

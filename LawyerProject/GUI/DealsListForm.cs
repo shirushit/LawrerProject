@@ -66,13 +66,13 @@ namespace LawyerProject.GUI
 
         private void ApplyFilter()
         {
-            dataGridView1.DataSource = all
+            gridDeals.DataSource = all
                 .Where(r => (txtPropertyAddress.Text.Trim().Length == 0 || (r.PropertyAddress ?? "").Contains(txtPropertyAddress.Text.Trim()))
                          && Matches(r.Block, txtBlock)
                          && Matches(r.Parcel, txtParcel)
                          && Matches(r.SubParcel, txtSubParcel))
                 .ToList();
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridDeals, new Dictionary<string, string>
             {
                 { "CaseId", "מספר תיק" },
                 { "Client", "לקוח" },
@@ -93,14 +93,14 @@ namespace LawyerProject.GUI
 
         private void txtSubParcel_TextChanged(object sender, EventArgs e) { ApplyFilter(); }
 
-        private void btnAdd_Click_1(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             CaseWindows.NewCase(this, true, () => { if (!IsDisposed) LoadDeals(); });
         }
 
-        private void btnUpdate_Click_1(object sender, EventArgs e)
+        private void btnUpdate_Click(object sender, EventArgs e)
         {
-            int? id = Ui.SelectedInt(dataGridView1, "CaseId");
+            int? id = Ui.SelectedInt(gridDeals, "CaseId");
             if (id == null)
             {
                 Ui.Error("יש לבחור עסקה מהרשימה.");

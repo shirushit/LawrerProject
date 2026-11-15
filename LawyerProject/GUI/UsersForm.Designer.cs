@@ -17,7 +17,7 @@
 
         private void InitializeComponent()
         {
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.gridUsers = new System.Windows.Forms.DataGridView();
             this.groupBoxAdd = new System.Windows.Forms.GroupBox();
             this.btnAdd = new System.Windows.Forms.Button();
             this.cmbRole = new System.Windows.Forms.ComboBox();
@@ -27,19 +27,19 @@
             this.txtUserName = new System.Windows.Forms.TextBox();
             this.lblUserName = new System.Windows.Forms.Label();
             this.lblPasswordRules = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridUsers)).BeginInit();
             this.groupBoxAdd.SuspendLayout();
             this.btnResetPassword = new System.Windows.Forms.Button();
             this.btnToggleActive = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
-            // dataGridView1
+            // gridUsers
             //
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(20, 20);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(420, 200);
-            this.dataGridView1.TabIndex = 0;
+            this.gridUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridUsers.Location = new System.Drawing.Point(20, 20);
+            this.gridUsers.Name = "gridUsers";
+            this.gridUsers.Size = new System.Drawing.Size(420, 200);
+            this.gridUsers.TabIndex = 0;
             //
             // groupBoxAdd
             //
@@ -162,7 +162,7 @@
             this.Controls.Add(this.groupBoxAdd);
             this.Controls.Add(this.btnResetPassword);
             this.Controls.Add(this.btnToggleActive);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.gridUsers);
             this.Font = new System.Drawing.Font("Calibri", 12F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -171,7 +171,7 @@
             this.RightToLeftLayout = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "ניהול משתמשים";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridUsers)).EndInit();
             this.groupBoxAdd.ResumeLayout(false);
             this.groupBoxAdd.PerformLayout();
             this.ResumeLayout(false);
@@ -180,7 +180,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView gridUsers;
         private System.Windows.Forms.GroupBox groupBoxAdd;
         private System.Windows.Forms.Label lblUserName;
         private System.Windows.Forms.TextBox txtUserName;

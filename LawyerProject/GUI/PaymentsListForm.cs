@@ -32,7 +32,7 @@ namespace LawyerProject.GUI
         public PaymentsListForm()
         {
             InitializeComponent();
-            dataGridView1.DataBindingComplete += (s, e) => GreyCancelled();
+            gridPayments.DataBindingComplete += (s, e) => GreyCancelled();
             LoadPayments();
         }
 
@@ -82,8 +82,8 @@ namespace LawyerProject.GUI
                 ? all
                 : all.Where(p => p.CaseId.ToString() == text || p.PaymentId.ToString() == text || (p.Client ?? "").Contains(text)).ToList();
 
-            dataGridView1.DataSource = rows;
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            gridPayments.DataSource = rows;
+            Ui.SetHeaders(gridPayments, new Dictionary<string, string>
             {
                 { "PaymentId", "קבלה" },
                 { "CaseId", "תיק" },
@@ -102,7 +102,7 @@ namespace LawyerProject.GUI
 
         private void GreyCancelled()
         {
-            foreach (DataGridViewRow row in dataGridView1.Rows)
+            foreach (DataGridViewRow row in gridPayments.Rows)
             {
                 var r = row.DataBoundItem as PaymentRow;
                 if (r != null && (r.IsCancelled || r.CancelsPaymentId.HasValue)) row.DefaultCellStyle.ForeColor = SystemColors.GrayText;
@@ -116,7 +116,7 @@ namespace LawyerProject.GUI
 
         private PaymentRow Selected()
         {
-            int? id = Ui.SelectedInt(dataGridView1, "PaymentId");
+            int? id = Ui.SelectedInt(gridPayments, "PaymentId");
             if (id == null)
             {
                 Ui.Error("יש לבחור תשלום מהרשימה.");

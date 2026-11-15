@@ -68,7 +68,8 @@ namespace Quedin.IntegrationTests
             User user = new AuthService(db).Login("legacy", "12345");
 
             Assert.IsNotNull(user);
-            Assert.IsTrue(user.PasswordHash.StartsWith("pbkdf2$"), "password should be re-stored as a hash");
+            string stored = db.Users.AsNoTracking().Single(u => u.UserName == "legacy").PasswordHash;
+            Assert.IsTrue(stored.StartsWith("pbkdf2$"), "password should be re-stored as a hash");
             Assert.IsNotNull(new AuthService(db).Login("legacy", "12345"), "login still works after the upgrade");
         }
 
@@ -99,7 +100,7 @@ namespace Quedin.IntegrationTests
 
         // ------------------------------------------------------------------ cases
 
-        private LegalCase NewCourtCase(int subjectId)
+        private LegalCase NewCourtCase(int caseTypeId)
         {
             Customer client = db.Customers.First(c => c.PersonType == PersonTypes.Client);
             Customer opposing = db.Customers.First(c => c.PersonType == PersonTypes.OpposingClient);
@@ -107,7 +108,7 @@ namespace Quedin.IntegrationTests
             return new LegalCase
             {
                 ClientId = client.CustomerId,
-                CaseTypeId = subjectId,
+                CaseTypeId = caseTypeId,
                 IsInCourt = true,
                 CourtId = db.Courts.First().CourtId,
                 PowerOfAttorney = "TEST",
@@ -231,7 +232,8 @@ namespace Quedin.IntegrationTests
             Assert.AreEqual(total - 500m, payment.BalanceAfter);
             Assert.AreEqual(AppSettings.VatRate, payment.VatRate);
 
-            Assert.IsNotNull(service.AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee }), "overpayment refused");
+            string overpaid = service.AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today });
+            StringAssert.Contains(overpaid, "גבוה מהיתרה", "overpayment refused");
             Assert.IsNull(service.CancelPayment(legalCase, payment.PaymentId, "נרשם בטעות"));
             Assert.IsNotNull(service.CancelPayment(legalCase, payment.PaymentId, null), "cannot cancel twice");
 
@@ -323,6 +325,8 @@ namespace Quedin.IntegrationTests
         public void DueSteps_ReturnsOneLinePerOpenCase()
         {
             var due = new CaseService(db).DueSteps(new DateTime(2030, 1, 1), 7);
+            int openCases = db.Cases.Count(c => c.Steps.Any(s => s.IsDone != true));
+            Assert.AreEqual(openCases, due.Count, "in 2030 every open case is late, so each appears once");
             Assert.AreEqual(due.Count, due.Select(d => d.CaseId).Distinct().Count());
         }
 
@@ -486,6 +490,100 @@ namespace Quedin.IntegrationTests
                 refused = true;
             }
             Assert.IsTrue(refused, "deleting from the audit log must fail");
+        }
+
+        // ------------------------------------------------------------------ v1.3.1: code review findings
+
+        [TestMethod]
+        public void SaveCase_RetryAfterAFailedSave_DoesNotDuplicateTheTimeline()
+        {
+            CaseType type = db.CaseTypes.First(s => s.Steps.Count >= 2);
+            int expectedSteps = type.Steps.Count;
+            var service = new CaseService(db);
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+            string realLawyer = legalCase.OpposingLawyerId;
+            legalCase.OpposingLawyerId = "NO-SUCH-ID"; // breaks the foreign key: the save fails in the database
+
+            Assert.ThrowsException<System.Data.Entity.Infrastructure.DbUpdateException>(
+                () => service.SaveCase(legalCase, type, true, new DateTime(2025, 1, 1)));
+            Assert.AreEqual(0, legalCase.Steps.Count, "the failed attempt left nothing behind");
+
+            legalCase.OpposingLawyerId = realLawyer;
+            Assert.IsNull(service.SaveCase(legalCase, type, true, new DateTime(2025, 1, 1)));
+
+            using (var fresh = new QuedinDbContext())
+                Assert.AreEqual(expectedSteps, fresh.CaseSteps.Count(s => s.CaseId == legalCase.CaseId));
+        }
+
+        [TestMethod]
+        public void SaveCase_AuditEntryCarriesTheNewCaseNumber()
+        {
+            CaseType type = db.CaseTypes.First(s => s.Steps.Any());
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+            Assert.IsNull(new CaseService(db).SaveCase(legalCase, type, true, DateTime.Today));
+            string id = legalCase.CaseId.ToString();
+            Assert.IsTrue(db.AuditLog.Any(a => a.Action == AuditActions.CaseOpened && a.EntityId == id));
+        }
+
+        [TestMethod]
+        public void SaveCase_RulesAreCheckedInTheServiceToo()
+        {
+            CaseType type = db.CaseTypes.First(s => s.Steps.Any());
+            LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+            legalCase.OpposingPartyId = legalCase.ClientId;
+            Assert.IsNotNull(new CaseService(db).SaveCase(legalCase, type, true, DateTime.Today), "client cannot be their own opponent");
+
+            legalCase = NewCourtCase(type.CaseTypeId);
+            legalCase.ClaimAmount = Validation.MaxMoney + 1m;
+            Assert.IsNotNull(new CaseService(db).SaveCase(legalCase, type, true, DateTime.Today), "amount above the limit");
+        }
+
+        [TestMethod]
+        public void AddPayment_FailedSave_IsNotWrittenByTheNextSave()
+        {
+            LegalCase legalCase = SavedCase();
+            var service = new CaseService(db);
+            var tooLong = new Payment { Amount = 100m, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today,
+                                        Description = new string('x', 60) }; // longer than the column: the save fails
+
+            Assert.ThrowsException<System.Data.Entity.Validation.DbEntityValidationException>(() => service.AddPayment(legalCase, tooLong));
+            Assert.AreEqual(0, legalCase.Payments.Count, "the failed payment was discarded");
+
+            Assert.IsNull(service.AddPayment(legalCase, new Payment { Amount = 100m, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today }));
+            using (var fresh = new QuedinDbContext())
+                Assert.AreEqual(1, fresh.Payments.Count(p => p.CaseId == legalCase.CaseId), "exactly one payment, not two");
+        }
+
+        [TestMethod]
+        public void Catalogue_ChangesNeedAManager()
+        {
+            db.Courts.Add(new Court { Name = "TEST-COURT" });
+            Assert.ThrowsException<UnauthorizedAccessException>(() => CatalogService.Save(db, "בית משפט", "TEST"));
+
+            Session.SignIn(new User { UserName = "test-manager", Role = Roles.Manager, IsActive = true });
+            CatalogService.Save(db, "בית משפט", "TEST");
+            Assert.IsTrue(db.Courts.Any(c => c.Name == "TEST-COURT"));
+            Assert.IsTrue(db.AuditLog.Any(a => a.Action == AuditActions.CatalogChanged && a.Details == "TEST"));
+        }
+
+        [TestMethod]
+        public void Payments_CannotBeEditedInTheDatabase()
+        {
+            var ex = Assert.ThrowsException<System.Data.SqlClient.SqlException>(
+                () => db.Database.ExecuteSqlCommand("UPDATE dbo.Payments SET Amount = Amount + 1 WHERE PaymentId = 1"));
+            StringAssert.Contains(ex.Message, "cannot be edited");
+        }
+
+        [TestMethod]
+        public void LoginSalt_DoesNotRevealWhichUsersExist()
+        {
+            string known = db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @p0", "admin").Single();
+            string unknown = db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @p0", "nobody-here").Single();
+            StringAssert.StartsWith(known, "pbkdf2$");
+            StringAssert.StartsWith(unknown, "pbkdf2$");
+            Assert.AreEqual(unknown, db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @p0", "nobody-here").Single(), "stable");
+            Assert.IsFalse(db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @p0", "admin").Single().Contains(
+                db.Users.Single(u => u.UserName == "admin").PasswordHash.Split('$')[3]), "the hash itself is never returned");
         }
     }
 }

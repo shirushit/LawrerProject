@@ -30,12 +30,12 @@ namespace LawyerProject.GUI
         {
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gridProcedures = new System.Windows.Forms.DataGridView();
+            this.groupSearch = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtProcedureName = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridProcedures)).BeginInit();
+            this.groupSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnUpdate
@@ -64,35 +64,35 @@ namespace LawyerProject.GUI
             this.btnAdd.UseVisualStyleBackColor = false;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
-            // dataGridView1
+            // gridProcedures
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(136, 307);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(995, 349);
-            this.dataGridView1.TabIndex = 17;
+            this.gridProcedures.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
+            this.gridProcedures.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridProcedures.Location = new System.Drawing.Point(136, 307);
+            this.gridProcedures.Margin = new System.Windows.Forms.Padding(4);
+            this.gridProcedures.MultiSelect = false;
+            this.gridProcedures.Name = "gridProcedures";
+            this.gridProcedures.ReadOnly = true;
+            this.gridProcedures.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.gridProcedures.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridProcedures.Size = new System.Drawing.Size(995, 349);
+            this.gridProcedures.TabIndex = 17;
             // 
-            // groupBox1
+            // groupSearch
             // 
-            this.groupBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.txtProcedureName);
-            this.groupBox1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBox1.Location = new System.Drawing.Point(532, 101);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupBox1.Size = new System.Drawing.Size(297, 118);
-            this.groupBox1.TabIndex = 16;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "חיפוש תהליך לתיק";
+            this.groupSearch.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.groupSearch.Controls.Add(this.label1);
+            this.groupSearch.Controls.Add(this.txtProcedureName);
+            this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.groupSearch.Location = new System.Drawing.Point(532, 101);
+            this.groupSearch.Margin = new System.Windows.Forms.Padding(4);
+            this.groupSearch.Name = "groupSearch";
+            this.groupSearch.Padding = new System.Windows.Forms.Padding(4);
+            this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.groupSearch.Size = new System.Drawing.Size(297, 118);
+            this.groupSearch.TabIndex = 16;
+            this.groupSearch.TabStop = false;
+            this.groupSearch.Text = "חיפוש תהליך לתיק";
             // 
             // label1
             // 
@@ -122,16 +122,16 @@ namespace LawyerProject.GUI
             this.ClientSize = new System.Drawing.Size(1243, 870);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnAdd);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.gridProcedures);
+            this.Controls.Add(this.groupSearch);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             this.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ProceduresListForm";
             this.Text = "כל התהליכים לתיקים";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridProcedures)).EndInit();
+            this.groupSearch.ResumeLayout(false);
+            this.groupSearch.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -140,8 +140,8 @@ namespace LawyerProject.GUI
 
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.DataGridView gridProcedures;
+        private System.Windows.Forms.GroupBox groupSearch;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtProcedureName;
     }

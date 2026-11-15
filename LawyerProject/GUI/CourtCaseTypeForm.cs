@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using LawyerProject.BLL;
 using LawyerProject.DB;
 
 namespace LawyerProject.GUI
@@ -31,8 +32,8 @@ namespace LawyerProject.GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var subject = cmbCaseType.SelectedItem as CaseType;
-            if (subject == null)
+            var caseType = cmbCaseType.SelectedItem as CaseType;
+            if (caseType == null)
             {
                 Ui.Error("יש לבחור נושא תיק.");
                 return;
@@ -42,9 +43,9 @@ namespace LawyerProject.GUI
                 db.CourtCaseTypes.Add(new CourtCaseType
                 {
                     CourtId = courtId,
-                    CaseTypeId = subject.CaseTypeId
+                    CaseTypeId = caseType.CaseTypeId
                 });
-                db.SaveChanges();
+                CatalogService.Save(db, "בית משפט", "נושא " + caseType.Name + " נוסף לבית משפט " + courtId);
                 DialogResult = DialogResult.OK;
                 Close();
             }

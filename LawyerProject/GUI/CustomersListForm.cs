@@ -52,7 +52,7 @@ namespace LawyerProject.GUI
             }
 
             List<Customer> list = rows.ToList();
-            dataGridView1.DataSource = list.Select(c => new
+            gridCustomers.DataSource = list.Select(c => new
             {
                 c.CustomerId,
                 IdType = c.IdType == IdTypes.None ? "-" : c.IdType,
@@ -66,7 +66,7 @@ namespace LawyerProject.GUI
                 BirthDate = Ui.FormatDate(c.BirthDate)
             }).ToList();
 
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridCustomers, new Dictionary<string, string>
             {
                 { "CustomerId", "מזהה" },
                 { "IdType", "סוג מזהה" },
@@ -106,7 +106,7 @@ namespace LawyerProject.GUI
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            object id = Ui.SelectedValue(dataGridView1, "CustomerId");
+            object id = Ui.SelectedValue(gridCustomers, "CustomerId");
             if (id == null)
             {
                 Ui.Error("יש לבחור רשומה מהרשימה.");

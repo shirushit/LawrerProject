@@ -65,7 +65,7 @@ namespace LawyerProject.GUI
         {
             foreach (Control c in parent.Controls)
             {
-                if (c == tabControl1) continue; // steps and payments are saved immediately
+                if (c == tabsCase) continue; // steps and payments are saved immediately
                 if (c is TextBox || c is MaskedTextBox) c.TextChanged += MarkDirty;
                 else if (c is ComboBox) ((ComboBox)c).SelectedIndexChanged += MarkDirty;
                 else if (c is CheckBox) ((CheckBox)c).CheckedChanged += MarkDirty;
@@ -190,11 +190,11 @@ namespace LawyerProject.GUI
         /// <summary>Courts that handle the selected case type; all courts if none is linked yet.</summary>
         private void LoadCourts()
         {
-            var subject = cmbCaseType.SelectedItem as CaseType;
+            var caseType = cmbCaseType.SelectedItem as CaseType;
             List<Court> courts = null;
-            if (subject != null)
+            if (caseType != null)
                 courts = db.CourtCaseTypes
-                    .Where(s => s.CaseTypeId == subject.CaseTypeId)
+                    .Where(s => s.CaseTypeId == caseType.CaseTypeId)
                     .Select(s => s.Court)
                     .Distinct()
                     .OrderBy(b => b.Name)
@@ -287,14 +287,14 @@ namespace LawyerProject.GUI
 
         private void FillSteps()
         {
-            listView1.Items.Clear();
+            listSteps.Items.Clear();
             DateTime today = Clock.Today;
             CaseStep next = CaseService.OrderedSteps(legalCase).FirstOrDefault(s => s.IsDone != true);
             int number = 1;
             foreach (CaseStep step in CaseService.OrderedSteps(legalCase))
             {
                 bool done = step.IsDone == true;
-                bool late = !done && step.DueDate.HasValue && step.DueDate.Value.Date < today;
+                bool late = CaseScheduler.UrgencyOf(step.DueDate, done, today, 0) == Urgency.Late;
                 string status = done ? "בוצע" : late ? "באיחור" : (step == next ? "השלב הבא" : "ממתין");
                 if (!done && step.IsFixedDate) status += " · מועד קבוע";
                 string lateText = "";
@@ -315,20 +315,20 @@ namespace LawyerProject.GUI
                 item.Tag = step.CaseStepId;
                 if (done) item.ForeColor = SystemColors.GrayText;
                 else if (late) item.BackColor = Color.MistyRose;
-                if (step == next) item.Font = new Font(listView1.Font, FontStyle.Bold);
-                listView1.Items.Add(item);
+                if (step == next) item.Font = new Font(listSteps.Font, FontStyle.Bold);
+                listSteps.Items.Add(item);
                 number++;
             }
             btnCompleteStep.Enabled = next != null;
             btnReschedule.Enabled = next != null;
-            btnStepNote.Enabled = listView1.Items.Count > 0;
+            btnStepNote.Enabled = listSteps.Items.Count > 0;
             btnUndoStep.Visible = Session.IsManager;
             btnUndoStep.Enabled = legalCase.Steps.Any(st => st.IsDone == true);
         }
 
         private void FillPayments()
         {
-            listView2.Items.Clear();
+            listPayments.Items.Clear();
             foreach (Payment p in legalCase.Payments.OrderBy(p => p.PaymentId))
             {
                 string status = p.IsCancelled ? "בוטל" : (p.CancelsPaymentId.HasValue ? "זיכוי" : "");
@@ -345,10 +345,10 @@ namespace LawyerProject.GUI
                 });
                 item.Tag = p.PaymentId;
                 if (p.IsCancelled || p.CancelsPaymentId.HasValue) item.ForeColor = SystemColors.GrayText;
-                listView2.Items.Add(item);
+                listPayments.Items.Add(item);
             }
-            btnReceipt.Enabled = listView2.Items.Count > 0;
-            btnCancelPayment.Enabled = listView2.Items.Count > 0;
+            btnReceipt.Enabled = listPayments.Items.Count > 0;
+            btnCancelPayment.Enabled = listPayments.Items.Count > 0;
             btnRefund.Visible = !isNew && CaseService.OpenBalance(legalCase) < 0;
         }
 
@@ -363,7 +363,7 @@ namespace LawyerProject.GUI
             // The fixed steps come from the case type, so it is chosen once, when the case is opened.
             cmbCaseType.Enabled = isNew;
             lblCaseTypeLock.Visible = !isNew;
-            tabControl1.Enabled = !isNew;
+            tabsCase.Enabled = !isNew;
             lblSaveHint.Visible = isNew;
             btnDeleteCase.Visible = !isNew && Session.IsManager;
             if (isNew) Text = court ? "פתיחת תיק חדש" : "עסקת נכס חדשה";
@@ -389,7 +389,7 @@ namespace LawyerProject.GUI
             if (loading) return;
             decimal? amount = ReadMoney(rbCourt.Checked ? txtClaimAmount : txtPropertyValue);
             double? percent = ReadPercent();
-            var subject = cmbCaseType.SelectedItem as CaseType;
+            var caseType = cmbCaseType.SelectedItem as CaseType;
 
             if (amount == null || percent == null || !Validation.IsPercent(percent.Value))
             {
@@ -398,7 +398,7 @@ namespace LawyerProject.GUI
                 return;
             }
 
-            decimal total = FeeCalculator.CaseTotal(amount.Value, percent.Value, subject != null ? (subject.CourtFee ?? 0m) : 0m);
+            decimal total = FeeCalculator.CaseTotal(amount.Value, percent.Value, caseType != null ? (caseType.CourtFee ?? 0m) : 0m, caseType != null ? (caseType.BaseFee ?? 0m) : 0m);
             decimal paid = isNew ? 0m : CaseService.PaidTotal(legalCase);
             decimal balance = FeeCalculator.Balance(total, new[] { paid });
             lblTotal.Text = Ui.FormatMoney(total);
@@ -470,14 +470,14 @@ namespace LawyerProject.GUI
             Action<Control, string> fail = (control, message) => { errorProvider1.SetError(control, message); ok = false; };
 
             var client = cmbClient.SelectedItem as Customer;
-            var subject = cmbCaseType.SelectedItem as CaseType;
+            var caseType = cmbCaseType.SelectedItem as CaseType;
             var opposingClient = cmbOpposingParty.SelectedItem as Customer;
             var opposingLawyer = cmbOpposingLawyer.SelectedItem as Customer;
             var court = cmbCourt.SelectedItem as Court;
             bool isCourt = rbCourt.Checked;
 
             if (client == null) fail(cmbClient, "יש לבחור לקוח");
-            if (subject == null) fail(cmbCaseType, "יש לבחור נושא תיק");
+            if (caseType == null) fail(cmbCaseType, "יש לבחור נושא תיק");
             if (opposingClient == null) fail(cmbOpposingParty, "יש לבחור את הצד שכנגד");
             if (opposingLawyer == null) fail(cmbOpposingLawyer, "יש לבחור עורך דין נגדי");
             if (client != null && opposingClient != null && client.CustomerId == opposingClient.CustomerId)
@@ -517,9 +517,9 @@ namespace LawyerProject.GUI
                 else advance = m.Value;
             }
 
-            if (ok && subject != null)
+            if (ok && caseType != null)
             {
-                decimal total = FeeCalculator.CaseTotal(isCourt ? (claim ?? 0m) : (propertyValue ?? 0m), percent.Value, subject.CourtFee ?? 0m);
+                decimal total = FeeCalculator.CaseTotal(isCourt ? (claim ?? 0m) : (propertyValue ?? 0m), percent.Value, caseType.CourtFee ?? 0m, caseType.BaseFee ?? 0m);
                 if (advance > total && total > 0) fail(txtAdvance, "המקדמה גדולה מסכום התיק (" + Ui.FormatMoney(total) + ")");
                 decimal paid = isNew ? 0m : CaseService.PaidTotal(legalCase);
                 if (ok && paid > total && !Ui.Confirm("סכום התיק החדש (" + Ui.FormatMoney(total) + ") נמוך ממה שהלקוח כבר שילם (" +
@@ -529,16 +529,16 @@ namespace LawyerProject.GUI
 
             if (!ok) return false;
 
-            if (client != null && subject != null)
+            if (client != null && caseType != null)
             {
-                LegalCase duplicate = new CaseService(db).FindOpenDuplicate(client.CustomerId, subject.CaseTypeId, isNew ? 0 : legalCase.CaseId);
-                if (duplicate != null && (isNew || legalCase.ClientId != client.CustomerId || legalCase.CaseTypeId != subject.CaseTypeId) &&
+                LegalCase duplicate = new CaseService(db).FindOpenDuplicate(client.CustomerId, caseType.CaseTypeId, isNew ? 0 : legalCase.CaseId);
+                if (duplicate != null && (isNew || legalCase.ClientId != client.CustomerId || legalCase.CaseTypeId != caseType.CaseTypeId) &&
                     !Ui.Confirm("ללקוח זה כבר יש תיק פתוח מאותו נושא (תיק מספר " + duplicate.CaseId + "). לפתוח תיק נוסף?"))
                     return false;
             }
 
             legalCase.ClientId = client.CustomerId;
-            legalCase.CaseTypeId = subject.CaseTypeId;
+            legalCase.CaseTypeId = caseType.CaseTypeId;
             legalCase.OpposingPartyId = opposingClient.CustomerId;
             legalCase.OpposingLawyerId = opposingLawyer.CustomerId;
             legalCase.PowerOfAttorney = chkPowerOfAttorney.Checked ? SignedPrefix + dtpPowerOfAttorney.Value.ToString("dd/MM/yyyy") : "";
@@ -561,19 +561,14 @@ namespace LawyerProject.GUI
             if (!ValidateAndCopy()) return;
             try
             {
-                if (isNew)
-                {
-                    string error = new CaseService(db).CreatePlan(legalCase, Clock.Today);
-                    if (error != null)
-                    {
-                        Ui.Error(error);
-                        return;
-                    }
-                    db.Cases.Add(legalCase);
-                }
                 bool wasNew = isNew;
-                AuditService.Log(db, wasNew ? AuditActions.CaseOpened : AuditActions.CaseUpdated, "תיק", legalCase.CaseId == 0 ? null : (object)legalCase.CaseId, null);
-                db.SaveChanges();
+                // Business rules, the timeline of a new case and the audit entry live in the service.
+                string error = new CaseService(db).SaveCase(legalCase, cmbCaseType.SelectedItem as CaseType, isNew, Clock.Today);
+                if (error != null)
+                {
+                    Ui.Error(error);
+                    return;
+                }
                 dirty = false;
                 LoadCase(legalCase.CaseId);
                 Ui.Notify(this, wasNew ? "התיק נפתח. מספר תיק: " + legalCase.CaseId : "התיק עודכן.");
@@ -584,6 +579,12 @@ namespace LawyerProject.GUI
             {
                 HandleError("התיק לא נשמר.", ex);
             }
+        }
+
+        /// <summary>The number of the case shown (0 while a new case is not saved yet).</summary>
+        public int CaseId
+        {
+            get { return isNew || legalCase == null ? 0 : legalCase.CaseId; }
         }
 
         /// <summary>True after anything was saved, so the list that opened this window can refresh.</summary>
@@ -651,12 +652,12 @@ namespace LawyerProject.GUI
                     Ui.Notify(this, done);
                     WarnAboutConflicts();
                 }
-                tabControl1.SelectedTab = tab;
+                tabsCase.SelectedTab = tab;
             }
             catch (Exception ex)
             {
                 HandleError("הפעולה לא נשמרה.", ex);
-                tabControl1.SelectedTab = tab;
+                tabsCase.SelectedTab = tab;
             }
         }
 
@@ -690,8 +691,8 @@ namespace LawyerProject.GUI
 
         private CaseStep SelectedStep()
         {
-            if (listView1.SelectedItems.Count == 0) return null;
-            int id = (int)listView1.SelectedItems[0].Tag;
+            if (listSteps.SelectedItems.Count == 0) return null;
+            int id = (int)listSteps.SelectedItems[0].Tag;
             return legalCase.Steps.FirstOrDefault(s => s.CaseStepId == id);
         }
 
@@ -722,7 +723,7 @@ namespace LawyerProject.GUI
             string note;
             if (!Ui.AskDate(this, "שינוי מועד",
                     "מועד חדש לשלב \"" + StepName(step) + "\" (למשל מועד דיון שנקבע ע\"י בית המשפט).\nהמועד יסומן כקבוע: החישוב האוטומטי לא יזיז אותו, והשלבים הבאים יחושבו ממנו.",
-                    step.DueDate ?? Clock.Today, null, null, "סיבת השינוי (לא חובה)", step.Notes, out newDate, out note)) return;
+                    step.DueDate ?? Clock.Today, Clock.Today.AddYears(-CaseService.MaxYearsAway), Clock.Today.AddYears(CaseService.MaxYearsAway), "סיבת השינוי (לא חובה)", step.Notes, out newDate, out note)) return;
 
             if (!BusinessCalendar.IsWorkday(newDate))
             {
@@ -762,17 +763,17 @@ namespace LawyerProject.GUI
                 }
             }
             LoadCase(legalCase.CaseId);
-            tabControl1.SelectedTab = tabPayments;
+            tabsCase.SelectedTab = tabPayments;
         }
 
         private void btnCancelPayment_Click(object sender, EventArgs e)
         {
-            if (listView2.SelectedItems.Count == 0)
+            if (listPayments.SelectedItems.Count == 0)
             {
                 Ui.Error("יש לבחור תשלום מהרשימה.");
                 return;
             }
-            int id = (int)listView2.SelectedItems[0].Tag;
+            int id = (int)listPayments.SelectedItems[0].Tag;
             Payment p = legalCase.Payments.First(x => x.PaymentId == id);
             if (p.IsCancelled) { Ui.Error("התשלום כבר בוטל."); return; }
             if (p.CancelsPaymentId.HasValue) { Ui.Error("זו רשומת זיכוי של ביטול קודם, ואותה לא ניתן לבטל."); return; }
@@ -800,12 +801,12 @@ namespace LawyerProject.GUI
 
         private void btnReceipt_Click(object sender, EventArgs e)
         {
-            if (listView2.SelectedItems.Count == 0)
+            if (listPayments.SelectedItems.Count == 0)
             {
                 Ui.Error("יש לבחור תשלום מהרשימה.");
                 return;
             }
-            using (var form = new ReceiptForm((int)listView2.SelectedItems[0].Tag))
+            using (var form = new ReceiptForm((int)listPayments.SelectedItems[0].Tag))
                 form.ShowDialog(this);
         }
 
@@ -818,12 +819,12 @@ namespace LawyerProject.GUI
                 if (form.ShowDialog() != DialogResult.OK) return;
                 string id = form.SavedId;
                 object[] keep = { cmbClient.SelectedItem, cmbOpposingParty.SelectedItem, cmbOpposingLawyer.SelectedItem };
-                var subject = cmbCaseType.SelectedItem as CaseType;
+                var caseType = cmbCaseType.SelectedItem as CaseType;
                 var court = cmbCourt.SelectedItem as Court;
                 LoadLists();
                 Changed = true;
                 loading = true;
-                Select(cmbCaseType, o => subject != null && ((CaseType)o).CaseTypeId == subject.CaseTypeId);
+                Select(cmbCaseType, o => caseType != null && ((CaseType)o).CaseTypeId == caseType.CaseTypeId);
                 loading = false;
                 LoadCourts();
                 Select(cmbCourt, o => court != null && ((Court)o).CourtId == court.CourtId);

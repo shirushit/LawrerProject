@@ -43,7 +43,7 @@ namespace LawyerProject.GUI
 
         private void FillSubjects()
         {
-            listView2.Items.Clear();
+            listCaseTypes.Items.Clear();
             foreach (CourtCaseType link in db.CourtCaseTypes
                          .Where(s => s.CourtId == court.CourtId)
                          .OrderBy(s => s.CaseType.Name)
@@ -51,7 +51,7 @@ namespace LawyerProject.GUI
             {
                 var item = new ListViewItem(new[] { link.CourtCaseTypeId.ToString(), link.CaseType.Name });
                 item.Tag = link.CourtCaseTypeId;
-                listView2.Items.Add(item);
+                listCaseTypes.Items.Add(item);
             }
         }
 
@@ -74,7 +74,7 @@ namespace LawyerProject.GUI
             {
                 court.Name = name;
                 if (isNew) db.Courts.Add(court);
-                db.SaveChanges();
+                CatalogService.Save(db, "בית משפט", (isNew ? "נוסף: " : "עודכן: ") + name);
                 Ui.Notify(this, isNew ? "בית המשפט נשמר. כעת אפשר להוסיף את נושאי התיקים שהוא מטפל בהם." : "בית המשפט עודכן.");
                 isNew = false;
                 lblCode.Text = court.CourtId.ToString();
@@ -100,12 +100,12 @@ namespace LawyerProject.GUI
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
-            if (listView2.SelectedItems.Count == 0)
+            if (listCaseTypes.SelectedItems.Count == 0)
             {
                 Ui.Error("יש לבחור נושא מהרשימה.");
                 return;
             }
-            int id = (int)listView2.SelectedItems[0].Tag;
+            int id = (int)listCaseTypes.SelectedItems[0].Tag;
             if (!Ui.Confirm("להסיר את הנושא מרשימת הנושאים של בית המשפט?")) return;
 
             try
@@ -114,7 +114,7 @@ namespace LawyerProject.GUI
                 if (link != null)
                 {
                     db.CourtCaseTypes.Remove(link);
-                    db.SaveChanges();
+                    CatalogService.Save(db, "בית משפט", "הוסר נושא " + link.CaseTypeId + " מבית משפט " + link.CourtId);
                 }
                 FillSubjects();
             }

@@ -22,6 +22,9 @@ USE [QuedinDB];
 GO
 
 -- ---------------------------------------------------------- drop (child tables first)
+IF OBJECT_ID(N'dbo.usp_ChangeOwnPassword', N'P') IS NOT NULL DROP PROCEDURE [dbo].[usp_ChangeOwnPassword];
+IF OBJECT_ID(N'dbo.usp_TryLogin', N'P') IS NOT NULL DROP PROCEDURE [dbo].[usp_TryLogin];
+IF OBJECT_ID(N'dbo.usp_GetLoginSalt', N'P') IS NOT NULL DROP PROCEDURE [dbo].[usp_GetLoginSalt];
 IF OBJECT_ID(N'dbo.Payments', N'U') IS NOT NULL DROP TABLE [dbo].[Payments];
 IF OBJECT_ID(N'dbo.CaseSteps', N'U') IS NOT NULL DROP TABLE [dbo].[CaseSteps];
 IF OBJECT_ID(N'dbo.Cases', N'U') IS NOT NULL DROP TABLE [dbo].[Cases];
@@ -135,8 +138,8 @@ CREATE TABLE [dbo].[Cases] (
     [ClaimAmount] money NULL,
     [AwardedAmount] money NULL,
     [FeePercent] float NULL,
-    [OpposingLawyerId] nvarchar(50) NOT NULL,
-    [OpposingPartyId] nvarchar(50) NOT NULL,
+    [OpposingLawyerId] nvarchar(20) NOT NULL,
+    [OpposingPartyId] nvarchar(20) NOT NULL,
     [RowVersion] rowversion NOT NULL,
     CONSTRAINT [PK_Cases] PRIMARY KEY CLUSTERED ([CaseId])
 );
@@ -157,7 +160,7 @@ CREATE TABLE [dbo].[Payments] (
     [CaseId] int NOT NULL CONSTRAINT [DF_Payments_CaseId] DEFAULT 0,
     [BalanceAfter] money NOT NULL,
     [Method] nvarchar(50) NOT NULL,
-    [CardLast4] nchar(16) NULL,
+    [CardLast4] nvarchar(8) NULL,
     [ChequeNumber] nchar(10) NULL,
     [BankNumber] nchar(3) NULL,
     [BranchNumber] nchar(3) NULL,
@@ -192,6 +195,22 @@ ALTER TABLE [dbo].[CaseTypeSteps] ADD CONSTRAINT [UQ_CaseTypeSteps_Order] UNIQUE
 CREATE INDEX [IX_CaseSteps_CaseId] ON [dbo].[CaseSteps] ([CaseId]);
 CREATE INDEX [IX_Payments_CaseId] ON [dbo].[Payments] ([CaseId]);
 CREATE INDEX [IX_Cases_ClientId] ON [dbo].[Cases] ([ClientId]);
+-- Links the EF model does not navigate, but the database still guarantees.
+ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [FK_Cases_Customers_OpposingParty] FOREIGN KEY ([OpposingPartyId]) REFERENCES [dbo].[Customers] ([CustomerId]);
+ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [FK_Cases_Customers_OpposingLawyer] FOREIGN KEY ([OpposingLawyerId]) REFERENCES [dbo].[Customers] ([CustomerId]);
+ALTER TABLE [dbo].[Payments] ADD CONSTRAINT [FK_Payments_CancelsPayment] FOREIGN KEY ([CancelsPaymentId]) REFERENCES [dbo].[Payments] ([PaymentId]);
+-- A payment can be cancelled only once.
+CREATE UNIQUE INDEX [UQ_Payments_CancelsPaymentId] ON [dbo].[Payments] ([CancelsPaymentId]) WHERE [CancelsPaymentId] IS NOT NULL;
+-- The same rules the business layer checks, kept by the database too.
+ALTER TABLE [dbo].[Users] ADD CONSTRAINT [CK_Users_Role] CHECK ([Role] IN (N'מנהל', N'משתמש רגיל'));
+ALTER TABLE [dbo].[Users] ADD CONSTRAINT [CK_Users_FailedLogins] CHECK ([FailedLogins] >= 0);
+ALTER TABLE [dbo].[CaseTypes] ADD CONSTRAINT [CK_CaseTypes_Fees] CHECK (ISNULL([BaseFee], 0) >= 0 AND ISNULL([CourtFee], 0) >= 0);
+ALTER TABLE [dbo].[Procedures] ADD CONSTRAINT [CK_Procedures_DurationDays] CHECK ([DurationDays] >= 0);
+ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [CK_Cases_Amounts] CHECK ([Advance] >= 0 AND ISNULL([ClaimAmount], 0) >= 0 AND ISNULL([AwardedAmount], 0) >= 0);
+ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [CK_Cases_FeePercent] CHECK ([FeePercent] IS NULL OR [FeePercent] BETWEEN 0 AND 100);
+ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [CK_Cases_NotOwnOpponent] CHECK ([OpposingPartyId] <> [ClientId]);
+ALTER TABLE [dbo].[Payments] ADD CONSTRAINT [CK_Payments_Amount] CHECK ([Amount] <> 0);
+ALTER TABLE [dbo].[Payments] ADD CONSTRAINT [CK_Payments_VatRate] CHECK ([VatRate] IS NULL OR [VatRate] BETWEEN 0 AND 1);
 GO
 
 -- The audit log is append-only: nobody can change or delete what was recorded.
@@ -201,6 +220,124 @@ AS
 BEGIN
     -- INSTEAD OF: the change itself never runs; the caller gets an error.
     RAISERROR (N'The audit log is append-only.', 16, 1);
+END
+GO
+
+-- A payment is a receipt: once written, only "cancelled" may change (from 0 to 1).
+-- Corrections are made with a reversing entry, never by editing the original.
+CREATE TRIGGER [dbo].[TR_Payments_Immutable] ON [dbo].[Payments]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1 FROM inserted i JOIN deleted d ON d.[PaymentId] = i.[PaymentId]
+        WHERE i.[CaseId] <> d.[CaseId] OR i.[Amount] <> d.[Amount] OR i.[PaidOn] <> d.[PaidOn]
+           OR i.[Method] <> d.[Method] OR ISNULL(i.[Kind], N'') <> ISNULL(d.[Kind], N'')
+           OR i.[BalanceAfter] <> d.[BalanceAfter] OR ISNULL(i.[VatRate], -1) <> ISNULL(d.[VatRate], -1)
+           OR ISNULL(i.[CancelsPaymentId], -1) <> ISNULL(d.[CancelsPaymentId], -1)
+           OR (d.[IsCancelled] = 1 AND i.[IsCancelled] = 0))
+    BEGIN
+        RAISERROR (N'A payment cannot be edited. Cancel it with a reversing entry instead.', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END
+GO
+
+-- ---------------------------------------------------------- login procedures
+-- Password hashes never leave the database: the app asks for the salt, hashes the typed password
+-- with PBKDF2 and the database compares. With security.sql, employees cannot read or change the
+-- Users table directly - only through these procedures (EXECUTE AS OWNER).
+
+CREATE PROCEDURE [dbo].[usp_GetLoginSalt] @UserName nvarchar(50)
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @stored nvarchar(200) = (SELECT [PasswordHash] FROM [dbo].[Users] WHERE [UserName] = @UserName);
+    IF @stored IS NULL
+    BEGIN
+        -- An unknown user gets a stable made-up salt, so the answer does not reveal which names exist.
+        DECLARE @fake varbinary(16) = CAST(HASHBYTES('SHA2_256', N'quedin-unknown-user:' + LOWER(@UserName)) AS varbinary(16));
+        SELECT N'pbkdf2$100000$' + CAST(CAST('' AS xml).value('xs:base64Binary(sql:variable("@fake"))', 'varchar(64)') AS nvarchar(64)) + N'$' AS [Salt];
+        RETURN;
+    END
+    IF @stored NOT LIKE N'pbkdf2$%'
+    BEGIN
+        SELECT N'legacy$' AS [Salt]; -- a password stored as plain text by the 2024 version
+        RETURN;
+    END
+    -- "pbkdf2$<iterations>$<salt>$" : everything up to the last '$'
+    SELECT LEFT(@stored, LEN(@stored) - CHARINDEX(N'$', REVERSE(@stored)) + 1) AS [Salt];
+END
+GO
+
+-- Result: 0 = success, 1 = wrong password, 2 = locked, 3 = deactivated, 4 = unknown user,
+--         5 = wrong password and now locked. 5 wrong passwords lock the user for 15 minutes
+--         (the same numbers as LoginPolicy in the app).
+CREATE PROCEDURE [dbo].[usp_TryLogin] @UserName nvarchar(50), @Candidate nvarchar(200), @UpgradeHash nvarchar(200) = NULL
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @now datetime = SYSDATETIME();
+    DECLARE @id int, @stored nvarchar(200), @active bit, @fails int, @locked datetime, @role nvarchar(50);
+    SELECT @id = [UserId], @stored = [PasswordHash], @active = [IsActive], @fails = [FailedLogins],
+           @locked = [LockedUntil], @role = [Role]
+    FROM [dbo].[Users] WHERE [UserName] = @UserName;
+
+    IF @id IS NULL
+    BEGIN
+        SELECT 4 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
+        RETURN;
+    END
+    IF @locked > @now
+    BEGIN
+        SELECT 2 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], @locked AS [LockedUntil];
+        RETURN;
+    END
+
+    -- Hashes are base64 and therefore case-sensitive: compare with a binary collation.
+    IF @Candidate IS NULL OR @stored COLLATE Latin1_General_BIN2 <> @Candidate COLLATE Latin1_General_BIN2
+    BEGIN
+        SET @fails = @fails + 1;
+        IF @fails >= 5
+        BEGIN
+            UPDATE [dbo].[Users] SET [FailedLogins] = 0, [LockedUntil] = DATEADD(minute, 15, @now) WHERE [UserId] = @id;
+            SELECT 5 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], DATEADD(minute, 15, @now) AS [LockedUntil];
+        END
+        ELSE
+        BEGIN
+            UPDATE [dbo].[Users] SET [FailedLogins] = @fails WHERE [UserId] = @id;
+            SELECT 1 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
+        END
+        RETURN;
+    END
+
+    UPDATE [dbo].[Users]
+    SET [FailedLogins] = 0, [LockedUntil] = NULL,
+        [PasswordHash] = CASE WHEN [PasswordHash] NOT LIKE N'pbkdf2$%' AND @UpgradeHash LIKE N'pbkdf2$%' THEN @UpgradeHash ELSE [PasswordHash] END
+    WHERE [UserId] = @id;
+    -- Only someone who knows the password learns that the user was deactivated.
+    SELECT CASE WHEN @active = 1 THEN 0 ELSE 3 END AS [Result], @id AS [UserId], @role AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
+END
+GO
+
+-- Changes a password only when the current one (hashed with the stored salt) matches.
+CREATE PROCEDURE [dbo].[usp_ChangeOwnPassword] @UserName nvarchar(50), @OldCandidate nvarchar(200), @NewHash nvarchar(200)
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF @NewHash IS NULL OR @NewHash NOT LIKE N'pbkdf2$%'
+    BEGIN
+        SELECT 0 AS [Changed];
+        RETURN;
+    END
+    UPDATE [dbo].[Users] SET [PasswordHash] = @NewHash
+    WHERE [UserName] = @UserName AND [IsActive] = 1
+      AND [PasswordHash] COLLATE Latin1_General_BIN2 = @OldCandidate COLLATE Latin1_General_BIN2;
+    SELECT @@ROWCOUNT AS [Changed];
 END
 GO
 
@@ -312,7 +449,7 @@ INSERT INTO [dbo].[Cases] ([CaseId], [ClientId], [CaseTypeId], [IsInCourt], [Cou
     (2, N'312345671', 3, 1, 4, 3, N'נחתם 20/09/2026', 0, 2000, 0, NULL, NULL, NULL, NULL, 42000, NULL, 25, N'411111032', N'374074029'),
     (3, N'324691344', 2, 1, 5, 2, N'', 0, 5000, 0, NULL, NULL, NULL, NULL, 120000, NULL, 18, N'423456706', N'386419691'),
     (4, N'337037014', 4, 0, NULL, 12, N'נחתם 23/10/2026', 0, 1500, 1, N'5432', N'17', N'4', N'נהר הירדן 21, בית שמש', 1850000, NULL, 0.5, N'398765362', N'512345786'),
-    (5, N'349382689', 1, 1, 3, 9, N'נחתם 05/10/2025', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 20, N'411111032', N'374074029');
+    (5, N'349382689', 1, 1, 3, 9, N'נחתם 05/10/2025', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 25, N'411111032', N'374074029');
 SET IDENTITY_INSERT [dbo].[Cases] OFF;
 SET IDENTITY_INSERT [dbo].[CaseSteps] ON;
 INSERT INTO [dbo].[CaseSteps] ([CaseStepId], [CaseId], [ProcedureId], [DueDate], [DoneDate], [IsDone], [DurationDays], [Notes], [IsFixedDate]) VALUES
@@ -359,7 +496,7 @@ INSERT INTO [dbo].[Payments] ([PaymentId], [CaseId], [BalanceAfter], [Method], [
     (1, 1, 15200.0, N'מזומן', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, 3000, DATEADD(day, -150, @Today), N'מקדמה', NULL, NULL),
     (2, 1, 10200.0, N'העברה בנקאית', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, 5000, DATEADD(day, -130, @Today), N'תשלום שכר טרחה', N'TR-00002', NULL),
     (3, 4, 7750.0, N'מזומן', N'שכר טרחה', 0.18, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1500, DATEADD(day, -10, @Today), N'מקדמה', NULL, NULL),
-    (4, 5, 0.0, N'צ''ק', N'שכר טרחה', 0.18, 0, NULL, NULL, N'1000004', N'12', N'345', N'987654', 13200.0, DATEADD(day, -390, @Today), N'מקדמה', NULL, DATEADD(day, -390, @Today));
+    (4, 5, 0.0, N'צ''ק', N'שכר טרחה', 0.18, 0, NULL, NULL, N'1000004', N'12', N'345', N'987654', 16200.0, DATEADD(day, -390, @Today), N'מקדמה', NULL, DATEADD(day, -390, @Today));
 SET IDENTITY_INSERT [dbo].[Payments] OFF;
 GO
 

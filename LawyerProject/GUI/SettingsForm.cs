@@ -185,6 +185,7 @@ namespace LawyerProject.GUI
                         Ui.Error("היום הזה כבר ברשימה.");
                         return;
                     }
+                    CatalogService.RequireManager();
                     db.Holidays.Add(new Holiday { HolidayDate = date, Name = name });
                     AuditService.Log(db, AuditActions.HolidayAdded, "יום חופש", date.ToString("dd/MM/yyyy"), name);
                     db.SaveChanges();
@@ -215,6 +216,7 @@ namespace LawyerProject.GUI
                     Holiday row = db.Holidays.Find(date);
                     if (row != null)
                     {
+                        CatalogService.RequireManager();
                         db.Holidays.Remove(row);
                         AuditService.Log(db, AuditActions.HolidayRemoved, "יום חופש", date.ToString("dd/MM/yyyy"), row.Name);
                         db.SaveChanges();

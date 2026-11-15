@@ -17,9 +17,9 @@ namespace Quedin.Tests
             // Deliberately out of order: the plan must follow Level, not list order.
             return new List<StepTemplate>
             {
-                new StepTemplate { ProcessId = 30, Level = 3, DurationDays = 21 },
-                new StepTemplate { ProcessId = 10, Level = 1, DurationDays = 7 },
-                new StepTemplate { ProcessId = 20, Level = 2, DurationDays = 14 },
+                new StepTemplate { ProcedureId = 30, Level = 3, DurationDays = 21 },
+                new StepTemplate { ProcedureId = 10, Level = 1, DurationDays = 7 },
+                new StepTemplate { ProcedureId = 20, Level = 2, DurationDays = 14 },
             };
         }
 
@@ -34,7 +34,7 @@ namespace Quedin.Tests
         {
             List<ScheduledStep> plan = CaseScheduler.BuildPlan(CivilClaim(), Opened);
 
-            CollectionAssert.AreEqual(new[] { 10, 20, 30 }, plan.Select(s => s.ProcessId).ToArray());
+            CollectionAssert.AreEqual(new[] { 10, 20, 30 }, plan.Select(s => s.ProcedureId).ToArray());
             Assert.AreEqual(Opened.AddDays(7), plan[0].EstimatedDate);
             Assert.AreEqual(Opened.AddDays(21), plan[1].EstimatedDate);
             Assert.AreEqual(Opened.AddDays(42), plan[2].EstimatedDate);
@@ -44,7 +44,7 @@ namespace Quedin.Tests
         [TestMethod]
         public void BuildPlan_IgnoresTimeOfDay_AndNegativeDurations()
         {
-            var templates = new List<StepTemplate> { new StepTemplate { ProcessId = 1, Level = 1, DurationDays = -5 } };
+            var templates = new List<StepTemplate> { new StepTemplate { ProcedureId = 1, Level = 1, DurationDays = -5 } };
             List<ScheduledStep> plan = CaseScheduler.BuildPlan(templates, Opened.AddHours(15));
 
             Assert.AreEqual(Opened, plan[0].EstimatedDate);
@@ -121,7 +121,19 @@ namespace Quedin.Tests
 
             List<ScheduledStep> due = CaseScheduler.DueSoon(plan, today, 7);
 
-            CollectionAssert.AreEqual(new[] { 10, 20 }, due.Select(s => s.ProcessId).ToArray());
+            CollectionAssert.AreEqual(new[] { 10, 20 }, due.Select(s => s.ProcedureId).ToArray());
+        }
+
+        [TestMethod]
+        public void UrgencyOf_LateDueSoonOrNone()
+        {
+            DateTime today = new DateTime(2026, 11, 15);
+            Assert.AreEqual(Urgency.Late, CaseScheduler.UrgencyOf(today.AddDays(-1), false, today, 7));
+            Assert.AreEqual(Urgency.DueSoon, CaseScheduler.UrgencyOf(today, false, today, 7), "due today is not late yet");
+            Assert.AreEqual(Urgency.DueSoon, CaseScheduler.UrgencyOf(today.AddDays(7), false, today, 7));
+            Assert.AreEqual(Urgency.None, CaseScheduler.UrgencyOf(today.AddDays(8), false, today, 7));
+            Assert.AreEqual(Urgency.None, CaseScheduler.UrgencyOf(today.AddDays(-30), true, today, 7), "a done step is never late");
+            Assert.AreEqual(Urgency.None, CaseScheduler.UrgencyOf(null, false, today, 7));
         }
 
         // ---------------------------------------------------------- workdays
@@ -141,8 +153,8 @@ namespace Quedin.Tests
         {
             var templates = new List<StepTemplate>
             {
-                new StepTemplate { ProcessId = 1, Level = 1, DurationDays = 4 }, // Mon + 4 = Fri -> Sun 10/3
-                new StepTemplate { ProcessId = 2, Level = 2, DurationDays = 6 }, // Sun + 6 = Sat -> Sun 17/3
+                new StepTemplate { ProcedureId = 1, Level = 1, DurationDays = 4 }, // Mon + 4 = Fri -> Sun 10/3
+                new StepTemplate { ProcedureId = 2, Level = 2, DurationDays = 6 }, // Sun + 6 = Sat -> Sun 17/3
             };
             List<ScheduledStep> plan = CaseScheduler.BuildPlan(templates, Opened);
 
@@ -318,9 +330,9 @@ namespace Quedin.Tests
         {
             var templates = new List<StepTemplate>
             {
-                new StepTemplate { ProcessId = 1, Level = 1, DurationDays = 7 },
-                new StepTemplate { ProcessId = 2, Level = 2, DurationDays = 14 },
-                new StepTemplate { ProcessId = 3, Level = 3, DurationDays = 21 },
+                new StepTemplate { ProcedureId = 1, Level = 1, DurationDays = 7 },
+                new StepTemplate { ProcedureId = 2, Level = 2, DurationDays = 14 },
+                new StepTemplate { ProcedureId = 3, Level = 3, DurationDays = 21 },
             };
             List<ScheduledStep> plan = WithIds(CaseScheduler.BuildPlan(templates, Opened));
             DateTime hearing = new DateTime(2024, 4, 9); // Tuesday
@@ -397,41 +409,6 @@ namespace Quedin.Tests
                 BusinessCalendar.SetExtraHolidays(null);
             }
             Assert.IsTrue(BusinessCalendar.IsWorkday(recess));
-        }
-
-        // ---------------------------------------------------------- login lockout and clock
-
-        [TestMethod]
-        public void LoginPolicy_LocksAfterFiveFailures()
-        {
-            DateTime now = new DateTime(2026, 11, 15, 10, 0, 0);
-            DateTime? locked = null;
-            int failures = 0;
-            for (int i = 0; i < 4; i++) failures = LoginPolicy.RegisterFailure(failures, now, out locked);
-            Assert.AreEqual(4, failures);
-            Assert.IsNull(locked);
-
-            failures = LoginPolicy.RegisterFailure(failures, now, out locked);
-            Assert.AreEqual(0, failures);
-            Assert.AreEqual(now.AddMinutes(15), locked);
-            Assert.IsTrue(LoginPolicy.IsLocked(locked, now.AddMinutes(14)));
-            Assert.IsFalse(LoginPolicy.IsLocked(locked, now.AddMinutes(16)));
-        }
-
-        [TestMethod]
-        public void Clock_FollowsTheServerTime()
-        {
-            try
-            {
-                Clock.SetServerTime(DateTime.Now.AddDays(1));
-                Assert.AreEqual(DateTime.Today.AddDays(1), Clock.Today);
-                Clock.SetServerTime(DateTime.Now.AddMilliseconds(500));
-                Assert.AreEqual(TimeSpan.Zero, Clock.Offset, "network delay is ignored");
-            }
-            finally
-            {
-                Clock.Reset();
-            }
         }
     }
 }

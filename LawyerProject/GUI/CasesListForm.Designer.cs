@@ -36,8 +36,8 @@ namespace LawyerProject.GUI
             this.lblLegendLate = new System.Windows.Forms.Label();
             this.lblLegendSoon = new System.Windows.Forms.Label();
             this.lblCount = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.gridCases = new System.Windows.Forms.DataGridView();
+            this.groupSearch = new System.Windows.Forms.GroupBox();
             this.txtFilterClientId = new System.Windows.Forms.MaskedTextBox();
             this.cmbFilterCaseType = new System.Windows.Forms.ComboBox();
             this.cmbFilterClient = new System.Windows.Forms.ComboBox();
@@ -54,8 +54,8 @@ namespace LawyerProject.GUI
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCases)).BeginInit();
+            this.groupSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnUpdate
@@ -84,50 +84,50 @@ namespace LawyerProject.GUI
             this.btnAdd.UseVisualStyleBackColor = false;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
-            // dataGridView1
+            // gridCases
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(32, 243);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1125, 520);
-            this.dataGridView1.TabIndex = 9;
+            this.gridCases.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
+            this.gridCases.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridCases.Location = new System.Drawing.Point(32, 243);
+            this.gridCases.Margin = new System.Windows.Forms.Padding(4);
+            this.gridCases.MultiSelect = false;
+            this.gridCases.Name = "gridCases";
+            this.gridCases.ReadOnly = true;
+            this.gridCases.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.gridCases.RowHeadersWidth = 62;
+            this.gridCases.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridCases.Size = new System.Drawing.Size(1125, 520);
+            this.gridCases.TabIndex = 9;
             // 
-            // groupBox2
+            // groupSearch
             // 
-            this.groupBox2.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.groupBox2.Controls.Add(this.txtFilterClientId);
-            this.groupBox2.Controls.Add(this.cmbFilterCaseType);
-            this.groupBox2.Controls.Add(this.cmbFilterClient);
-            this.groupBox2.Controls.Add(this.cmbFilterOpposingParty);
-            this.groupBox2.Controls.Add(this.cmbFilterOpposingLawyer);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.txtFilterCaseId);
-            this.groupBox2.Controls.Add(this.cmbFilterStatus);
-            this.groupBox2.Controls.Add(this.chkFilterPaid);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.label11);
-            this.groupBox2.Controls.Add(this.label12);
-            this.groupBox2.Controls.Add(this.label13);
-            this.groupBox2.Controls.Add(this.label14);
-            this.groupBox2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBox2.Location = new System.Drawing.Point(32, 18);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupBox2.Size = new System.Drawing.Size(1125, 180);
-            this.groupBox2.TabIndex = 18;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "חיפוש תיק לטיפול";
+            this.groupSearch.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.groupSearch.Controls.Add(this.txtFilterClientId);
+            this.groupSearch.Controls.Add(this.cmbFilterCaseType);
+            this.groupSearch.Controls.Add(this.cmbFilterClient);
+            this.groupSearch.Controls.Add(this.cmbFilterOpposingParty);
+            this.groupSearch.Controls.Add(this.cmbFilterOpposingLawyer);
+            this.groupSearch.Controls.Add(this.label1);
+            this.groupSearch.Controls.Add(this.label2);
+            this.groupSearch.Controls.Add(this.txtFilterCaseId);
+            this.groupSearch.Controls.Add(this.cmbFilterStatus);
+            this.groupSearch.Controls.Add(this.chkFilterPaid);
+            this.groupSearch.Controls.Add(this.label7);
+            this.groupSearch.Controls.Add(this.label10);
+            this.groupSearch.Controls.Add(this.label11);
+            this.groupSearch.Controls.Add(this.label12);
+            this.groupSearch.Controls.Add(this.label13);
+            this.groupSearch.Controls.Add(this.label14);
+            this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.groupSearch.Location = new System.Drawing.Point(32, 18);
+            this.groupSearch.Margin = new System.Windows.Forms.Padding(4);
+            this.groupSearch.Name = "groupSearch";
+            this.groupSearch.Padding = new System.Windows.Forms.Padding(4);
+            this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.groupSearch.Size = new System.Drawing.Size(1125, 180);
+            this.groupSearch.TabIndex = 18;
+            this.groupSearch.TabStop = false;
+            this.groupSearch.Text = "חיפוש תיק לטיפול";
             // 
             // txtFilterClientId
             // 
@@ -368,7 +368,7 @@ namespace LawyerProject.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(1232, 856);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupSearch);
             this.Controls.Add(this.lblSearch);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.btnClear);
@@ -377,15 +377,15 @@ namespace LawyerProject.GUI
             this.Controls.Add(this.lblCount);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnAdd);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.gridCases);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
             this.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CasesListForm";
             this.Text = "QUEDIN - תיקים";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCases)).EndInit();
+            this.groupSearch.ResumeLayout(false);
+            this.groupSearch.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -400,8 +400,8 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Label lblLegendLate;
         private System.Windows.Forms.Label lblLegendSoon;
         private System.Windows.Forms.Label lblCount;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.DataGridView gridCases;
+        private System.Windows.Forms.GroupBox groupSearch;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtFilterCaseId;

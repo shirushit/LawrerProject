@@ -55,6 +55,14 @@ namespace LawyerProject.BLL
     }
 
     /// <summary>Actions written to the audit log (AuditEntry.Action).</summary>
+    /// <summary>Column lengths from create-database.sql that the code shortens text to.</summary>
+    public static class ColumnLengths
+    {
+        public const int PaymentDescription = 50;
+        public const int StepNotes = 200;
+        public const int AuditDetails = 400;
+    }
+
     public static class AuditActions
     {
         public const string CaseOpened = "פתיחת תיק";
@@ -78,5 +86,6 @@ namespace LawyerProject.BLL
         public const string SettingsChanged = "שינוי הגדרות";
         public const string HolidayAdded = "הוספת יום חופש";
         public const string HolidayRemoved = "הסרת יום חופש";
+        public const string CatalogChanged = "שינוי בהגדרות המשרד";
     }
 }

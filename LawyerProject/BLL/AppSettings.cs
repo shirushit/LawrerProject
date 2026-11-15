@@ -47,7 +47,7 @@ namespace LawyerProject.BLL
         /// <summary>Saves the given settings (managers only). Returns null or a Hebrew error message.</summary>
         public static string Save(QuedinDbContext db, IDictionary<string, string> changes)
         {
-            if (!Session.IsManager) return "רק מנהל יכול לשנות הגדרות.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה לשנות הגדרות.";
             decimal vat;
             string rawVat;
             if (changes.TryGetValue(VatRateKey, out rawVat) &&

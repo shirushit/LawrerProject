@@ -8,7 +8,7 @@ namespace LawyerProject.BLL
     /// <summary>A fixed step defined for a case type (e.g. "filing the claim", 14 days).</summary>
     public class StepTemplate
     {
-        public int ProcessId { get; set; }
+        public int ProcedureId { get; set; }
         public int Level { get; set; }
         public int DurationDays { get; set; }
     }
@@ -17,7 +17,7 @@ namespace LawyerProject.BLL
     public class ScheduledStep
     {
         public int Id { get; set; }
-        public int ProcessId { get; set; }
+        public int ProcedureId { get; set; }
         public int DurationDays { get; set; }
         public DateTime EstimatedDate { get; set; }
         public DateTime? DoneDate { get; set; }
@@ -109,6 +109,14 @@ namespace LawyerProject.BLL
     /// Estimated dates never fall on a weekend or a holiday, and dates fixed by the court are never moved.
     /// Pure logic with no database access, so it is fully unit-tested.
     /// </summary>
+    /// <summary>How urgent an open step is.</summary>
+    public enum Urgency
+    {
+        None,
+        DueSoon,
+        Late
+    }
+
     public static class CaseScheduler
     {
         /// <summary>
@@ -127,7 +135,7 @@ namespace LawyerProject.BLL
                 cursor = BusinessCalendar.NextWorkday(cursor.AddDays(days));
                 plan.Add(new ScheduledStep
                 {
-                    ProcessId = t.ProcessId,
+                    ProcedureId = t.ProcedureId,
                     DurationDays = days,
                     EstimatedDate = cursor,
                     IsDone = false
@@ -243,11 +251,23 @@ namespace LawyerProject.BLL
             return conflicts;
         }
 
-        /// <summary>Open steps whose estimated date is within <paramref name="days"/> days (or already late).</summary>
+        /// <summary>
+        /// The one rule for "late" and "due soon", used by the home screen, the cases list and the case
+        /// screen: an open step is late when its date has passed, and due soon within <paramref name="soonDays"/> days.
+        /// </summary>
+        public static Urgency UrgencyOf(DateTime? due, bool isDone, DateTime today, int soonDays)
+        {
+            if (isDone || !due.HasValue) return Urgency.None;
+            if (due.Value.Date < today.Date) return Urgency.Late;
+            if (due.Value.Date <= today.Date.AddDays(soonDays)) return Urgency.DueSoon;
+            return Urgency.None;
+        }
+
+        /// <summary>Open steps that are late or due within <paramref name="days"/> days.</summary>
         public static List<ScheduledStep> DueSoon(IEnumerable<ScheduledStep> steps, DateTime today, int days)
         {
             return Ordered(steps)
-                .Where(s => !s.IsDone && s.EstimatedDate.Date <= today.Date.AddDays(days))
+                .Where(s => UrgencyOf(s.EstimatedDate, s.IsDone, today, days) != Urgency.None)
                 .ToList();
         }
 

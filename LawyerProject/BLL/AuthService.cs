@@ -23,8 +23,9 @@ namespace LawyerProject.BLL
 
         /// <summary>
         /// Checks the credentials. Returns the user, or null with a Hebrew message in <paramref name="error"/>.
-        /// After <see cref="LoginPolicy.MaxFailures"/> wrong passwords the user is locked for a while;
-        /// a deactivated user cannot log in at all.
+        /// The stored hash never comes to the app: the app gets the salt, hashes the typed password and the
+        /// database compares, counts failures and locks the user after <see cref="LoginPolicy.MaxFailures"/>
+        /// wrong passwords (see usp_TryLogin in create-database.sql). A deactivated user cannot log in.
         /// </summary>
         public User Login(string userName, string password, out string error)
         {
@@ -32,62 +33,76 @@ namespace LawyerProject.BLL
             if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(password)) return null;
 
             string name = userName.Trim();
-            User user = db.Users.FirstOrDefault(u => u.UserName == name);
-            if (user == null) return null;
+            string candidate, upgrade;
+            HashForLogin(name, password, out candidate, out upgrade);
 
-            DateTime now = Clock.Now;
-            if (!user.IsActive)
-            {
-                error = "המשתמש הושבת. פנו למנהל המשרד.";
-                return null;
-            }
-            if (LoginPolicy.IsLocked(user.LockedUntil, now))
-            {
-                error = "המשתמש נעול עד " + user.LockedUntil.Value.ToString("HH:mm") + " בגלל ניסיונות כניסה שגויים. מנהל יכול לשחרר אותו על ידי איפוס סיסמה.";
-                return null;
-            }
+            LoginAttempt result = db.Database.SqlQuery<LoginAttempt>(
+                "EXEC dbo.usp_TryLogin @UserName, @Candidate, @UpgradeHash",
+                Param("@UserName", name), Param("@Candidate", candidate), Param("@UpgradeHash", upgrade)).Single();
 
-            bool ok;
-            if (IsHashed(user.PasswordHash))
+            switch (result.Result)
             {
-                ok = PasswordHasher.Verify(password, user.PasswordHash);
+                case LoginAttempt.Success:
+                    error = null;
+                    return new User { UserId = result.UserId ?? 0, UserName = name, Role = result.Role, IsActive = true };
+                case LoginAttempt.Locked:
+                    error = "המשתמש נעול עד " + result.LockedUntil.Value.ToString("HH:mm") + " בגלל ניסיונות כניסה שגויים. מנהל/ת יכול/ה לשחרר אותו על ידי איפוס סיסמה.";
+                    return null;
+                case LoginAttempt.NowLocked:
+                    AuditService.Log(db, AuditActions.UserLocked, "משתמש", name, "עד " + result.LockedUntil.Value.ToString("HH:mm"));
+                    ChangeDiscarder.SaveOrDiscard(db);
+                    error = "יותר מדי ניסיונות שגויים. המשתמש נעול ל-" + LoginPolicy.LockMinutes + " דקות.";
+                    return null;
+                case LoginAttempt.Deactivated:
+                    error = "המשתמש הושבת. פנו למנהל/ת המשרד.";
+                    return null;
+                default: // wrong password or unknown user: the same answer
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Hashes the typed password with the user's salt from the database. An unknown user gets a
+        /// made-up salt, so both cases take the same time. A password from the 2024 version (stored as
+        /// plain text) is compared as is, and <paramref name="upgrade"/> holds the hash that replaces it.
+        /// </summary>
+        private void HashForLogin(string name, string password, out string candidate, out string upgrade)
+        {
+            string salt = db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @UserName", Param("@UserName", name)).FirstOrDefault();
+            if (salt == LegacySalt)
+            {
+                candidate = password;
+                upgrade = PasswordHasher.Hash(password);
             }
             else
             {
-                // A database created by the original 2024 version still holds plain-text
-                // passwords. Accept the old password once and replace it with a hash.
-                ok = user.PasswordHash == password;
-                if (ok) user.PasswordHash = PasswordHasher.Hash(password);
+                candidate = PasswordHasher.HashWithSalt(password, salt);
+                upgrade = null;
             }
+        }
 
-            if (!ok)
-            {
-                DateTime? lockedUntil;
-                user.FailedLogins = LoginPolicy.RegisterFailure(user.FailedLogins, now, out lockedUntil);
-                if (lockedUntil.HasValue)
-                {
-                    user.LockedUntil = lockedUntil;
-                    AuditService.Log(db, AuditActions.UserLocked, "משתמש", user.UserName, "עד " + lockedUntil.Value.ToString("HH:mm"));
-                    error = "יותר מדי ניסיונות שגויים. המשתמש נעול ל-" + LoginPolicy.LockMinutes + " דקות.";
-                }
-                db.SaveChanges();
-                return null;
-            }
+        private const string LegacySalt = "legacy$";
 
-            if (user.FailedLogins != 0 || user.LockedUntil.HasValue)
-            {
-                user.FailedLogins = 0;
-                user.LockedUntil = null;
-            }
-            db.SaveChanges();
-            error = null;
-            return user;
+        private static System.Data.SqlClient.SqlParameter Param(string name, string value)
+        {
+            return new System.Data.SqlClient.SqlParameter(name, System.Data.SqlDbType.NVarChar, 200) { Value = (object)value ?? DBNull.Value };
+        }
+
+        /// <summary>The row returned by usp_TryLogin.</summary>
+        private class LoginAttempt
+        {
+            public const int Success = 0, WrongPassword = 1, Locked = 2, Deactivated = 3, UnknownUser = 4, NowLocked = 5;
+
+            public int Result { get; set; }
+            public int? UserId { get; set; }
+            public string Role { get; set; }
+            public DateTime? LockedUntil { get; set; }
         }
 
         /// <summary>Turns a user's access on or off (managers only; a manager cannot deactivate themselves).</summary>
         public string SetActive(string userName, bool active)
         {
-            if (!Session.IsManager) return "רק מנהל יכול להשבית משתמשים.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה להשבית משתמשים.";
             string name = (userName ?? string.Empty).Trim();
             User user = db.Users.FirstOrDefault(u => u.UserName == name);
             if (user == null) return "המשתמש לא נמצא.";
@@ -97,14 +112,14 @@ namespace LawyerProject.BLL
 
             user.IsActive = active;
             AuditService.Log(db, active ? AuditActions.UserActivated : AuditActions.UserDeactivated, "משתמש", user.UserName, null);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
         /// <summary>Creates a user. Returns null on success or a Hebrew error message.</summary>
         public string AddUser(string userName, string password, string role)
         {
-            if (!Session.IsManager) return "רק מנהל יכול להוסיף משתמשים.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה להוסיף משתמשים.";
             if (string.IsNullOrWhiteSpace(userName)) return "יש להזין שם משתמש.";
             if (!Roles.All.Contains(role)) return "יש לבחור סוג משתמש.";
 
@@ -122,7 +137,7 @@ namespace LawyerProject.BLL
                 IsActive = true
             });
             AuditService.Log(db, AuditActions.UserAdded, "משתמש", name, role);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
@@ -137,16 +152,23 @@ namespace LawyerProject.BLL
             string passwordError = Validation.GetPasswordError(newPassword);
             if (passwordError != null) return passwordError;
 
-            user.PasswordHash = PasswordHasher.Hash(newPassword);
+            // The database checks the current password again before it stores the new hash.
+            string oldCandidate, ignored;
+            HashForLogin(user.UserName, oldPassword, out oldCandidate, out ignored);
+            int changed = db.Database.SqlQuery<int>("EXEC dbo.usp_ChangeOwnPassword @UserName, @OldCandidate, @NewHash",
+                Param("@UserName", user.UserName), Param("@OldCandidate", oldCandidate),
+                Param("@NewHash", PasswordHasher.Hash(newPassword))).Single();
+            if (changed != 1) return "הסיסמה לא הוחלפה. נסו שוב.";
+
             AuditService.Log(db, AuditActions.PasswordChanged, "משתמש", user.UserName, null);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
         /// <summary>A manager sets a new password for a user who forgot theirs.</summary>
         public string ResetPassword(string userName, string newPassword)
         {
-            if (!Session.IsManager) return "רק מנהל יכול לאפס סיסמה.";
+            if (!Session.IsManager) return "רק מנהל/ת יכול/ה לאפס סיסמה.";
             string name = (userName ?? string.Empty).Trim();
             User user = db.Users.FirstOrDefault(u => u.UserName == name);
             if (user == null) return "המשתמש לא נמצא.";
@@ -157,13 +179,9 @@ namespace LawyerProject.BLL
             user.FailedLogins = 0;
             user.LockedUntil = null; // a reset also releases a locked user
             AuditService.Log(db, AuditActions.PasswordReset, "משתמש", user.UserName, null);
-            db.SaveChanges();
+            ChangeDiscarder.SaveOrDiscard(db);
             return null;
         }
 
-        private static bool IsHashed(string stored)
-        {
-            return stored != null && stored.StartsWith("pbkdf2$");
-        }
     }
 }

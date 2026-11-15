@@ -24,7 +24,7 @@ namespace LawyerProject.GUI
         {
             // The password hash is never loaded into the grid.
             DateTime now = Clock.Now;
-            dataGridView1.DataSource = db.Users
+            gridUsers.DataSource = db.Users
                 .OrderBy(u => u.UserName)
                 .Select(u => new { u.UserId, u.UserName, u.Role, u.IsActive, u.LockedUntil })
                 .ToList()
@@ -36,7 +36,7 @@ namespace LawyerProject.GUI
                     Status = !u.IsActive ? "מושבת" : LoginPolicy.IsLocked(u.LockedUntil, now) ? "נעול עד " + u.LockedUntil.Value.ToString("HH:mm") : "פעיל"
                 })
                 .ToList();
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridUsers, new Dictionary<string, string>
             {
                 { "UserName", "שם משתמש" },
                 { "Role", "סוג משתמש" },
@@ -47,7 +47,7 @@ namespace LawyerProject.GUI
         /// <summary>Turns a user's access off (for example an employee who left) or back on.</summary>
         private void btnToggleActive_Click(object sender, EventArgs e)
         {
-            object name = Ui.SelectedValue(dataGridView1, "UserName");
+            object name = Ui.SelectedValue(gridUsers, "UserName");
             if (name == null)
             {
                 Ui.Error("יש לבחור משתמש מהרשימה.");
@@ -98,7 +98,7 @@ namespace LawyerProject.GUI
         /// <summary>For a user who forgot the password: the manager sets a temporary one and gives it to the user.</summary>
         private void btnResetPassword_Click(object sender, EventArgs e)
         {
-            object name = Ui.SelectedValue(dataGridView1, "UserName");
+            object name = Ui.SelectedValue(gridUsers, "UserName");
             if (name == null)
             {
                 Ui.Error("יש לבחור משתמש מהרשימה.");

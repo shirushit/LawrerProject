@@ -174,12 +174,16 @@ namespace LawyerProject.GUI
             return new string((text ?? "").Where(char.IsDigit).ToArray());
         }
 
-        /// <summary>The identifier as it is stored: digits for ID/company numbers, upper-case for passports.</summary>
+        /// <summary>
+        /// The identifier as it is stored: 9 digits for ID/company numbers (so a leading 0 does not create
+        /// a second customer), upper-case for passports.
+        /// </summary>
         private string ReadIdentifier()
         {
             string raw = (txtIdNumber.Text ?? "").Trim();
             if (IdType == IdTypes.Passport) return raw.ToUpperInvariant();
-            return Digits(raw);
+            string digits = Digits(raw);
+            return Validation.IsLegalId(digits) ? Validation.NormalizeIdNumber(digits) : digits;
         }
 
         /// <summary>A unique internal code for a party whose ID number is unknown ("N" + 8 digits).</summary>

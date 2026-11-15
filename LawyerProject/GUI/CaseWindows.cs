@@ -12,17 +12,14 @@ namespace LawyerProject.GUI
     {
         private static readonly Dictionary<int, CaseForm> open = new Dictionary<int, CaseForm>();
 
-        /// <summary>Number of case windows currently open (used to warn before logging out).</summary>
-        public static int OpenCount
-        {
-            get { return open.Count; }
-        }
-
         /// <summary>Opens an existing case. <paramref name="onChanged"/> runs after the window closes if anything was saved.</summary>
         public static void OpenCase(IWin32Window owner, int id, Action onChanged)
         {
-            CaseForm existing;
-            if (open.TryGetValue(id, out existing) && !existing.IsDisposed)
+            // Look by the case shown, not by the key: a new case keeps its temporary key after its first save.
+            CaseForm existing = null;
+            foreach (CaseForm form in open.Values)
+                if (!form.IsDisposed && form.CaseId == id) existing = form;
+            if (existing != null)
             {
                 if (existing.WindowState == FormWindowState.Minimized) existing.WindowState = FormWindowState.Normal;
                 existing.Activate();

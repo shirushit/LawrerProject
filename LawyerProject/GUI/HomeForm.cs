@@ -80,7 +80,7 @@ namespace LawyerProject.GUI
                         }
                     }
                     if (!configured && !Session.IsManager)
-                        lblSetup.Text = "המערכת עדיין לא הוגדרה. פנו למנהלת המשרד כדי להגדיר נושאי תיקים ותהליכים.";
+                        lblSetup.Text = "המערכת עדיין לא הוגדרה. פנו למנהל/ת המשרד כדי להגדיר נושאי תיקים ותהליכים.";
 
                     List<DueItem> items = new CaseService(db).DueSteps(Clock.Today, AppSettings.DueSoonDays);
                     gridDue.DataSource = items.Select(i => new DueRow

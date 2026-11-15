@@ -103,7 +103,7 @@
             this.pictureBoxLogo.Name = "pictureBoxLogo";
             this.pictureBoxLogo.Size = new System.Drawing.Size(160, 80);
             this.pictureBoxLogo.TabIndex = 1;
-            this.pictureBoxLogo.Image = global::LawyerProject.Properties.Resources.לוגו;
+            this.pictureBoxLogo.Image = global::LawyerProject.Properties.Resources.Logo;
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxLogo.TabStop = false;
             // 

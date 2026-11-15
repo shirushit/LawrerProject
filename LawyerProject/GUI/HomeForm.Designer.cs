@@ -39,8 +39,8 @@
             this.btnUsers = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.lblWelcome = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.pictureLogo = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureLogo)).BeginInit();
             this.panelToday = new System.Windows.Forms.Panel();
             this.lblTodayTitle = new System.Windows.Forms.Label();
             this.lblTodaySub = new System.Windows.Forms.Label();
@@ -307,16 +307,16 @@
             this.btnSettings.UseVisualStyleBackColor = false;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
             //
-            // pictureBox1
+            // pictureLogo
             //
-            this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
-            this.pictureBox1.Image = global::LawyerProject.Properties.Resources.לוגו2;
-            this.pictureBox1.Location = new System.Drawing.Point(35, 686);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(130, 52);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 11;
-            this.pictureBox1.TabStop = false;
+            this.pictureLogo.BackColor = System.Drawing.Color.FromArgb(18, 18, 18);
+            this.pictureLogo.Image = global::LawyerProject.Properties.Resources.Logo;
+            this.pictureLogo.Location = new System.Drawing.Point(35, 686);
+            this.pictureLogo.Name = "pictureLogo";
+            this.pictureLogo.Size = new System.Drawing.Size(130, 52);
+            this.pictureLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureLogo.TabIndex = 11;
+            this.pictureLogo.TabStop = false;
             //
             // HomeForm
             //
@@ -340,11 +340,11 @@
             this.Controls.Add(this.btnAbout);
             this.Controls.Add(this.btnPayments);
             this.Controls.Add(this.btnCustomers);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.pictureLogo);
             this.Name = "HomeForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QUEDIN - דף הבית";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureLogo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridDue)).EndInit();
             this.panelToday.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -373,6 +373,6 @@
         private System.Windows.Forms.Button btnUsers;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Label lblWelcome;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureLogo;
     }
 }

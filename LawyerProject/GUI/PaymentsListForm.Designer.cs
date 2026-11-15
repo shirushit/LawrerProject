@@ -20,11 +20,11 @@
             this.groupBoxSearch = new System.Windows.Forms.GroupBox();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.lblSearch = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.gridPayments = new System.Windows.Forms.DataGridView();
             this.btnReceipt = new System.Windows.Forms.Button();
             this.lblTotal = new System.Windows.Forms.Label();
             this.groupBoxSearch.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridPayments)).BeginInit();
             this.btnCancelPayment = new System.Windows.Forms.Button();
             this.btnOpenCase = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -58,14 +58,14 @@
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             //
-            // dataGridView1
+            // gridPayments
             //
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(20, 95);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(1180, 380);
-            this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.gridPayments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridPayments.Location = new System.Drawing.Point(20, 95);
+            this.gridPayments.Name = "gridPayments";
+            this.gridPayments.Size = new System.Drawing.Size(1180, 380);
+            this.gridPayments.TabIndex = 1;
+            this.gridPayments.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             //
             // btnReceipt
             //
@@ -115,7 +115,7 @@
             this.Controls.Add(this.btnCancelPayment);
             this.Controls.Add(this.btnOpenCase);
             this.Controls.Add(this.btnReceipt);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.gridPayments);
             this.Controls.Add(this.groupBoxSearch);
             this.Font = new System.Drawing.Font("Calibri", 12F);
             this.Name = "PaymentsListForm";
@@ -125,7 +125,7 @@
             this.Text = "תשלומים וקבלות";
             this.groupBoxSearch.ResumeLayout(false);
             this.groupBoxSearch.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridPayments)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -136,7 +136,7 @@
         private System.Windows.Forms.GroupBox groupBoxSearch;
         private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView gridPayments;
         private System.Windows.Forms.Button btnReceipt;
         private System.Windows.Forms.Button btnCancelPayment;
         private System.Windows.Forms.Button btnOpenCase;

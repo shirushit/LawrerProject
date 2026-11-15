@@ -18,7 +18,7 @@ namespace LawyerProject.BLL
                 Action = action,
                 Entity = entity,
                 EntityId = entityId == null ? null : Convert.ToString(entityId),
-                Details = details == null ? null : (details.Length > 400 ? details.Substring(0, 400) : details)
+                Details = details == null ? null : (details.Length > ColumnLengths.AuditDetails ? details.Substring(0, ColumnLengths.AuditDetails) : details)
             });
         }
     }

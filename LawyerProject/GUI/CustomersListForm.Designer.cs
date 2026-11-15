@@ -29,34 +29,34 @@ namespace LawyerProject.GUI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupSearch = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtFilter = new System.Windows.Forms.TextBox();
             this.lblType = new System.Windows.Forms.Label();
             this.cmbType = new System.Windows.Forms.ComboBox();
             this.btnClear = new System.Windows.Forms.Button();
             this.lblCount = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.gridCustomers = new System.Windows.Forms.DataGridView();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCustomers)).BeginInit();
+            this.groupSearch.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // groupSearch
             // 
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.txtFilter);
-            this.groupBox1.Controls.Add(this.lblType);
-            this.groupBox1.Controls.Add(this.cmbType);
-            this.groupBox1.Controls.Add(this.btnClear);
-            this.groupBox1.Controls.Add(this.lblCount);
-            this.groupBox1.Location = new System.Drawing.Point(20, 15);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1260, 80);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.Text = "חיפוש";
-            this.groupBox1.TabStop = false;
+            this.groupSearch.Controls.Add(this.label1);
+            this.groupSearch.Controls.Add(this.txtFilter);
+            this.groupSearch.Controls.Add(this.lblType);
+            this.groupSearch.Controls.Add(this.cmbType);
+            this.groupSearch.Controls.Add(this.btnClear);
+            this.groupSearch.Controls.Add(this.lblCount);
+            this.groupSearch.Location = new System.Drawing.Point(20, 15);
+            this.groupSearch.Name = "groupSearch";
+            this.groupSearch.Size = new System.Drawing.Size(1260, 80);
+            this.groupSearch.TabIndex = 0;
+            this.groupSearch.Text = "חיפוש";
+            this.groupSearch.TabStop = false;
             // 
             // label1
             // 
@@ -116,16 +116,16 @@ namespace LawyerProject.GUI
             this.lblCount.Text = "";
             this.lblCount.ForeColor = System.Drawing.SystemColors.GrayText;
             // 
-            // dataGridView1
+            // gridCustomers
             // 
-            this.dataGridView1.Location = new System.Drawing.Point(20, 110);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(1260, 640);
-            this.dataGridView1.TabIndex = 7;
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.gridCustomers.Location = new System.Drawing.Point(20, 110);
+            this.gridCustomers.Name = "gridCustomers";
+            this.gridCustomers.Size = new System.Drawing.Size(1260, 640);
+            this.gridCustomers.TabIndex = 7;
+            this.gridCustomers.BackgroundColor = System.Drawing.Color.White;
+            this.gridCustomers.RowHeadersVisible = false;
+            this.gridCustomers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridCustomers.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             // 
             // btnAdd
             // 
@@ -154,17 +154,17 @@ namespace LawyerProject.GUI
             this.ClientSize = new System.Drawing.Size(1300, 820);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnAdd);
-            this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.gridCustomers);
+            this.Controls.Add(this.groupSearch);
             this.Font = new System.Drawing.Font("Calibri", 12F);
             this.Name = "CustomersListForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.RightToLeftLayout = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "לקוחות וצדדים";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCustomers)).EndInit();
+            this.groupSearch.ResumeLayout(false);
+            this.groupSearch.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,14 +172,14 @@ namespace LawyerProject.GUI
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupSearch;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label lblType;
         private System.Windows.Forms.ComboBox cmbType;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Label lblCount;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView gridCustomers;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnUpdate;
     }

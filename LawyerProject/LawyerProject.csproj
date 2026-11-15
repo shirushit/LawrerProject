@@ -60,6 +60,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,6 +78,8 @@
     <Compile Include="BLL\BackupService.cs" />
     <Compile Include="BLL\CaseScheduler.cs" />
     <Compile Include="BLL\CaseService.cs" />
+    <Compile Include="BLL\CatalogService.cs" />
+    <Compile Include="BLL\ChangeDiscarder.cs" />
     <Compile Include="BLL\Clock.cs" />
     <Compile Include="BLL\Constants.cs" />
     <Compile Include="BLL\FeeCalculator.cs" />
@@ -359,16 +362,8 @@
       <DependentUpon>QuedinModel.edmx</DependentUpon>
       <LastGenOutput>QuedinModel.cs</LastGenOutput>
     </Content>
-    <None Include="Resources\אודות.PNG" />
-    <None Include="Resources\אייקון %282%29.PNG" />
-    <None Include="Resources\אייקון.PNG" />
-    <None Include="Resources\לוגו לטפסים1.PNG" />
-    <None Include="Resources\לוגו לטפסים2.PNG" />
-    <None Include="Resources\לוגו.PNG" />
-    <None Include="Resources\לוגו1.PNG" />
-    <None Include="Resources\עין סגורה.PNG" />
-    <None Include="Resources\עין.PNG" />
-    <None Include="Resources\עין1.PNG" />
+    <None Include="Resources\about.png" />
+    <None Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

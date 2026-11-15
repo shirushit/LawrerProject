@@ -125,8 +125,8 @@
           <Property Name="ClaimAmount" Type="money" />
           <Property Name="AwardedAmount" Type="money" />
           <Property Name="FeePercent" Type="float" />
-          <Property Name="OpposingLawyerId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="OpposingPartyId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="OpposingLawyerId" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="OpposingPartyId" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="RowVersion" Type="rowversion" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
         <EntityType Name="CaseSteps">
@@ -151,7 +151,7 @@
           <Property Name="CaseId" Type="int" Nullable="false" />
           <Property Name="BalanceAfter" Type="money" Nullable="false" />
           <Property Name="Method" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CardLast4" Type="nchar" MaxLength="16" />
+          <Property Name="CardLast4" Type="nvarchar" MaxLength="8" />
           <Property Name="ChequeNumber" Type="nchar" MaxLength="10" />
           <Property Name="BankNumber" Type="nchar" MaxLength="3" />
           <Property Name="BranchNumber" Type="nchar" MaxLength="3" />
@@ -495,8 +495,8 @@
           <Property Name="ClaimAmount" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
           <Property Name="AwardedAmount" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
           <Property Name="FeePercent" Type="Double" Nullable="true" />
-          <Property Name="OpposingLawyerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OpposingPartyId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OpposingLawyerId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OpposingPartyId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
           <NavigationProperty Name="Steps" Relationship="Self.FK_CaseSteps_Cases" FromRole="LegalCase" ToRole="CaseStep" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Cases" FromRole="LegalCase" ToRole="Payment" />
@@ -529,7 +529,7 @@
           <Property Name="CaseId" Type="Int32" Nullable="false" />
           <Property Name="BalanceAfter" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
           <Property Name="Method" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CardLast4" Type="String" MaxLength="16" FixedLength="true" Unicode="true" Nullable="true" />
+          <Property Name="CardLast4" Type="String" MaxLength="8" FixedLength="false" Unicode="true" Nullable="true" />
           <Property Name="ChequeNumber" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="true" />
           <Property Name="BankNumber" Type="String" MaxLength="3" FixedLength="true" Unicode="true" Nullable="true" />
           <Property Name="BranchNumber" Type="String" MaxLength="3" FixedLength="true" Unicode="true" Nullable="true" />

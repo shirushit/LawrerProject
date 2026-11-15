@@ -10,10 +10,10 @@ namespace Quedin.Tests
         [DataTestMethod]
         [DataRow("000000018")]
         [DataRow("123456782")]
-        [DataRow("18")] // too short
+        [DataRow("12345674")] // 8 digits: read as 012345674
         public void IsLegalId_ValidCheckDigit(string id)
         {
-            Assert.AreEqual(id.Length >= 5, Validation.IsLegalId(id));
+            Assert.IsTrue(Validation.IsLegalId(id));
         }
 
         [DataTestMethod]
@@ -22,6 +22,7 @@ namespace Quedin.Tests
         [DataRow("")]
         [DataRow(null)]
         [DataRow("1234567890")]
+        [DataRow("18")] // the check digit is right, but an ID is at least 5 digits
         public void IsLegalId_Rejects(string id)
         {
             Assert.IsFalse(Validation.IsLegalId(id));
@@ -219,6 +220,44 @@ namespace Quedin.Tests
             DateTime today = new DateTime(2026, 11, 12);
             Assert.IsFalse(Validation.IsFutureDate(today.AddHours(23), today));
             Assert.IsTrue(Validation.IsFutureDate(today.AddDays(1), today));
+        }
+
+        // ---------- identifiers and money limits (v1.3.1)
+
+        [DataTestMethod]
+        [DataRow("12345674", "012345674")]
+        [DataRow("012345674", "012345674")]
+        [DataRow(" 123456782 ", "123456782")]
+        [DataRow("AB12345", "AB12345")] // a passport is only trimmed
+        [DataRow("", "")]
+        public void NormalizeIdNumber_PadsDigitsToNine(string input, string expected)
+        {
+            Assert.AreEqual(expected, Validation.NormalizeIdNumber(input));
+        }
+
+        [TestMethod]
+        public void NormalizeIdNumber_SameIdWithOrWithoutLeadingZero_IsTheSameKey()
+        {
+            Assert.AreEqual(Validation.NormalizeIdNumber("12345674"), Validation.NormalizeIdNumber("012345674"));
+        }
+
+        [TestMethod]
+        public void TryParseMoney_RejectsAmountsAboveTheLimit()
+        {
+            decimal amount;
+            Assert.IsTrue(Validation.TryParseMoney("1,000,000,000", out amount));
+            Assert.AreEqual(Validation.MaxMoney, amount);
+            Assert.IsFalse(Validation.TryParseMoney("1000000000.01", out amount));
+            Assert.IsFalse(Validation.TryParseMoney("1000000000000000", out amount), "a typo must not reach the database");
+        }
+
+        [TestMethod]
+        public void IsMoneyInRange_Bounds()
+        {
+            Assert.IsTrue(Validation.IsMoneyInRange(0m));
+            Assert.IsTrue(Validation.IsMoneyInRange(Validation.MaxMoney));
+            Assert.IsFalse(Validation.IsMoneyInRange(-0.01m));
+            Assert.IsFalse(Validation.IsMoneyInRange(Validation.MaxMoney + 0.01m));
         }
     }
 }

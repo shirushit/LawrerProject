@@ -60,6 +60,8 @@ namespace LawyerProject.GUI
                         return "לא ניתן לכתוב לתיקיית הגיבוי. בחרו תיקייה ששרת מסד הנתונים מורשה לכתוב אליה.";
                 }
             }
+            if (root is UnauthorizedAccessException)
+                return root.Message;
             if (root is System.Data.Entity.Validation.DbEntityValidationException || ex is System.Data.Entity.Validation.DbEntityValidationException)
                 return "אחד השדות ארוך מדי או חסר.";
             return "פרטים טכניים: " + root.Message;

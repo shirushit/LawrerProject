@@ -28,15 +28,15 @@ namespace LawyerProject.GUI
         private void ApplyFilter()
         {
             string text = txtCaseTypeName.Text.Trim();
-            dataGridView1.DataSource = all
+            gridCaseTypes.DataSource = all
                 .Where(s => text.Length == 0 || s.Name.Contains(text))
                 .Select(s => new { s.CaseTypeId, s.Name, s.BaseFee, s.CourtFee })
                 .ToList();
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridCaseTypes, new Dictionary<string, string>
             {
                 { "CaseTypeId", "קוד" },
                 { "Name", "נושא תיק" },
-                { "BaseFee", "שכר טרחה" },
+                { "BaseFee", "שכר טרחה מינימלי" },
                 { "CourtFee", "אגרה" }
             });
         }
@@ -51,16 +51,16 @@ namespace LawyerProject.GUI
             e.Handled = !Validation.IsNameKey(e.KeyChar);
         }
 
-        private void btnAdd_Click_1(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             using (var form = new CaseTypeForm())
                 form.ShowDialog();
             LoadTypes();
         }
 
-        private void btnUpdate_Click_1(object sender, EventArgs e)
+        private void btnUpdate_Click(object sender, EventArgs e)
         {
-            int? id = Ui.SelectedInt(dataGridView1, "CaseTypeId");
+            int? id = Ui.SelectedInt(gridCaseTypes, "CaseTypeId");
             if (id == null)
             {
                 Ui.Error("יש לבחור נושא תיק מהרשימה.");

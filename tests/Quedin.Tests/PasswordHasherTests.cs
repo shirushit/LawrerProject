@@ -56,5 +56,27 @@ namespace Quedin.Tests
             Assert.IsTrue(PasswordHasher.Verify("Worker2024",
                 "pbkdf2$100000$cXVlZGluLWRlbW8tc2FsdDI=$D4bLJ4IlgXxnzMguYNwv+DaETNIhWIS73LeJBgkOPsA="));
         }
+
+        [TestMethod]
+        public void HashWithSalt_RecreatesTheStoredHashOnlyForTheRightPassword()
+        {
+            string stored = PasswordHasher.Hash("Quedin2024", 1000);
+            string saltPrefix = stored.Substring(0, stored.LastIndexOf('$') + 1);
+
+            Assert.AreEqual(stored, PasswordHasher.HashWithSalt("Quedin2024", saltPrefix));
+            Assert.AreNotEqual(stored, PasswordHasher.HashWithSalt("quedin2024", saltPrefix));
+        }
+
+        [DataTestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("legacy$")]
+        [DataRow("pbkdf2$abc$c2FsdA==$")]
+        [DataRow("pbkdf2$1000$not base64!$")]
+        [DataRow("pbkdf2$1000$c2FsdA==$extra")]
+        public void HashWithSalt_RejectsABadPrefix(string saltPrefix)
+        {
+            Assert.IsNull(PasswordHasher.HashWithSalt("Quedin2024", saltPrefix));
+        }
     }
 }

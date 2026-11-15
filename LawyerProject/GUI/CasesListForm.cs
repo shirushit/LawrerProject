@@ -20,10 +20,10 @@ namespace LawyerProject.GUI
             public int CaseId { get; set; }
             public string ClientId { get; set; }
             public string ClientName { get; set; }
-            public int SubjectId { get; set; }
-            public string Subject { get; set; }
-            public int StatusId { get; set; }
-            public string Status { get; set; }
+            public int CaseTypeId { get; set; }
+            public string CaseTypeName { get; set; }
+            public int CurrentProcedureId { get; set; }
+            public string CurrentStep { get; set; }
             public DateTime? NextDue { get; set; }
             public string NextDueText { get; set; }
             public string OpposingClientId { get; set; }
@@ -59,8 +59,8 @@ namespace LawyerProject.GUI
             cmbFilterClient.SelectedIndexChanged += Filter_Changed;
             cmbFilterCaseType.SelectedIndexChanged += Filter_Changed;
             chkFilterPaid.CheckStateChanged += Filter_Changed;
-            dataGridView1.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) OpenSelected(); };
-            dataGridView1.DataBindingComplete += (s, e) => Highlight();
+            gridCases.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) OpenSelected(); };
+            gridCases.DataBindingComplete += (s, e) => Highlight();
 
             LoadCases();
         }
@@ -89,10 +89,10 @@ namespace LawyerProject.GUI
                         CaseId = t.CaseId,
                         ClientId = t.ClientId,
                         ClientName = t.Client != null ? t.Client.ToString() : "",
-                        SubjectId = t.CaseTypeId,
-                        Subject = t.CaseType != null ? t.CaseType.Name : "",
-                        StatusId = t.CurrentProcedureId,
-                        Status = CaseService.IsFinished(t) ? "הסתיים" : (t.CurrentProcedure != null ? t.CurrentProcedure.Name : ""),
+                        CaseTypeId = t.CaseTypeId,
+                        CaseTypeName = t.CaseType != null ? t.CaseType.Name : "",
+                        CurrentProcedureId = t.CurrentProcedureId,
+                        CurrentStep = CaseService.IsFinished(t) ? "הסתיים" : (t.CurrentProcedure != null ? t.CurrentProcedure.Name : ""),
                         NextDue = next != null ? next.DueDate : null,
                         NextDueText = next != null ? Ui.FormatDate(next.DueDate) : "",
                         OpposingClientId = t.OpposingPartyId,
@@ -105,7 +105,7 @@ namespace LawyerProject.GUI
                         Finished = CaseService.IsFinished(t),
                         LateText = late > 0 ? late + " ימים" : ""
                     };
-                    row.SearchText = string.Join(" ", row.CaseId, row.ClientId, row.ClientName, row.Subject, row.Status,
+                    row.SearchText = string.Join(" ", row.CaseId, row.ClientId, row.ClientName, row.CaseTypeName, row.CurrentStep,
                         row.OpposingClient, row.OpposingLawyer, row.Court, t.Block, t.Parcel, t.PropertyAddress).ToLowerInvariant();
                     return row;
                 }).OrderBy(r => r.Finished).ThenBy(r => r.NextDue ?? DateTime.MaxValue).ToList();
@@ -170,11 +170,11 @@ namespace LawyerProject.GUI
             Customer opposingLawyer = Selected<Customer>(cmbFilterOpposingLawyer);
             if (opposingLawyer != null) rows = rows.Where(r => r.OpposingLawyerId == opposingLawyer.CustomerId);
 
-            CaseType subject = Selected<CaseType>(cmbFilterCaseType);
-            if (subject != null) rows = rows.Where(r => r.SubjectId == subject.CaseTypeId);
+            CaseType caseType = Selected<CaseType>(cmbFilterCaseType);
+            if (caseType != null) rows = rows.Where(r => r.CaseTypeId == caseType.CaseTypeId);
 
             Procedure status = Selected<Procedure>(cmbFilterStatus);
-            if (status != null) rows = rows.Where(r => r.StatusId == status.ProcedureId && !r.Finished);
+            if (status != null) rows = rows.Where(r => r.CurrentProcedureId == status.ProcedureId && !r.Finished);
 
             if (chkFilterPaid.CheckState != CheckState.Indeterminate)
             {
@@ -183,15 +183,15 @@ namespace LawyerProject.GUI
             }
 
             List<CaseRow> list = rows.ToList();
-            dataGridView1.DataSource = list;
+            gridCases.DataSource = list;
             lblCount.Text = list.Count == all.Count ? all.Count + " תיקים" : "מוצגים " + list.Count + " מתוך " + all.Count + " תיקים";
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridCases, new Dictionary<string, string>
             {
                 { "CaseId", "מספר תיק" },
                 { "ClientId", "ת.ז. לקוח" },
                 { "ClientName", "שם לקוח" },
-                { "Subject", "נושא תיק" },
-                { "Status", "שלב נוכחי" },
+                { "CaseTypeName", "נושא תיק" },
+                { "CurrentStep", "שלב נוכחי" },
                 { "NextDueText", "מועד משוער" },
                 { "LateText", "באיחור" },
                 { "OpposingClient", "לקוח נגדי" },
@@ -206,20 +206,19 @@ namespace LawyerProject.GUI
         {
             DateTime today = Clock.Today;
             int days = AppSettings.DueSoonDays;
-            foreach (DataGridViewRow row in dataGridView1.Rows)
+            foreach (DataGridViewRow row in gridCases.Rows)
             {
                 var data = row.DataBoundItem as CaseRow;
-                if (data == null || data.Finished || data.NextDue == null) continue;
-                if (data.NextDue.Value.Date < today)
-                    row.DefaultCellStyle.BackColor = Color.MistyRose;
-                else if (data.NextDue.Value.Date <= today.AddDays(days))
-                    row.DefaultCellStyle.BackColor = Color.LightYellow;
+                if (data == null) continue;
+                Urgency urgency = CaseScheduler.UrgencyOf(data.NextDue, data.Finished, today, days);
+                if (urgency == Urgency.Late) row.DefaultCellStyle.BackColor = Color.MistyRose;
+                else if (urgency == Urgency.DueSoon) row.DefaultCellStyle.BackColor = Color.LightYellow;
             }
         }
 
         private void OpenSelected()
         {
-            int? id = Ui.SelectedInt(dataGridView1, "CaseId");
+            int? id = Ui.SelectedInt(gridCases, "CaseId");
             if (id == null)
             {
                 Ui.Error("יש לבחור תיק מהרשימה.");

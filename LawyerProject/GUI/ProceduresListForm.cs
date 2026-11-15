@@ -6,7 +6,7 @@ using LawyerProject.DB;
 
 namespace LawyerProject.GUI
 {
-    /// <summary>The catalogue of processes (steps) and how long each one takes.</summary>
+    /// <summary>The catalogue of procedures (steps) and how long each one takes.</summary>
     public partial class ProceduresListForm : Form
     {
         private List<Procedure> all = new List<Procedure>();
@@ -28,11 +28,11 @@ namespace LawyerProject.GUI
         private void ApplyFilter()
         {
             string text = txtProcedureName.Text.Trim();
-            dataGridView1.DataSource = all
+            gridProcedures.DataSource = all
                 .Where(t => text.Length == 0 || t.Name.Contains(text))
                 .Select(t => new { t.ProcedureId, t.Name, t.Category, Days = t.DurationDays })
                 .ToList();
-            Ui.SetHeaders(dataGridView1, new Dictionary<string, string>
+            Ui.SetHeaders(gridProcedures, new Dictionary<string, string>
             {
                 { "ProcedureId", "קוד" },
                 { "Name", "שם תהליך" },
@@ -50,7 +50,7 @@ namespace LawyerProject.GUI
 
         private void btnUpdate_Click_2(object sender, EventArgs e)
         {
-            int? id = Ui.SelectedInt(dataGridView1, "ProcedureId");
+            int? id = Ui.SelectedInt(gridProcedures, "ProcedureId");
             if (id == null)
             {
                 Ui.Error("יש לבחור תהליך מהרשימה.");

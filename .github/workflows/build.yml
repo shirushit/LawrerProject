@@ -94,6 +94,10 @@ jobs:
             IF (SELECT COUNT(*) FROM CaseSteps) <> 37 THROW 50004, 'Steps', 1;
             IF (SELECT COUNT(*) FROM Payments) <> 4 THROW 50005, 'Payments', 1;
             IF EXISTS (SELECT 1 FROM Users WHERE PasswordHash NOT LIKE 'pbkdf2$%') THROW 50006, 'Plain-text password', 1;
+            IF EXISTS (SELECT 1 FROM Cases c JOIN CaseTypes t ON t.CaseTypeId = c.CaseTypeId
+                       WHERE c.IsPaid = 1 AND (SELECT SUM(Amount) FROM Payments p WHERE p.CaseId = c.CaseId)
+                             < CASE WHEN c.ClaimAmount * c.FeePercent / 100 > t.BaseFee THEN c.ClaimAmount * c.FeePercent / 100 ELSE t.BaseFee END + t.CourtFee)
+              THROW 50009, 'A case marked paid has an open balance', 1;
             IF EXISTS (
               SELECT 1 FROM Cases c
               CROSS APPLY (SELECT TOP 1 s.ProcedureId FROM CaseSteps s
@@ -108,3 +112,30 @@ jobs:
               IF ERROR_NUMBER() = 50008 THROW;
             END CATCH
             PRINT 'Demo data verified.';"
+
+      - name: Permissions script - a worker cannot read passwords or edit payments
+        run: |
+          docker cp database/security.sql "$CID":/tmp/security.sql
+          SQL="docker exec $CID /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost"
+          for run in 1 2; do $SQL -U sa -P 'Ci-Passw0rd!' -i /tmp/security.sql; done
+          $SQL -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
+            IF SUSER_ID('ci_worker') IS NULL CREATE LOGIN ci_worker WITH PASSWORD = 'Ci-Worker-1!', CHECK_POLICY = OFF;
+            IF USER_ID('ci_worker') IS NULL CREATE USER ci_worker FOR LOGIN ci_worker;
+            ALTER ROLE QuedinWorker ADD MEMBER ci_worker;"
+          W="$SQL -U ci_worker -P Ci-Worker-1! -d QuedinDB"
+          # Allowed: reading cases and logging in through the procedures.
+          $W -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM dbo.Cases; EXEC dbo.usp_GetLoginSalt N'admin';"
+          # Refused: each of these must fail.
+          for q in "SELECT PasswordHash FROM dbo.Users" \
+                   "UPDATE dbo.Users SET PasswordHash = N'x' WHERE UserName = N'admin'" \
+                   "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" \
+                   "DELETE FROM dbo.Payments WHERE PaymentId = 1" \
+                   "UPDATE dbo.CaseSteps SET IsDone = 0 WHERE IsDone = 1" \
+                   "DELETE FROM dbo.AuditLog"; do
+            if $W -Q "$q" >/dev/null 2>&1; then echo "NOT REFUSED: $q"; exit 1; fi
+            echo "refused as expected: $q"
+          done
+          # Even the owner cannot change a recorded amount (trigger).
+          if $SQL -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" >/dev/null 2>&1; then
+            echo "Payment amount was changed"; exit 1; fi
+          echo "Permissions verified."

@@ -14,7 +14,7 @@ namespace LawyerProject.GUI
     {
         private readonly QuedinDbContext db = new QuedinDbContext();
         private readonly LegalCase legalCase;
-        private readonly decimal openBalance;
+        private decimal openBalance;
 
         public PaymentForm(int caseId)
         {
@@ -155,7 +155,28 @@ namespace LawyerProject.GUI
             }
             catch (Exception ex)
             {
-                Ui.Error("שגיאה! התשלום לא נשמר.", ex);
+                // The service already discarded the unsaved payment; show the case as it is now.
+                bool conflict = ex is System.Data.Entity.Infrastructure.DbUpdateConcurrencyException;
+                Ui.Error(conflict
+                    ? "משתמש אחר עדכן את התיק בזמן שהחלון היה פתוח. היתרה עודכנה - בדקו את הסכום ונסו שוב."
+                    : "שגיאה! התשלום לא נשמר.", ex);
+                ReloadCase();
+            }
+        }
+
+        /// <summary>Reads the case and its payments again, so a retry is checked against the current balance.</summary>
+        private void ReloadCase()
+        {
+            try
+            {
+                db.Entry(legalCase).Reload();
+                db.Entry(legalCase).Collection(c => c.Payments).Load();
+                openBalance = CaseService.OpenBalance(legalCase);
+                lblBalance.Text = Ui.FormatMoney(openBalance);
+            }
+            catch (Exception)
+            {
+                // Still offline: the next save attempt will report it.
             }
         }
 
