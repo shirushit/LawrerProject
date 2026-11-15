@@ -8,7 +8,7 @@
 ![WinForms](https://img.shields.io/badge/UI-WinForms%20(RTL%20Hebrew)-blue)
 ![EF6](https://img.shields.io/badge/ORM-Entity%20Framework%206-6DB33F)
 ![SQL Server](https://img.shields.io/badge/DB-SQL%20Server%20LocalDB-CC2927)
-![tests](https://img.shields.io/badge/tests-57%20unit%20%2B%209%20integration-brightgreen)
+![tests](https://img.shields.io/badge/tests-104%20unit%20%2B%2015%20integration-brightgreen)
 
 **English** · [עברית](#עברית)
 
@@ -21,7 +21,9 @@ and, at its core, **a timeline engine that plans every case and keeps its deadli
 It started as my high-school final project (2024), built with a real law office as the client.
 **v1.1** is a full review and refactor of that project: I fixed the bugs, secured the data,
 extracted the business rules into a tested layer and made the project runnable from a clean clone.
-See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
+**v1.2** fixes everything found in a usability test and an edge-case code review: a "what's urgent
+today" home screen, court-set dates, payment cancellation by credit note, an audit log, optimistic
+concurrency and strict money parsing. See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
 
 ---
 
@@ -30,9 +32,11 @@ See [CHANGELOG.md](CHANGELOG.md) for everything that changed.
 | | |
 |---|---|
 | 📅 **Automatic case timeline** | Opening a case creates its steps from the case type (e.g. *filing → defence → pre-trial → evidence → ruling*), each with an estimated date. |
-| 🔁 **Deadlines that move** | Completing a step early or late pushes the dates of every later step. Steps cannot be skipped. |
-| 🚦 **Deadline radar** | The cases list puts open cases with the nearest deadline first: late steps in red, steps due within 7 days in yellow. |
-| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value) + court fee. Every payment updates the balance and produces a printable receipt with an 18% VAT breakdown. |
+| 🔁 **Deadlines that move** | Completing a step (on the real date), or setting a date decided by the court, pushes every later step. Deadlines never fall on Friday/Saturday. Steps cannot be skipped; a manager can undo the last one. |
+| 🚦 **"What's urgent today"** | The home screen lists the next step of every open case that is late or due this week. The cases list shows days late, with free search and a colour legend. |
+| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value) + court fee. The balance is always computed from the payments. Receipts store the VAT rate of the day; court fees carry no VAT. A payment is cancelled with a credit note, never deleted. |
+| 🧾 **Audit log & backup** | Every payment, cancellation, step change and user change is logged with user and time. Managers can back up the database from the home screen. |
+| 🤝 **Concurrent users** | Two people editing the same case: the second save is refused (optimistic concurrency with `rowversion`) and the case reloads, instead of silently overwriting. |
 | 🏛️ **Court cases & property deals** | Court, claim and award amounts for litigation; address and land-registry numbers (gush/chelka) for real-estate deals. |
 | 👥 **Roles** | Managers configure courts, case types, processes and users; regular users work on clients, cases and payments. |
 | 🔒 **Security** | Salted PBKDF2-SHA256 password hashes; card payments keep only the last 4 digits. |
@@ -46,11 +50,15 @@ Civil claim:   1. Intake meeting (7d) → 2. Collect evidence (14d) → 3. File 
 ```
 
 ```text
-Case opened on 01/03          Step 1 done LATE on 12/03           Step 1 done EARLY on 03/03
-1. Intake        08/03        1. Intake        ✔ 12/03            1. Intake        ✔ 03/03
-2. Evidence      22/03        2. Evidence        26/03  (+4d)     2. Evidence        17/03  (−5d)
-3. File claim    12/04        3. File claim      16/04  (+4d)     3. File claim      07/04  (−5d)
+Case opened Mon 04/03          Step 1 done LATE on Thu 14/03       Step 1 done EARLY on Wed 06/03
+1. Intake        Mon 11/03     1. Intake        ✔ 14/03            1. Intake        ✔ 06/03
+2. Evidence      Mon 25/03     2. Evidence        Thu 28/03 (+3d)  2. Evidence        Wed 20/03 (−5d)
+3. File claim    Mon 15/04     3. File claim      Thu 18/04 (+3d)  3. File claim      Wed 10/04 (−5d)
 ```
+
+A date that lands on Friday or Saturday moves to Sunday. When the court sets a hearing date, the
+step keeps that exact date and the following steps are counted from it. Each step stores the
+duration it had when the case was opened, so editing the catalogue later does not move old cases.
 
 The rule lives in [`CaseScheduler`](LawyerProject/BLL/CaseScheduler.cs): a pure class with no UI or
 database access, covered by [unit tests](tests/Quedin.Tests/CaseSchedulerTests.cs).
@@ -143,8 +151,8 @@ so some steps show as late and some as due soon right away.
 
 | Suite | What it covers | Runs |
 |---|---|---|
-| [`Quedin.Tests`](tests/Quedin.Tests) — 57 unit tests | Timeline engine, fee/VAT math, password hashing, validation (Israeli ID check digit, phones, e-mail, dates) | anywhere: `dotnet test tests/Quedin.Tests` |
-| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 9 tests | The real data layer against QuedinDB: login and legacy-password upgrade, user management, opening a case, completing a step, balances | Windows + LocalDB, after running the database script. Each test is rolled back. |
+| [`Quedin.Tests`](tests/Quedin.Tests) — 104 unit tests | Timeline engine (weekends, reschedule, undo, completion-date rules), fee/VAT/balance math, password hashing, validation (ID / company / passport, Israeli and international phones, strict money parsing) | anywhere: `dotnet test tests/Quedin.Tests` |
+| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 15 tests | The real data layer against QuedinDB: login and legacy-password upgrade, users, opening a case, completing/rescheduling/undoing steps, payments and cancellations, concurrent edits, case deletion | Windows + LocalDB, after running the database script. Each test is rolled back. |
 | CI `database` job | Runs `create-database.sql` twice on SQL Server 2022 and verifies the demo data | every push |
 
 In Visual Studio: **Test → Run All Tests**. Without the database, the integration tests are
@@ -174,6 +182,7 @@ docs/             diagrams from the original project book
 - **v2.0:** ASP.NET Core Web API + React, EF Core migrations, JWT roles, Docker Compose
 - English naming across the domain model (`Case`, `Client`, `Payment`, …)
 - Deadline reminders by e-mail
+- Israeli public holidays in the deadline calendar (today only Friday/Saturday are skipped)
 - Document attachments per case
 
 ---
@@ -187,6 +196,7 @@ docs/             diagrams from the original project book
 
 הפרויקט נכתב כפרויקט גמר בתיכון (2024) עבור משרד עורכי דין אמיתי.
 גרסה 1.1 היא בדיקה ושכתוב של הפרויקט: תיקון באגים, אבטחת סיסמאות ונתוני תשלום, שכבת לוגיקה נפרדת עם בדיקות יחידה, וסקריפט שמקים את מסד הנתונים עם נתוני דמה.
+גרסה 1.2 מתקנת את כל הממצאים מבדיקת שימושיות ומסקירת קוד: מסך "מה דחוף היום", מועדים שנקבעו בבית המשפט, ביטול תשלום בקבלת זיכוי, יומן פעולות, הגנה מעריכה מקבילה ופענוח סכומים קפדני.
 
 **הרצה:** להריץ את `database/create-database.sql`, לפתוח את `LawyerProject.sln` ב-Visual Studio 2022 וללחוץ F5.
 כניסה עם `admin` / `Quedin2024`.

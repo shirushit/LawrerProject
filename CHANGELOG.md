@@ -1,5 +1,56 @@
 # Changelog
 
+## v1.2 — Fixes from a user test and a code review (2026)
+
+Two reviews were written against v1.1: one from the point of view of an office worker using the
+app, one from a reviewer looking for edge cases in the code. Everything below comes from them.
+
+### Daily work
+- **Home screen "what's urgent today":** the next step of every open case that is late or due soon.
+  An empty system shows a setup banner; managers get a step-by-step **setup guide**.
+- **Timeline:** mark a step done on the real date (not in the future, not before the previous step);
+  set a date decided by the court, with a note; managers can undo the last completion; notes per step;
+  "days late" column in the case and the cases list. Deadlines never fall on Friday or Saturday.
+- **Cases list:** free search over every column, a clear-filters button, a colour legend and a
+  "showing X of Y" counter. Case windows are no longer modal: several cases can be open side by side.
+- **Opposing parties:** ID number is optional (ID / company number / passport / none, with an internal
+  code), company names such as `אלפא נכסים בע"מ` are accepted, international phone numbers too.
+  Any person can be picked as the other side. The customer screen lists the person's cases and the
+  customers list filters by type.
+- **Payments:** payment kind (fee / court fee and expenses). Cancelling adds a credit note instead of
+  deleting; the original stays visible and marked. Receipts show the office details, the VAT rate
+  stored with the payment, no VAT on court fees, and "credit note" wording for cancellations.
+- **Smaller fixes:** power of attorney is a "signed on" checkbox and date; warning before switching
+  court case / deal hides data already typed; Caps Lock / Hebrew keyboard warning on login; username
+  field inside the change-password box; manager password reset; confirmations appear as a status bar
+  instead of pop-ups; logout asks for confirmation; friendlier database error messages; typos
+  ("עידכון", "טירחה").
+
+### Correctness (code review)
+- `"12,5"` was parsed as 125 and `0.004` was saved as ₪0. Amounts are now parsed strictly and a
+  payment must be at least ₪0.01.
+- The balance was copied from the last payment, so changing the claim amount was ignored. It is now
+  always computed from the case total and all payments; "paid" and "advance paid" are derived, not
+  checkboxes.
+- Steps were ordered by date, so a court-set date could reorder the timeline. They keep creation order.
+- Editing a process duration moved deadlines of existing cases. Each step now stores its own duration.
+- Two users editing the same case silently overwrote each other. Cases have a `rowversion` and the
+  second save is refused.
+- A case opened by mistake could not be removed. Managers can delete it while nothing was paid or done.
+- No record of who changed what: new audit log (`Yoman`) with a viewer, and a database backup button.
+
+### Schema (v1.2)
+New table `Yoman`; new columns `Customers.SugMezahe`, `Tikim_Letipul_Orech_Din.RowVersion`,
+`Tahalich_Tipul_Betik.Hearot / MeshechYamim`, `Tashlumim_Letik.SugTashlum / VatRate / Mevutal /
+MevatelTashlum`; contact fields of customers are nullable and phone columns are 20 characters.
+Run `database/create-database.sql` again to create the new schema.
+
+### Not done yet
+- Israeli public holidays are not in the business calendar (only Friday/Saturday).
+- The integration tests run on Windows with LocalDB; CI runs the unit tests and checks the SQL script
+  on SQL Server, but not the integration tests.
+- A few original management screens (courts, case types, processes) still have the old styling.
+
 ## v1.1 — Review & refactor (2026)
 
 A full code review of the original 2024 final project, followed by fixes. The original code is
