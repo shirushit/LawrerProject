@@ -356,6 +356,8 @@ namespace Quedin.IntegrationTests
         public void Refund_ReturnsTheOverpayment()
         {
             LegalCase legalCase = SavedCase();
+            legalCase.ClaimAmount = 1000000m; // 10% = 100,000: well above any minimum fee, before and after halving
+            db.SaveChanges();
             var service = new CaseService(db);
             decimal total = CaseService.CaseTotal(legalCase);
             Assert.IsNull(service.AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today }));
