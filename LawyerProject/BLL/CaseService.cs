@@ -260,6 +260,7 @@ namespace LawyerProject.BLL
             if (payment.Amount < 0.01m) return "סכום התשלום חייב להיות לפחות 0.01 ₪.";
             if (payment.Amount > open) return "הסכום גבוה מהיתרה לתשלום (" + open.ToString("#,##0.00") + " ₪).";
             if (!PaymentKinds.All.Contains(payment.Kind)) return "יש לבחור סוג תשלום.";
+            if (!PaymentMethods.All.Contains(payment.Method)) return "יש לבחור אמצעי תשלום.";
 
             payment.Amount = FeeCalculator.Round(payment.Amount);
             payment.CaseId = legalCase.CaseId;

@@ -251,7 +251,7 @@ namespace Quedin.IntegrationTests
         {
             LegalCase legalCase = SavedCase();
             decimal total = CaseService.CaseTotal(legalCase);
-            Assert.IsNull(new CaseService(db).AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, PaidOn = DateTime.Today }));
+            Assert.IsNull(new CaseService(db).AddPayment(legalCase, new Payment { Amount = total, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today }));
             Assert.IsTrue(legalCase.IsPaid);
             Assert.AreEqual(0m, CaseService.OpenBalance(legalCase));
         }
@@ -305,7 +305,7 @@ namespace Quedin.IntegrationTests
             {
                 LegalCase paid = SavedCase();
                 var service = new CaseService(db);
-                service.AddPayment(paid, new Payment { Amount = 1m, Kind = PaymentKinds.Fee, PaidOn = DateTime.Today });
+                service.AddPayment(paid, new Payment { Amount = 1m, Kind = PaymentKinds.Fee, Method = PaymentMethods.Cash, PaidOn = DateTime.Today });
                 Assert.IsNotNull(service.DeleteCase(paid));
 
                 LegalCase mistake = SavedCase();
@@ -339,9 +339,10 @@ namespace Quedin.IntegrationTests
             Assert.IsNull(service.RescheduleStep(legalCase, steps[1].CaseStepId, hearing, null));
             Assert.IsNull(service.CompleteStep(legalCase, steps[0].CaseStepId, new DateTime(2025, 1, 30)));
 
+            int fixedStepId = steps[1].CaseStepId;
             using (var fresh = new QuedinDbContext())
             {
-                CaseStep stored = fresh.CaseSteps.Single(s => s.CaseStepId == steps[1].CaseStepId);
+                CaseStep stored = fresh.CaseSteps.Single(s => s.CaseStepId == fixedStepId);
                 Assert.AreEqual(hearing, stored.DueDate);
                 Assert.IsTrue(stored.IsFixedDate);
             }
