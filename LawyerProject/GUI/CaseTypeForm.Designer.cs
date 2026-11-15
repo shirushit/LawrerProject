@@ -40,7 +40,7 @@ namespace LawyerProject.GUI
             this.label4 = new System.Windows.Forms.Label();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.listSteps = new System.Windows.Forms.ListView();
-            this.gridSteps = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colStep = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnAddStep = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnEditStep = new System.Windows.Forms.Button();
@@ -51,7 +51,7 @@ namespace LawyerProject.GUI
             // 
             this.btnOK.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnOK.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnOK.Location = new System.Drawing.Point(345, 376);
+            this.btnOK.Location = new System.Drawing.Point(485, 376);
             this.btnOK.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(101, 34);
@@ -64,11 +64,11 @@ namespace LawyerProject.GUI
             // 
             this.txtCaseTypeName.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.txtCaseTypeName.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.txtCaseTypeName.Location = new System.Drawing.Point(294, 139);
+            this.txtCaseTypeName.Location = new System.Drawing.Point(366, 139);
             this.txtCaseTypeName.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtCaseTypeName.Name = "txtCaseTypeName";
             this.txtCaseTypeName.MaxLength = 50;
-            this.txtCaseTypeName.Size = new System.Drawing.Size(132, 27);
+            this.txtCaseTypeName.Size = new System.Drawing.Size(200, 27);
             this.txtCaseTypeName.TabIndex = 8;
             this.txtCaseTypeName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCaseTypeName_KeyPress);
             // 
@@ -77,7 +77,7 @@ namespace LawyerProject.GUI
             this.lblCode.AutoSize = true;
             this.lblCode.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lblCode.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.lblCode.Location = new System.Drawing.Point(426, 79);
+            this.lblCode.Location = new System.Drawing.Point(566, 79);
             this.lblCode.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblCode.Name = "lblCode";
             this.lblCode.Size = new System.Drawing.Size(0, 19);
@@ -88,7 +88,7 @@ namespace LawyerProject.GUI
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label2.Location = new System.Drawing.Point(455, 149);
+            this.label2.Location = new System.Drawing.Point(595, 149);
             this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 19);
@@ -100,7 +100,7 @@ namespace LawyerProject.GUI
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(455, 79);
+            this.label1.Location = new System.Drawing.Point(595, 79);
             this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(91, 19);
@@ -111,7 +111,7 @@ namespace LawyerProject.GUI
             // 
             this.txtBaseFee.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.txtBaseFee.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.txtBaseFee.Location = new System.Drawing.Point(294, 209);
+            this.txtBaseFee.Location = new System.Drawing.Point(434, 209);
             this.txtBaseFee.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtBaseFee.Name = "txtBaseFee";
             this.txtBaseFee.Size = new System.Drawing.Size(132, 27);
@@ -123,7 +123,7 @@ namespace LawyerProject.GUI
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label3.Location = new System.Drawing.Point(455, 219);
+            this.label3.Location = new System.Drawing.Point(595, 219);
             this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 19);
@@ -134,7 +134,7 @@ namespace LawyerProject.GUI
             // 
             this.txtCourtFee.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.txtCourtFee.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.txtCourtFee.Location = new System.Drawing.Point(294, 279);
+            this.txtCourtFee.Location = new System.Drawing.Point(434, 279);
             this.txtCourtFee.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtCourtFee.Name = "txtCourtFee";
             this.txtCourtFee.Size = new System.Drawing.Size(132, 27);
@@ -146,7 +146,7 @@ namespace LawyerProject.GUI
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label4.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label4.Location = new System.Drawing.Point(455, 289);
+            this.label4.Location = new System.Drawing.Point(595, 289);
             this.label4.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(39, 19);
@@ -161,7 +161,7 @@ namespace LawyerProject.GUI
             // 
             this.listSteps.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.listSteps.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.gridSteps});
+            this.colStep});
             this.listSteps.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.listSteps.FullRowSelect = true;
             this.listSteps.GridLines = true;
@@ -172,15 +172,15 @@ namespace LawyerProject.GUI
             this.listSteps.MultiSelect = false;
             this.listSteps.Name = "listSteps";
             this.listSteps.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.listSteps.Size = new System.Drawing.Size(208, 429);
+            this.listSteps.Size = new System.Drawing.Size(348, 429);
             this.listSteps.TabIndex = 14;
             this.listSteps.UseCompatibleStateImageBehavior = false;
             this.listSteps.View = System.Windows.Forms.View.Details;
             // 
-            // gridSteps
+            // colStep
             // 
-            this.gridSteps.Text = "תהליכים בתיק";
-            this.gridSteps.Width = 98;
+            this.colStep.Text = "תהליכים בתיק";
+            this.colStep.Width = 320;
             // 
             // btnAddStep
             // 
@@ -226,7 +226,7 @@ namespace LawyerProject.GUI
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(645, 550);
+            this.ClientSize = new System.Drawing.Size(785, 550);
             this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.btnEditStep);
             this.Controls.Add(this.btnAddStep);
@@ -263,7 +263,7 @@ namespace LawyerProject.GUI
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.ListView listSteps;
-        private System.Windows.Forms.ColumnHeader gridSteps;
+        private System.Windows.Forms.ColumnHeader colStep;
         private System.Windows.Forms.Button btnAddStep;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnEditStep;

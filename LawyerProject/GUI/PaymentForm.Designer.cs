@@ -179,7 +179,8 @@ namespace LawyerProject.GUI
             this.dtpPaidOn.Name = "dtpPaidOn";
             this.dtpPaidOn.Size = new System.Drawing.Size(200, 27);
             this.dtpPaidOn.TabIndex = 7;
-            this.dtpPaidOn.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpPaidOn.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpPaidOn.CustomFormat = "dd/MM/yyyy";
             // 
             // lblMethod
             // 
@@ -226,7 +227,7 @@ namespace LawyerProject.GUI
             this.lblAfter.TabIndex = 12;
             this.lblAfter.AutoSize = false;
             this.lblAfter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lblAfter.Text = "יתרה אחרי התשלום";
+            this.lblAfter.Text = "יתרה חדשה";
             // 
             // lblBalanceAfter
             // 
@@ -421,7 +422,8 @@ namespace LawyerProject.GUI
             this.dtpChequeDate.Name = "dtpChequeDate";
             this.dtpChequeDate.Size = new System.Drawing.Size(200, 27);
             this.dtpChequeDate.TabIndex = 31;
-            this.dtpChequeDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpChequeDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpChequeDate.CustomFormat = "dd/MM/yyyy";
             // 
             // btnOK
             // 

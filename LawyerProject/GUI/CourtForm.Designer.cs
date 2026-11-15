@@ -56,11 +56,11 @@ namespace LawyerProject.GUI
             // 
             // txtCourtName
             // 
-            this.txtCourtName.Location = new System.Drawing.Point(378, 282);
+            this.txtCourtName.Location = new System.Drawing.Point(180, 282);
             this.txtCourtName.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtCourtName.Name = "txtCourtName";
             this.txtCourtName.MaxLength = 50;
-            this.txtCourtName.Size = new System.Drawing.Size(132, 27);
+            this.txtCourtName.Size = new System.Drawing.Size(330, 27);
             this.txtCourtName.TabIndex = 3;
             this.txtCourtName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCourtName_KeyPress);
             // 
@@ -82,7 +82,7 @@ namespace LawyerProject.GUI
             this.listCaseTypes.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.listCaseTypes.MultiSelect = false;
             this.listCaseTypes.Name = "listCaseTypes";
-            this.listCaseTypes.Size = new System.Drawing.Size(276, 505);
+            this.listCaseTypes.Size = new System.Drawing.Size(276, 445);
             this.listCaseTypes.TabIndex = 5;
             this.listCaseTypes.UseCompatibleStateImageBehavior = false;
             this.listCaseTypes.View = System.Windows.Forms.View.Details;
@@ -96,7 +96,7 @@ namespace LawyerProject.GUI
             // 
             this.colCaseTypeName.Text = "שם נושא";
             this.colCaseTypeName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.colCaseTypeName.Width = 120;
+            this.colCaseTypeName.Width = 250;
             // 
             // btnRemove
             // 

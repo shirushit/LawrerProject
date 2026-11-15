@@ -214,7 +214,7 @@ namespace LawyerProject.GUI
             // 
             this.lblIdHint.Location = new System.Drawing.Point(301, 275);
             this.lblIdHint.Name = "lblIdHint";
-            this.lblIdHint.Size = new System.Drawing.Size(64, 23);
+            this.lblIdHint.Size = new System.Drawing.Size(200, 23);
             this.lblIdHint.TabIndex = 13;
             this.lblIdHint.AutoSize = false;
             this.lblIdHint.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -376,9 +376,9 @@ namespace LawyerProject.GUI
             // 
             // lblRules
             // 
-            this.lblRules.Location = new System.Drawing.Point(586, 360);
+            this.lblRules.Location = new System.Drawing.Point(20, 360);
             this.lblRules.Name = "lblRules";
-            this.lblRules.Size = new System.Drawing.Size(64, 23);
+            this.lblRules.Size = new System.Drawing.Size(630, 23);
             this.lblRules.TabIndex = 29;
             this.lblRules.AutoSize = false;
             this.lblRules.TextAlign = System.Drawing.ContentAlignment.TopRight;

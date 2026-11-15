@@ -84,12 +84,12 @@
             this.groupSearch.Controls.Add(this.label1);
             this.groupSearch.Controls.Add(this.txtCaseTypeName);
             this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupSearch.Location = new System.Drawing.Point(401, 32);
+            this.groupSearch.Location = new System.Drawing.Point(331, 32);
             this.groupSearch.Margin = new System.Windows.Forms.Padding(4);
             this.groupSearch.Name = "groupSearch";
             this.groupSearch.Padding = new System.Windows.Forms.Padding(4);
             this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupSearch.Size = new System.Drawing.Size(267, 146);
+            this.groupSearch.Size = new System.Drawing.Size(337, 146);
             this.groupSearch.TabIndex = 8;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "חיפוש נושא תיק";
@@ -99,7 +99,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(167, 99);
+            this.label1.Location = new System.Drawing.Point(202, 99);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 19);
@@ -108,7 +108,7 @@
             // 
             // txtCaseTypeName
             // 
-            this.txtCaseTypeName.Location = new System.Drawing.Point(21, 95);
+            this.txtCaseTypeName.Location = new System.Drawing.Point(56, 95);
             this.txtCaseTypeName.Margin = new System.Windows.Forms.Padding(4);
             this.txtCaseTypeName.Name = "txtCaseTypeName";
             this.txtCaseTypeName.Size = new System.Drawing.Size(132, 27);

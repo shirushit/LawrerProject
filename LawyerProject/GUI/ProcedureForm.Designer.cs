@@ -45,11 +45,11 @@ namespace LawyerProject.GUI
             // 
             // txtCategory
             // 
-            this.txtCategory.Location = new System.Drawing.Point(127, 311);
+            this.txtCategory.Location = new System.Drawing.Point(40, 311);
             this.txtCategory.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtCategory.Name = "txtCategory";
             this.txtCategory.MaxLength = 50;
-            this.txtCategory.Size = new System.Drawing.Size(132, 27);
+            this.txtCategory.Size = new System.Drawing.Size(219, 27);
             this.txtCategory.TabIndex = 35;
             // 
             // label4
@@ -91,11 +91,11 @@ namespace LawyerProject.GUI
             // 
             // txtProcedureName
             // 
-            this.txtProcedureName.Location = new System.Drawing.Point(127, 171);
+            this.txtProcedureName.Location = new System.Drawing.Point(40, 171);
             this.txtProcedureName.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtProcedureName.Name = "txtProcedureName";
             this.txtProcedureName.MaxLength = 50;
-            this.txtProcedureName.Size = new System.Drawing.Size(132, 27);
+            this.txtProcedureName.Size = new System.Drawing.Size(219, 27);
             this.txtProcedureName.TabIndex = 30;
             // 
             // lblCode

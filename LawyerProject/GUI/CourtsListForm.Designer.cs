@@ -85,12 +85,12 @@
             this.groupSearch.Controls.Add(this.label1);
             this.groupSearch.Controls.Add(this.txtCourtName);
             this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupSearch.Location = new System.Drawing.Point(353, 57);
+            this.groupSearch.Location = new System.Drawing.Point(283, 57);
             this.groupSearch.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.groupSearch.Name = "groupSearch";
             this.groupSearch.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupSearch.Size = new System.Drawing.Size(266, 146);
+            this.groupSearch.Size = new System.Drawing.Size(336, 146);
             this.groupSearch.TabIndex = 4;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "חיפוש בית משפט";
@@ -98,7 +98,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(167, 99);
+            this.label1.Location = new System.Drawing.Point(202, 99);
             this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 19);
@@ -107,7 +107,7 @@
             // 
             // txtCourtName
             // 
-            this.txtCourtName.Location = new System.Drawing.Point(25, 89);
+            this.txtCourtName.Location = new System.Drawing.Point(60, 89);
             this.txtCourtName.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.txtCourtName.Name = "txtCourtName";
             this.txtCourtName.Size = new System.Drawing.Size(132, 27);

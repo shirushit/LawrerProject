@@ -65,7 +65,7 @@ namespace LawyerProject.GUI
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
-            int width = 820;
+            int width = 920;
 
             lblIntro = new Label
             {

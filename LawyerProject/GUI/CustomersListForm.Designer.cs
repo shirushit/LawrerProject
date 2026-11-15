@@ -60,9 +60,9 @@ namespace LawyerProject.GUI
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(1066, 37);
+            this.label1.Location = new System.Drawing.Point(1010, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(179, 23);
+            this.label1.Size = new System.Drawing.Size(235, 23);
             this.label1.TabIndex = 1;
             this.label1.AutoSize = false;
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -70,15 +70,15 @@ namespace LawyerProject.GUI
             // 
             // txtFilter
             // 
-            this.txtFilter.Location = new System.Drawing.Point(760, 34);
+            this.txtFilter.Location = new System.Drawing.Point(700, 34);
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(300, 27);
+            this.txtFilter.Size = new System.Drawing.Size(270, 27);
             this.txtFilter.TabIndex = 2;
             this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
             // lblType
             // 
-            this.lblType.Location = new System.Drawing.Point(686, 37);
+            this.lblType.Location = new System.Drawing.Point(596, 37);
             this.lblType.Name = "lblType";
             this.lblType.Size = new System.Drawing.Size(44, 23);
             this.lblType.TabIndex = 3;
@@ -88,7 +88,7 @@ namespace LawyerProject.GUI
             // 
             // cmbType
             // 
-            this.cmbType.Location = new System.Drawing.Point(480, 34);
+            this.cmbType.Location = new System.Drawing.Point(390, 34);
             this.cmbType.Name = "cmbType";
             this.cmbType.Size = new System.Drawing.Size(200, 27);
             this.cmbType.TabIndex = 4;
@@ -97,7 +97,7 @@ namespace LawyerProject.GUI
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(320, 30);
+            this.btnClear.Location = new System.Drawing.Point(230, 30);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(130, 34);
             this.btnClear.TabIndex = 5;
@@ -107,7 +107,7 @@ namespace LawyerProject.GUI
             // 
             // lblCount
             // 
-            this.lblCount.Location = new System.Drawing.Point(236, 37);
+            this.lblCount.Location = new System.Drawing.Point(146, 37);
             this.lblCount.Name = "lblCount";
             this.lblCount.Size = new System.Drawing.Size(64, 23);
             this.lblCount.TabIndex = 6;

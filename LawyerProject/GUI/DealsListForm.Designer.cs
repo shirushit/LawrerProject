@@ -48,7 +48,7 @@
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnUpdate.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnUpdate.Location = new System.Drawing.Point(599, 1013);
+            this.btnUpdate.Location = new System.Drawing.Point(363, 715);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(135, 50);
@@ -61,7 +61,7 @@
             // 
             this.btnAdd.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnAdd.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnAdd.Location = new System.Drawing.Point(599, 924);
+            this.btnAdd.Location = new System.Drawing.Point(518, 715);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(135, 50);
@@ -75,14 +75,14 @@
             this.gridDeals.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.gridDeals.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridDeals.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.gridDeals.Location = new System.Drawing.Point(261, 358);
+            this.gridDeals.Location = new System.Drawing.Point(50, 270);
             this.gridDeals.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.gridDeals.MultiSelect = false;
             this.gridDeals.Name = "gridDeals";
             this.gridDeals.ReadOnly = true;
             this.gridDeals.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.gridDeals.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridDeals.Size = new System.Drawing.Size(816, 490);
+            this.gridDeals.Size = new System.Drawing.Size(916, 420);
             this.gridDeals.TabIndex = 9;
             // 
             // groupSearch
@@ -97,12 +97,12 @@
             this.groupSearch.Controls.Add(this.label1);
             this.groupSearch.Controls.Add(this.txtBlock);
             this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupSearch.Location = new System.Drawing.Point(261, 82);
+            this.groupSearch.Location = new System.Drawing.Point(50, 25);
             this.groupSearch.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.groupSearch.Name = "groupSearch";
             this.groupSearch.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupSearch.Size = new System.Drawing.Size(816, 225);
+            this.groupSearch.Size = new System.Drawing.Size(916, 225);
             this.groupSearch.TabIndex = 8;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "חיפוש עסקה";
@@ -110,7 +110,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(219, 148);
+            this.label4.Location = new System.Drawing.Point(269, 148);
             this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(67, 19);
@@ -119,7 +119,7 @@
             // 
             // txtSubParcel
             // 
-            this.txtSubParcel.Location = new System.Drawing.Point(37, 143);
+            this.txtSubParcel.Location = new System.Drawing.Point(87, 143);
             this.txtSubParcel.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.txtSubParcel.Name = "txtSubParcel";
             this.txtSubParcel.Size = new System.Drawing.Size(175, 27);
@@ -129,7 +129,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(487, 79);
+            this.label3.Location = new System.Drawing.Point(537, 79);
             this.label3.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 19);
@@ -138,7 +138,7 @@
             // 
             // txtPropertyAddress
             // 
-            this.txtPropertyAddress.Location = new System.Drawing.Point(301, 69);
+            this.txtPropertyAddress.Location = new System.Drawing.Point(351, 69);
             this.txtPropertyAddress.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.txtPropertyAddress.Name = "txtPropertyAddress";
             this.txtPropertyAddress.Size = new System.Drawing.Size(175, 27);
@@ -148,7 +148,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(483, 153);
+            this.label2.Location = new System.Drawing.Point(533, 153);
             this.label2.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 19);
@@ -157,7 +157,7 @@
             // 
             // txtParcel
             // 
-            this.txtParcel.Location = new System.Drawing.Point(301, 143);
+            this.txtParcel.Location = new System.Drawing.Point(351, 143);
             this.txtParcel.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.txtParcel.Name = "txtParcel";
             this.txtParcel.Size = new System.Drawing.Size(175, 27);
@@ -167,7 +167,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(724, 153);
+            this.label1.Location = new System.Drawing.Point(774, 153);
             this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 19);
@@ -176,7 +176,7 @@
             // 
             // txtBlock
             // 
-            this.txtBlock.Location = new System.Drawing.Point(543, 143);
+            this.txtBlock.Location = new System.Drawing.Point(593, 143);
             this.txtBlock.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.txtBlock.Name = "txtBlock";
             this.txtBlock.Size = new System.Drawing.Size(175, 27);
@@ -188,7 +188,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(1375, 1061);
+            this.ClientSize = new System.Drawing.Size(1016, 790);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.gridDeals);

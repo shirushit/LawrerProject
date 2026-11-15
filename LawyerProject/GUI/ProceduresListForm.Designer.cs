@@ -84,12 +84,12 @@ namespace LawyerProject.GUI
             this.groupSearch.Controls.Add(this.label1);
             this.groupSearch.Controls.Add(this.txtProcedureName);
             this.groupSearch.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupSearch.Location = new System.Drawing.Point(532, 101);
+            this.groupSearch.Location = new System.Drawing.Point(462, 101);
             this.groupSearch.Margin = new System.Windows.Forms.Padding(4);
             this.groupSearch.Name = "groupSearch";
             this.groupSearch.Padding = new System.Windows.Forms.Padding(4);
             this.groupSearch.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.groupSearch.Size = new System.Drawing.Size(297, 118);
+            this.groupSearch.Size = new System.Drawing.Size(367, 118);
             this.groupSearch.TabIndex = 16;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "חיפוש תהליך לתיק";
@@ -99,7 +99,7 @@ namespace LawyerProject.GUI
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(176, 75);
+            this.label1.Location = new System.Drawing.Point(211, 75);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(98, 19);
@@ -108,7 +108,7 @@ namespace LawyerProject.GUI
             // 
             // txtProcedureName
             // 
-            this.txtProcedureName.Location = new System.Drawing.Point(31, 70);
+            this.txtProcedureName.Location = new System.Drawing.Point(66, 70);
             this.txtProcedureName.Margin = new System.Windows.Forms.Padding(4);
             this.txtProcedureName.Name = "txtProcedureName";
             this.txtProcedureName.Size = new System.Drawing.Size(132, 27);

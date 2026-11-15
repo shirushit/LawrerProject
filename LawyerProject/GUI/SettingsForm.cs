@@ -68,11 +68,11 @@ namespace LawyerProject.GUI
             holidays.Controls.Add(new Label
             {
                 Text = "חגי ישראל שבהם בתי המשפט סגורים מחושבים אוטומטית. כאן מוסיפים ימים נוספים, כמו יום העצמאות או פגרה.",
-                Location = new Point(15, 25), Size = new Size(710, 23), ForeColor = SystemColors.GrayText, TextAlign = ContentAlignment.TopRight
+                Location = new Point(15, 25), Size = new Size(710, 44), ForeColor = SystemColors.GrayText, TextAlign = ContentAlignment.TopRight
             });
             listHolidays = new ListView
             {
-                Location = new Point(15, 55), Size = new Size(710, 230), View = View.Details, FullRowSelect = true,
+                Location = new Point(15, 72), Size = new Size(710, 213), View = View.Details, FullRowSelect = true,
                 RightToLeft = RightToLeft.Yes, RightToLeftLayout = true, HideSelection = false
             };
             listHolidays.Columns.Add("תאריך", 110);

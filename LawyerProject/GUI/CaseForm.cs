@@ -347,6 +347,7 @@ namespace LawyerProject.GUI
                 if (p.IsCancelled || p.CancelsPaymentId.HasValue) item.ForeColor = SystemColors.GrayText;
                 listPayments.Items.Add(item);
             }
+            Ui.FitColumns(listPayments);
             btnReceipt.Enabled = listPayments.Items.Count > 0;
             btnCancelPayment.Enabled = listPayments.Items.Count > 0;
             btnRefund.Visible = !isNew && CaseService.OpenBalance(legalCase) < 0;

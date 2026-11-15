@@ -54,9 +54,9 @@ namespace LawyerProject.GUI
             // 
             // lblCaseTypeId
             // 
-            this.lblCaseTypeId.Location = new System.Drawing.Point(256, 25);
+            this.lblCaseTypeId.Location = new System.Drawing.Point(90, 25);
             this.lblCaseTypeId.Name = "lblCaseTypeId";
-            this.lblCaseTypeId.Size = new System.Drawing.Size(64, 23);
+            this.lblCaseTypeId.Size = new System.Drawing.Size(230, 23);
             this.lblCaseTypeId.TabIndex = 1;
             this.lblCaseTypeId.AutoSize = false;
             this.lblCaseTypeId.TextAlign = System.Drawing.ContentAlignment.TopRight;

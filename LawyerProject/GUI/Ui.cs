@@ -249,6 +249,7 @@ namespace LawyerProject.GUI
             grid.MultiSelect = false;
             grid.ReadOnly = true;
             grid.AllowUserToAddRows = false;
+            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize; // headers never cut at any scaling
             // Dark list screens set a light ForeColor on the form; keep cell text dark on the light grid.
             grid.DefaultCellStyle.ForeColor = SystemColors.ControlText;
             grid.ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.ControlText;
@@ -260,8 +261,42 @@ namespace LawyerProject.GUI
                     column.DefaultCellStyle.Format = "#,##0.00";
                 else if (type == typeof(DateTime))
                     column.DefaultCellStyle.Format = "dd/MM/yyyy";
-                // Short numbers (ids) need less room than names and descriptions.
-                if (type == typeof(int)) column.FillWeight = 55;
+            }
+            FitFillWeights(grid);
+            grid.DataBindingComplete -= RefitOnBinding; // subscribe once, however often the list is refreshed
+            grid.DataBindingComplete += RefitOnBinding;
+        }
+
+        private static void RefitOnBinding(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            FitFillWeights((DataGridView)sender);
+        }
+
+        /// <summary>
+        /// The columns still fill the grid, but each gets room in proportion to its longest value,
+        /// so an id column stays narrow and an e-mail or an address is not cut.
+        /// </summary>
+        private static void FitFillWeights(DataGridView grid)
+        {
+            foreach (DataGridViewColumn column in grid.Columns)
+                if (column.Visible)
+                    column.FillWeight = Math.Max(10, column.GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true));
+        }
+
+        /// <summary>
+        /// Widens each column of a details list to its longest value or its header, whichever is wider,
+        /// so dates and amounts are never cut (column widths do not follow the Windows scaling setting).
+        /// </summary>
+        public static void FitColumns(ListView list)
+        {
+            if (list.Items.Count == 0) return;
+            foreach (ColumnHeader column in list.Columns)
+            {
+                if (column.Width == 0) continue; // a hidden key column
+                column.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+                int content = column.Width;
+                column.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+                if (column.Width < content) column.Width = content;
             }
         }
 
