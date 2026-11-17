@@ -267,6 +267,8 @@ namespace LawyerProject.GUI
             grid.DataBindingComplete += RefitOnBinding;
         }
 
+        private const int ShortColumnWidth = 140;
+
         private static void RefitOnBinding(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             FitFillWeights((DataGridView)sender);
@@ -279,8 +281,13 @@ namespace LawyerProject.GUI
         private static void FitFillWeights(DataGridView grid)
         {
             foreach (DataGridViewColumn column in grid.Columns)
-                if (column.Visible)
-                    column.FillWeight = Math.Max(10, column.GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true));
+            {
+                if (!column.Visible) continue;
+                int preferred = column.GetPreferredWidth(DataGridViewAutoSizeColumnMode.AllCells, true);
+                column.FillWeight = Math.Max(10, preferred);
+                // Short values (numbers, dates, amounts) always show in full; long texts give up the room.
+                column.MinimumWidth = preferred <= ShortColumnWidth ? Math.Max(2, preferred) : 60;
+            }
         }
 
         /// <summary>

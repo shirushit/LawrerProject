@@ -42,7 +42,7 @@
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnUpdate.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnUpdate.Location = new System.Drawing.Point(88, 573);
+            this.btnUpdate.Location = new System.Drawing.Point(265, 567);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(4);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(100, 34);
@@ -55,7 +55,7 @@
             // 
             this.btnAdd.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.btnAdd.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnAdd.Location = new System.Drawing.Point(88, 512);
+            this.btnAdd.Location = new System.Drawing.Point(385, 567);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 34);
