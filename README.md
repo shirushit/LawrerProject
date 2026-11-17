@@ -38,9 +38,13 @@ The app is in Hebrew (right-to-left). All names, IDs and amounts are fictional d
 |---|---|---|
 | ![Home screen](docs/screenshots/home.png) | ![Case screen](docs/screenshots/case.png) | ![Receipt](docs/screenshots/receipt.png) |
 
-| All cases, late and due-soon highlighted | Payments and receipts |
-|---|---|
-| ![Cases list](docs/screenshots/cases.png) | ![Payments list](docs/screenshots/payments.png) |
+| All cases, late and due-soon highlighted | A case's payments | Payments and receipts |
+|---|---|---|
+| ![Cases list](docs/screenshots/cases.png) | ![Case payments](docs/screenshots/case-payments.png) | ![Payments list](docs/screenshots/payments.png) |
+
+| Customers and other parties |
+|---|
+| ![Customers list](docs/screenshots/customers.png) |
 
 ## 🔎 Where to look in the code
 
