@@ -57,6 +57,9 @@ for f in cs:
     name = os.path.basename(f)[:-3]
     if f in forms:
         items.append('    <Compile Include="%s">\n      <SubType>Form</SubType>\n    </Compile>' % win(f))
+    elif f.startswith('GUI/') and name.count('.') == 1 and ('GUI/' + name.split('.')[0] + '.cs') in forms and not f.endswith('.Designer.cs'):
+        # a form split into partial files (CaseForm.Payments.cs) nests under the form
+        items.append('    <Compile Include="%s">\n      <DependentUpon>%s</DependentUpon>\n    </Compile>' % (win(f), name.split('.')[0] + '.cs'))
     elif f.endswith('.Designer.cs') and f.startswith('GUI/'):
         items.append('    <Compile Include="%s">\n      <DependentUpon>%s</DependentUpon>\n    </Compile>' % (win(f), os.path.basename(f)[:-12] + '.cs'))
     elif f.startswith('DB/') and name in model_tt:

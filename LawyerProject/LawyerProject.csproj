@@ -153,6 +153,15 @@
     <Compile Include="GUI\CaseForm.Designer.cs">
       <DependentUpon>CaseForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\CaseForm.Money.cs">
+      <DependentUpon>CaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\CaseForm.Saving.cs">
+      <DependentUpon>CaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\CaseForm.Timeline.cs">
+      <DependentUpon>CaseForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\CaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
