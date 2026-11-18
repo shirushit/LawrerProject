@@ -54,7 +54,6 @@ namespace LawyerProject.BLL
         public static readonly string[] All = { Fee, Expenses };
     }
 
-    /// <summary>Actions written to the audit log (AuditEntry.Action).</summary>
     /// <summary>Column lengths from create-database.sql that the code shortens text to.</summary>
     public static class ColumnLengths
     {
@@ -63,6 +62,7 @@ namespace LawyerProject.BLL
         public const int AuditDetails = 400;
     }
 
+    /// <summary>Actions written to the audit log (AuditEntry.Action).</summary>
     public static class AuditActions
     {
         public const string CaseOpened = "פתיחת תיק";

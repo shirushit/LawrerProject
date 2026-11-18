@@ -7,7 +7,7 @@
 ![WinForms](https://img.shields.io/badge/UI-WinForms%20(RTL%20Hebrew)-blue)
 ![EF6](https://img.shields.io/badge/ORM-Entity%20Framework%206-6DB33F)
 ![SQL Server](https://img.shields.io/badge/DB-SQL%20Server%20LocalDB-CC2927)
-![tests](https://img.shields.io/badge/tests-134%20unit%20%2B%2031%20integration-brightgreen)
+![tests](https://img.shields.io/badge/tests-134%20unit%20%2B%2039%20integration-brightgreen)
 
 **English** · [עברית](#עברית)
 
@@ -68,7 +68,7 @@ Five minutes with the project? These files show the most:
 | 📅 **Automatic case timeline** | Opening a case creates its steps from the case type (e.g. *filing → defence → pre-trial → evidence → ruling*), each with an estimated date. |
 | 🔁 **Deadlines that move** | Completing a step (on the real date) pushes every later step. A date set by the court is kept fixed and later steps count from it. The app never sets a deadline on a weekend or a Jewish holiday. Steps cannot be skipped; a manager can undo the last one. |
 | 🚦 **"What's urgent today"** | The home screen lists the next step of every open case that is late or due this week. The cases list shows days late, with free search and a colour legend. |
-| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value), at least the case type's minimum fee, + court fee. The balance is always computed from the payments. Receipts store the VAT rate of the day; court fees carry no VAT. A payment is cancelled with a credit note, never deleted. |
+| 💰 **Fees, balances, receipts** | Fee = agreed % of the claim (or property value), at least the case type's minimum fee, + court fee. Each case keeps the fees it was opened with, so later catalogue changes never alter old totals. The balance is always computed from the payments. Receipts store the VAT rate of the day; court fees carry no VAT. A payment is cancelled with a credit note, never deleted. |
 | 🧾 **Audit log & backup** | Every payment, cancellation, step change and user change is logged with user and time. Managers can back up the database from the home screen. |
 | 🤝 **Concurrent users** | Two people editing the same case or customer: the second save is refused (optimistic concurrency with `rowversion`) and the record reloads instead of silently overwriting. An open window notices changes or deletion by someone else, and closing it with unsaved changes asks first. |
 | ⚙️ **Office settings** | VAT rate, office details and extra non-working days are stored in the database and shared by every workstation. Users are locked after 5 wrong passwords and can be deactivated. |
@@ -206,11 +206,11 @@ so some steps show as late and some as due soon right away.
 | Threat | What stops it |
 |---|---|
 | Stolen database file | Passwords are salted PBKDF2-SHA256 (100,000 iterations); legacy plain-text passwords are re-hashed at the first login. |
-| An employee opens the database directly (SSMS, Excel) | With [`security.sql`](database/security.sql), workers cannot read or change the `Users` table: login and password change go through stored procedures (`usp_GetLoginSalt`, `usp_TryLogin`, `usp_ChangeOwnPassword`) that compare the hash inside the database and count failures. Workers cannot delete, cannot change the catalogue and can only set the "cancelled" flag of a payment. CI connects as a worker and checks that each of these is refused. |
+| An employee opens the database directly (SSMS, Excel) | With [`security.sql`](database/security.sql), workers cannot read or change the `Users` table: login and password change go through stored procedures (`usp_GetLoginSalt`, `usp_TryLogin`, `usp_ChangeOwnPassword`) that compare the hash inside the database and count every failure, including guesses through the password-change procedure. Workers cannot delete, cannot change the catalogue, and can mark a payment cancelled only together with its credit note. CI connects as a worker and checks that each of these is refused, and for the right reason. |
 | Editing a receipt after the fact | A trigger refuses any change to a recorded payment's amount, date or method, even for the owner. Corrections are credit notes. |
 | Re-opening a completed step | Only a manager (app check, plus a trigger with `security.sql`). |
-| Covering one's tracks | The audit log is append-only (trigger + `DENY`). |
-| Guessing passwords | 5 wrong passwords lock the user for 15 minutes; the lock is counted by the database. Login answers the same for an unknown user and a wrong password, and takes the same time. |
+| Covering one's tracks | The audit log is append-only (trigger + `DENY`), and every entry records the database login that really wrote it (`DbLogin`, filled by the database), so an entry inserted under someone else's name still shows its author. |
+| Guessing passwords | 5 wrong passwords lock the user for 15 minutes. The database counts them under a row lock, so parallel attempts cannot slip past the limit. An unknown user and a wrong password get the same answer, in the app and from the procedures, and take the same time. |
 | A typo or a retry corrupting data | Amounts are capped at 1,000,000,000 ₪, the database checks amounts, percentages and links (foreign keys and `CHECK` constraints), and a failed save is rolled back in memory too, so a retry never saves a payment or a timeline twice. |
 
 ## 🏢 Running it in a real office
@@ -219,6 +219,7 @@ so some steps show as late and some as due soon right away.
 |---|---|
 | **Office details** | Log in as a manager → **הגדרות משרד**: office name, address, tax ID and VAT rate (shared by all workstations). The **מדריך הקמה** screen walks through the rest of the setup. |
 | **Permissions in the database** | Run [`database/security.sql`](database/security.sql) and map each employee's Windows account to `QuedinWorker` or `QuedinManager`. Then the rules hold even outside the app (see [Security](#-security)). Re-run it after re-running `create-database.sql`. |
+| **Upgrade from v1.3** | Run [`database/upgrade-from-v1.3.sql`](database/upgrade-from-v1.3.sql) (keeps all data, one transaction, safe to run twice), then `security.sql` again. CI upgrades a real v1.3 database on every build. |
 | **Backups** | Managers have a backup button and a reminder when the last backup is older than a day. For a nightly automatic backup, schedule [`database/backup-nightly.cmd`](database/backup-nightly.cmd); restore instructions are inside it. |
 | **Two people on one case** | Safe: the second save is refused and the case reloads with the other person's changes. |
 | **Wrong PC clock** | The app takes "today" from the database server and warns at login when the PC clock is off by 5 minutes or more. |
@@ -228,7 +229,7 @@ so some steps show as late and some as due soon right away.
 | Suite | What it covers | Runs |
 |---|---|---|
 | [`Quedin.Tests`](tests/Quedin.Tests) — 134 unit tests | Timeline engine (weekends, holidays, fixed court dates, reschedule, undo, conflicts), fee/VAT/balance/refund math, login lockout, server clock, password hashing, validation (ID / company / passport, Israeli and international phones, strict money parsing) | anywhere: `dotnet test tests/Quedin.Tests` |
-| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 31 tests | The real data layer against QuedinDB: login through the database procedures, lockout and deactivation, users, a failed save that is retried (no duplicate steps or payments), manager-only catalogue changes, payments that cannot be edited, opening a case, completing/rescheduling/undoing steps, fixed court dates, payments, cancellations and refunds, concurrent edits of cases and customers, case deletion, shared settings, append-only audit log | Windows + LocalDB, after running the database script. Each test is rolled back. |
+| [`Quedin.IntegrationTests`](tests/Quedin.IntegrationTests) — 39 tests | The real data layer against QuedinDB: login through the database procedures (stored user name, the same answer for unknown users, guessing through password change is locked), lockout and deactivation, fee snapshots, users, a failed save that is retried (no duplicate steps or payments), manager-only catalogue changes, payments that cannot be edited, opening a case, completing/rescheduling/undoing steps, fixed court dates, payments, cancellations and refunds, concurrent edits of cases and customers, case deletion, shared settings, append-only audit log | Windows + LocalDB, after running the database script. Each test is rolled back. |
 | CI `database` job | Runs `create-database.sql` twice on SQL Server 2022, verifies the demo data and that the audit log refuses deletes | every push |
 
 In Visual Studio: **Test → Run All Tests**. Without the database, the integration tests are
@@ -242,7 +243,8 @@ LawyerProject/
 ├── DB/           Entity Framework 6 model (QuedinModel.edmx) and entity classes
 ├── GUI/          WinForms screens (Hebrew, right-to-left)
 └── App.config    connection string and defaults for a new database
-database/         create-database.sql (schema + demo data), security.sql (roles), backup-nightly.cmd
+database/         create-database.sql (schema + demo data), upgrade-from-v1.3.sql (keeps the data of a v1.3
+                  database), security.sql (roles), backup-nightly.cmd
 tools/            generators: EF model and SQL script from one spec, the .csproj file list
 packaging/        HOW-TO-RUN.txt, packed with the app into each release zip by CI
 tests/            unit tests (.NET 8) and integration tests (.NET Framework + LocalDB)

@@ -58,7 +58,9 @@ namespace LawyerProject.GUI
                 return;
             }
 
-            decimal total = FeeCalculator.CaseTotal(amount.Value, percent.Value, caseType != null ? (caseType.CourtFee ?? 0m) : 0m, caseType != null ? (caseType.BaseFee ?? 0m) : 0m);
+            decimal minimumFee, courtFee;
+            CaseService.FeesOf(legalCase, caseType, out minimumFee, out courtFee);
+            decimal total = FeeCalculator.CaseTotal(amount.Value, percent.Value, courtFee, minimumFee);
             decimal paid = isNew ? 0m : CaseService.PaidTotal(legalCase);
             decimal balance = FeeCalculator.Balance(total, new[] { paid });
             lblTotal.Text = Ui.FormatMoney(total);

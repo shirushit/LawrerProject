@@ -12,7 +12,7 @@ jobs:
     name: Build app + unit tests (Windows)
     runs-on: windows-latest
     permissions:
-      contents: write   # only used to attach the zip to a published release
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -33,12 +33,12 @@ jobs:
       - name: Unit tests
         run: dotnet test tests/Quedin.Tests/Quedin.Tests.csproj -c Release --no-build --logger "console;verbosity=normal"
 
-      - name: Integration tests (only when LocalDB is installed on the runner)
+      - name: Integration tests on LocalDB
         shell: pwsh
         run: |
           if (-not (Get-Command sqllocaldb -ErrorAction SilentlyContinue) -or -not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
-            Write-Host "LocalDB or sqlcmd is not available on this runner - skipping integration tests."
-            exit 0
+            Write-Error "LocalDB or sqlcmd is missing on this runner, so the integration tests cannot run."
+            exit 1
           }
           sqllocaldb start MSSQLLocalDB
           sqlcmd -S "(localdb)\MSSQLLocalDB" -b -i database\create-database.sql
@@ -54,21 +54,37 @@ jobs:
             LawyerProject/bin/Release/*.dll
             LawyerProject/bin/Release/*.config
             database/create-database.sql
+            database/upgrade-from-v1.3.sql
+            database/security.sql
+            database/backup-nightly.cmd
+            packaging/HOW-TO-RUN.txt
+            LICENSE
 
-      - name: Attach the app to the release
-        if: github.event_name == 'release'
-        shell: pwsh
+  release-zip:
+    name: Attach the app to the release
+    if: github.event_name == 'release'
+    needs: [ build-and-test, database ]   # only an app that passed every check is published
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: QUEDIN-Release
+          path: artifact
+      - name: Zip and upload
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
         run: |
-          $tag = "${{ github.event.release.tag_name }}"
-          $dir = "QUEDIN-$tag"
-          New-Item -ItemType Directory -Force "$dir/app", "$dir/database" | Out-Null
-          Copy-Item LawyerProject/bin/Release/*.exe, LawyerProject/bin/Release/*.dll, LawyerProject/bin/Release/*.config "$dir/app"
-          Copy-Item database/create-database.sql, database/security.sql, database/backup-nightly.cmd "$dir/database"
-          Copy-Item packaging/HOW-TO-RUN.txt, LICENSE "$dir"
-          Compress-Archive -Path $dir -DestinationPath "$dir.zip" -Force
-          gh release upload $tag "$dir.zip" --clobber
+          dir="QUEDIN-$TAG"
+          mkdir -p "$dir/app" "$dir/database"
+          cp artifact/LawyerProject/bin/Release/* "$dir/app/"
+          cp artifact/database/* "$dir/database/"
+          cp artifact/packaging/HOW-TO-RUN.txt artifact/LICENSE "$dir/"
+          zip -r "$dir.zip" "$dir"
+          gh release upload "$TAG" "$dir.zip" --clobber --repo "$REPO"
 
   database:
     name: Database script on SQL Server 2022
@@ -96,16 +112,33 @@ jobs:
           done
           echo "SQL Server did not start"; exit 1
 
+      - name: Upgrade a v1.3 database to v1.3.1 (twice, and keep its data)
+        run: |
+          git fetch --depth=1 origin refs/tags/v1.3:refs/tags/v1.3
+          git show v1.3:database/create-database.sql > /tmp/v13.sql
+          docker cp /tmp/v13.sql "$CID":/tmp/v13.sql
+          docker cp database/upgrade-from-v1.3.sql "$CID":/tmp/upgrade.sql
+          SQL="docker exec $CID /opt/mssql-tools18/bin/sqlcmd -C -I -b -S localhost -U sa -P Ci-Passw0rd!"
+          $SQL -i /tmp/v13.sql
+          for run in 1 2; do $SQL -i /tmp/upgrade.sql; done
+          $SQL -d QuedinDB -Q "
+            SET NOCOUNT ON;
+            IF (SELECT COUNT(*) FROM Cases) <> 5 THROW 51001, 'Cases lost in the upgrade', 1;
+            IF EXISTS (SELECT 1 FROM Cases WHERE CourtFee IS NULL OR MinimumFee <> 0) THROW 51002, 'Fee snapshot not filled', 1;
+            IF OBJECT_ID('dbo.usp_TryLogin') IS NULL OR OBJECT_ID('dbo.TR_Payments_Immutable') IS NULL THROW 51003, 'Missing module', 1;
+            IF OBJECT_ID('dbo.FK_Payments_CancelsPayment') IS NULL OR COL_LENGTH('dbo.AuditLog', 'DbLogin') IS NULL THROW 51004, 'Missing constraint', 1;
+            PRINT 'Upgrade verified.';"
+
       - name: Run create-database.sql (twice, to prove it can be re-run)
         run: |
           docker cp database/create-database.sql "$CID":/tmp/create-database.sql
           for run in 1 2; do
-            docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost -U sa -P 'Ci-Passw0rd!' -i /tmp/create-database.sql
+            docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -I -b -S localhost -U sa -P 'Ci-Passw0rd!' -i /tmp/create-database.sql
           done
 
       - name: Verify demo data
         run: |
-          docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
+          docker exec "$CID" /opt/mssql-tools18/bin/sqlcmd -C -I -b -S localhost -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
             SET NOCOUNT ON;
             IF (SELECT COUNT(*) FROM Users) <> 2 THROW 50001, 'Users', 1;
             IF (SELECT COUNT(*) FROM Customers) <> 12 THROW 50002, 'Customers', 1;
@@ -114,8 +147,9 @@ jobs:
             IF (SELECT COUNT(*) FROM Payments) <> 4 THROW 50005, 'Payments', 1;
             IF EXISTS (SELECT 1 FROM Users WHERE PasswordHash NOT LIKE 'pbkdf2$%') THROW 50006, 'Plain-text password', 1;
             IF EXISTS (SELECT 1 FROM Cases c JOIN CaseTypes t ON t.CaseTypeId = c.CaseTypeId
-                       WHERE c.IsPaid = 1 AND (SELECT SUM(Amount) FROM Payments p WHERE p.CaseId = c.CaseId)
-                             < CASE WHEN c.ClaimAmount * c.FeePercent / 100 > t.BaseFee THEN c.ClaimAmount * c.FeePercent / 100 ELSE t.BaseFee END + t.CourtFee)
+                       CROSS APPLY (SELECT ISNULL(c.ClaimAmount, 0) * ISNULL(c.FeePercent, 0) / 100 AS Share) f
+                       WHERE c.IsPaid = 1 AND ISNULL((SELECT SUM(Amount) FROM Payments p WHERE p.CaseId = c.CaseId), 0)
+                             < CASE WHEN f.Share > ISNULL(c.MinimumFee, 0) THEN f.Share ELSE ISNULL(c.MinimumFee, 0) END + ISNULL(c.CourtFee, 0))
               THROW 50009, 'A case marked paid has an open balance', 1;
             IF EXISTS (
               SELECT 1 FROM Cases c
@@ -132,29 +166,45 @@ jobs:
             END CATCH
             PRINT 'Demo data verified.';"
 
-      - name: Permissions script - a worker cannot read passwords or edit payments
+      - name: Permissions script - a worker cannot read passwords, guess them, or edit payments
         run: |
           docker cp database/security.sql "$CID":/tmp/security.sql
-          SQL="docker exec $CID /opt/mssql-tools18/bin/sqlcmd -C -b -S localhost"
+          # -I: QUOTED_IDENTIFIER ON, as the app has; without it every UPDATE on Payments would fail for
+          # an unrelated reason (the filtered index) and a broken trigger could go unnoticed.
+          SQL="docker exec $CID /opt/mssql-tools18/bin/sqlcmd -C -I -b -S localhost"
+          SA="$SQL -U sa -P Ci-Passw0rd! -d QuedinDB"
           for run in 1 2; do $SQL -U sa -P 'Ci-Passw0rd!' -i /tmp/security.sql; done
-          $SQL -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "
+          $SA -Q "
             IF SUSER_ID('ci_worker') IS NULL CREATE LOGIN ci_worker WITH PASSWORD = 'Ci-Worker-1!', CHECK_POLICY = OFF;
             IF USER_ID('ci_worker') IS NULL CREATE USER ci_worker FOR LOGIN ci_worker;
             ALTER ROLE QuedinWorker ADD MEMBER ci_worker;"
           W="$SQL -U ci_worker -P Ci-Worker-1! -d QuedinDB"
+
+          # expect_refused <who> <query> <text the error must contain>
+          expect_refused() {
+            if out=$($1 -Q "$2" 2>&1); then echo "NOT REFUSED: $2"; exit 1; fi
+            if ! grep -qi "$3" <<<"$out"; then echo "Refused for the wrong reason: $2"; echo "$out"; exit 1; fi
+            echo "refused as expected: $2"
+          }
           # Allowed: reading cases and logging in through the procedures.
           $W -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM dbo.Cases; EXEC dbo.usp_GetLoginSalt N'admin';"
-          # Refused: each of these must fail.
-          for q in "SELECT PasswordHash FROM dbo.Users" \
-                   "UPDATE dbo.Users SET PasswordHash = N'x' WHERE UserName = N'admin'" \
-                   "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" \
-                   "DELETE FROM dbo.Payments WHERE PaymentId = 1" \
-                   "UPDATE dbo.CaseSteps SET IsDone = 0 WHERE IsDone = 1" \
-                   "DELETE FROM dbo.AuditLog"; do
-            if $W -Q "$q" >/dev/null 2>&1; then echo "NOT REFUSED: $q"; exit 1; fi
-            echo "refused as expected: $q"
-          done
+          expect_refused "$W" "SELECT PasswordHash FROM dbo.Users" "permission was denied"
+          expect_refused "$W" "UPDATE dbo.Users SET PasswordHash = N'x' WHERE UserName = N'admin'" "permission was denied"
+          expect_refused "$W" "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" "permission was denied"
+          expect_refused "$W" "DELETE FROM dbo.Payments WHERE PaymentId = 1" "permission was denied"
+          expect_refused "$W" "UPDATE dbo.CaseSteps SET IsDone = 0 WHERE IsDone = 1" "Only a manager"
+          expect_refused "$W" "DELETE FROM dbo.AuditLog" "permission was denied"
+          expect_refused "$W" "UPDATE dbo.Payments SET IsCancelled = 1 WHERE PaymentId = 1" "credit note"
           # Even the owner cannot change a recorded amount (trigger).
-          if $SQL -U sa -P 'Ci-Passw0rd!' -d QuedinDB -Q "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" >/dev/null 2>&1; then
-            echo "Payment amount was changed"; exit 1; fi
+          expect_refused "$SA" "UPDATE dbo.Payments SET Amount = 1 WHERE PaymentId = 1" "cannot be edited"
+
+          # Guessing through the procedures is counted: 5 wrong current passwords lock the user,
+          # and an unknown user gets the same answer as a wrong password.
+          for i in 1 2 3 4 5; do $W -Q "EXEC dbo.usp_ChangeOwnPassword N'admin', N'wrong-guess', N'pbkdf2\$1\$AA==\$AA=='" >/dev/null; done
+          $SA -Q "IF (SELECT LockedUntil FROM dbo.Users WHERE UserName = N'admin') IS NULL THROW 52001, 'Password guessing was not locked', 1;
+                  IF (SELECT PasswordHash FROM dbo.Users WHERE UserName = N'admin') NOT LIKE N'pbkdf2\$100000\$%' THROW 52002, 'Password was changed', 1;
+                  UPDATE dbo.Users SET LockedUntil = NULL, FailedLogins = 0 WHERE UserName = N'admin';"
+          unknown=$($W -h -1 -Q "SET NOCOUNT ON; EXEC dbo.usp_TryLogin N'nobody-here', N'x'" | awk 'NF{print $1; exit}')
+          wrong=$($W -h -1 -Q "SET NOCOUNT ON; EXEC dbo.usp_TryLogin N'worker', N'x'" | awk 'NF{print $1; exit}')
+          if [ "$unknown" != "1" ] || [ "$wrong" != "1" ]; then echo "Unknown user ($unknown) and wrong password ($wrong) differ"; exit 1; fi
           echo "Permissions verified."

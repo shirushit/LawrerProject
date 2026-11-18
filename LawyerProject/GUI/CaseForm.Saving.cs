@@ -70,7 +70,9 @@ namespace LawyerProject.GUI
 
             if (ok && caseType != null)
             {
-                decimal total = FeeCalculator.CaseTotal(isCourt ? (claim ?? 0m) : (propertyValue ?? 0m), percent.Value, caseType.CourtFee ?? 0m, caseType.BaseFee ?? 0m);
+                decimal minimumFee, courtFee;
+                CaseService.FeesOf(legalCase, caseType, out minimumFee, out courtFee);
+                decimal total = FeeCalculator.CaseTotal(isCourt ? (claim ?? 0m) : (propertyValue ?? 0m), percent.Value, courtFee, minimumFee);
                 if (advance > total && total > 0) fail(txtAdvance, "המקדמה גדולה מסכום התיק (" + Ui.FormatMoney(total) + ")");
                 decimal paid = isNew ? 0m : CaseService.PaidTotal(legalCase);
                 if (ok && paid > total && !Ui.Confirm("סכום התיק החדש (" + Ui.FormatMoney(total) + ") נמוך ממה שהלקוח כבר שילם (" +

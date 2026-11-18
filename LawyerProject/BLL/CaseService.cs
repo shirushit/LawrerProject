@@ -234,11 +234,28 @@ namespace LawyerProject.BLL
         /// </summary>
         public static decimal CaseTotal(LegalCase legalCase)
         {
-            CaseType type = legalCase.CaseType;
-            decimal courtFee = type != null ? Math.Max(0m, type.CourtFee ?? 0m) : 0m;
-            decimal minimumFee = type != null ? Math.Max(0m, type.BaseFee ?? 0m) : 0m;
+            decimal minimumFee, courtFee;
+            FeesOf(legalCase, legalCase.CaseType, out minimumFee, out courtFee);
             double percent = Math.Min(100, Math.Max(0, legalCase.FeePercent ?? 0d));
             return FeeCalculator.CaseTotal(Math.Max(0m, legalCase.ClaimAmount ?? 0m), percent, courtFee, minimumFee);
+        }
+
+        /// <summary>
+        /// The minimum fee and court fee that apply to a case: the ones stored when it was opened (or when
+        /// its case type was changed), so editing the catalogue later does not change old totals. A case
+        /// being opened, or moved to another case type, takes the fees of <paramref name="caseType"/>.
+        /// </summary>
+        public static void FeesOf(LegalCase legalCase, CaseType caseType, out decimal minimumFee, out decimal courtFee)
+        {
+            bool sameType = caseType == null || legalCase.CaseTypeId == caseType.CaseTypeId;
+            if (sameType && legalCase.CourtFee.HasValue)
+            {
+                minimumFee = Math.Max(0m, legalCase.MinimumFee ?? 0m);
+                courtFee = Math.Max(0m, legalCase.CourtFee.Value);
+                return;
+            }
+            minimumFee = caseType != null ? Math.Max(0m, caseType.BaseFee ?? 0m) : 0m;
+            courtFee = caseType != null ? Math.Max(0m, caseType.CourtFee ?? 0m) : 0m;
         }
 
         /// <summary>Sum of all payments (cancellations are negative).</summary>
@@ -298,7 +315,6 @@ namespace LawyerProject.BLL
             if (original.IsCancelled) return "התשלום כבר בוטל.";
             if (original.CancelsPaymentId.HasValue) return "לא ניתן לבטל רשומת ביטול.";
 
-            original.IsCancelled = true;
             var reversal = new Payment
             {
                 CaseId = legalCase.CaseId,
@@ -316,7 +332,21 @@ namespace LawyerProject.BLL
             RefreshPaymentFlags(legalCase);
             TouchCase(legalCase);
             AuditService.Log(db, AuditActions.PaymentCancelled, "תשלום", original.PaymentId, reason);
-            ChangeDiscarder.SaveOrDiscard(db);
+
+            // Two saves in one transaction: the credit note first, then the "cancelled" mark. The database
+            // refuses the mark when no credit note exists, so nobody can cancel a receipt without one.
+            InTransaction(() =>
+            {
+                db.SaveChanges();
+                original.IsCancelled = true;
+                db.SaveChanges();
+            }, () =>
+            {
+                original.IsCancelled = false;
+                if (db.Entry(reversal).State != System.Data.Entity.EntityState.Detached)
+                    db.Entry(reversal).State = System.Data.Entity.EntityState.Detached;
+                legalCase.Payments.Remove(reversal);
+            });
             return null;
         }
 
@@ -380,7 +410,9 @@ namespace LawyerProject.BLL
             if (!c.FeePercent.HasValue || !Validation.IsPercent(c.FeePercent.Value)) return "אחוז שכר הטרחה חייב להיות בין 0 ל-100.";
             decimal advance = c.Advance;
             if (!Validation.IsMoneyInRange(advance)) return "המקדמה אינה תקינה.";
-            decimal total = FeeCalculator.CaseTotal(amount, c.FeePercent.Value, caseType.CourtFee ?? 0m, caseType.BaseFee ?? 0m);
+            decimal minimumFee, courtFee;
+            FeesOf(c, caseType, out minimumFee, out courtFee);
+            decimal total = FeeCalculator.CaseTotal(amount, c.FeePercent.Value, courtFee, minimumFee);
             if (total > 0m && advance > total) return "המקדמה גדולה מסכום התיק (" + total.ToString("#,##0.00") + " ₪).";
             return null;
         }
@@ -399,6 +431,13 @@ namespace LawyerProject.BLL
                 return error;
             }
 
+            // Keep the case type's fees with the case (new case, or a case moved to another type).
+            if (isNew || !legalCase.CourtFee.HasValue || db.Entry(legalCase).Property(c => c.CaseTypeId).IsModified)
+            {
+                legalCase.MinimumFee = caseType.BaseFee ?? 0m;
+                legalCase.CourtFee = caseType.CourtFee ?? 0m;
+            }
+
             if (isNew)
             {
                 error = CreatePlan(legalCase, today);
@@ -410,29 +449,45 @@ namespace LawyerProject.BLL
                 db.Cases.Add(legalCase);
             }
 
-            // The case and its audit entry are saved together. Under an outer TransactionScope (the
-            // integration tests) that scope is the transaction; otherwise the service opens its own.
-            System.Data.Entity.DbContextTransaction transaction =
-                System.Transactions.Transaction.Current == null ? db.Database.BeginTransaction() : null;
-            try
+            // The case and its audit entry (which needs the new case number) are saved together.
+            InTransaction(() =>
             {
                 db.SaveChanges();
                 AuditService.Log(db, isNew ? AuditActions.CaseOpened : AuditActions.CaseUpdated, "תיק", legalCase.CaseId, null);
                 db.SaveChanges();
+            }, () =>
+            {
+                if (isNew) ForgetNewCase(legalCase);
+            });
+            return null;
+        }
+
+        /// <summary>
+        /// Runs several saves as one transaction. On any error the transaction is rolled back, the context
+        /// is put back to the database state and <paramref name="forget"/> undoes what had already been
+        /// saved inside the failed transaction. Under an outer TransactionScope (the integration tests)
+        /// that scope is the transaction.
+        /// </summary>
+        private void InTransaction(Action work, Action forget)
+        {
+            System.Data.Entity.DbContextTransaction transaction =
+                System.Transactions.Transaction.Current == null ? db.Database.BeginTransaction() : null;
+            try
+            {
+                work();
                 if (transaction != null) transaction.Commit();
             }
             catch
             {
                 if (transaction != null) transaction.Rollback();
                 ChangeDiscarder.DiscardChanges(db);
-                if (isNew) ForgetNewCase(legalCase);
+                forget();
                 throw;
             }
             finally
             {
                 if (transaction != null) transaction.Dispose();
             }
-            return null;
         }
 
         /// <summary>After a failed insert: takes the case and its steps out of the context, as if never added.</summary>

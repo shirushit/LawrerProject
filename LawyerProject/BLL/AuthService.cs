@@ -44,7 +44,7 @@ namespace LawyerProject.BLL
             {
                 case LoginAttempt.Success:
                     error = null;
-                    return new User { UserId = result.UserId ?? 0, UserName = name, Role = result.Role, IsActive = true };
+                    return new User { UserId = result.UserId ?? 0, UserName = result.UserName, Role = result.Role, IsActive = true };
                 case LoginAttempt.Locked:
                     error = "המשתמש נעול עד " + result.LockedUntil.Value.ToString("HH:mm") + " בגלל ניסיונות כניסה שגויים. מנהל/ת יכול/ה לשחרר אותו על ידי איפוס סיסמה.";
                     return null;
@@ -56,7 +56,7 @@ namespace LawyerProject.BLL
                 case LoginAttempt.Deactivated:
                     error = "המשתמש הושבת. פנו למנהל/ת המשרד.";
                     return null;
-                default: // wrong password or unknown user: the same answer
+                default: // wrong password or unknown user
                     return null;
             }
         }
@@ -91,10 +91,12 @@ namespace LawyerProject.BLL
         /// <summary>The row returned by usp_TryLogin.</summary>
         private class LoginAttempt
         {
-            public const int Success = 0, WrongPassword = 1, Locked = 2, Deactivated = 3, UnknownUser = 4, NowLocked = 5;
+            // An unknown user and a wrong password get the same answer (1).
+            public const int Success = 0, WrongUserOrPassword = 1, Locked = 2, Deactivated = 3, NowLocked = 5;
 
             public int Result { get; set; }
             public int? UserId { get; set; }
+            public string UserName { get; set; }
             public string Role { get; set; }
             public DateTime? LockedUntil { get; set; }
         }
@@ -106,7 +108,7 @@ namespace LawyerProject.BLL
             string name = (userName ?? string.Empty).Trim();
             User user = db.Users.FirstOrDefault(u => u.UserName == name);
             if (user == null) return "המשתמש לא נמצא.";
-            if (!active && Session.CurrentUser != null && Session.CurrentUser.UserName == user.UserName)
+            if (!active && Session.CurrentUser != null && Session.CurrentUser.UserId == user.UserId)
                 return "לא ניתן להשבית את המשתמש שאיתו את/ה מחובר/ת.";
             if (user.IsActive == active) return null;
 
@@ -144,25 +146,40 @@ namespace LawyerProject.BLL
         /// <summary>Changes a password after verifying the old one. Returns null on success or an error message.</summary>
         public string ChangePassword(string userName, string oldPassword, string newPassword, string confirmPassword)
         {
-            User user = Login(userName, oldPassword);
-            if (user == null) return "שם המשתמש או הסיסמה הנוכחית שגויים.";
+            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(oldPassword)) return "שם המשתמש או הסיסמה הנוכחית שגויים.";
             if (newPassword != confirmPassword) return "הסיסמאות החדשות אינן תואמות.";
             if (newPassword == oldPassword) return "הסיסמה החדשה זהה לסיסמה הנוכחית.";
-
             string passwordError = Validation.GetPasswordError(newPassword);
             if (passwordError != null) return passwordError;
 
-            // The database checks the current password again before it stores the new hash.
+            // The database checks the current password (with the same lock and failure counting as a
+            // login), stores the new hash and writes the audit entry.
+            string name = userName.Trim();
             string oldCandidate, ignored;
-            HashForLogin(user.UserName, oldPassword, out oldCandidate, out ignored);
-            int changed = db.Database.SqlQuery<int>("EXEC dbo.usp_ChangeOwnPassword @UserName, @OldCandidate, @NewHash",
-                Param("@UserName", user.UserName), Param("@OldCandidate", oldCandidate),
+            HashForLogin(name, oldPassword, out oldCandidate, out ignored);
+            PasswordChange result = db.Database.SqlQuery<PasswordChange>("EXEC dbo.usp_ChangeOwnPassword @UserName, @OldCandidate, @NewHash",
+                Param("@UserName", name), Param("@OldCandidate", oldCandidate),
                 Param("@NewHash", PasswordHasher.Hash(newPassword))).Single();
-            if (changed != 1) return "הסיסמה לא הוחלפה. נסו שוב.";
 
-            AuditService.Log(db, AuditActions.PasswordChanged, "משתמש", user.UserName, null);
-            ChangeDiscarder.SaveOrDiscard(db);
-            return null;
+            switch (result.Result)
+            {
+                case LoginAttempt.Success:
+                    return null;
+                case LoginAttempt.Locked:
+                case LoginAttempt.NowLocked:
+                    return "המשתמש נעול עד " + result.LockedUntil.Value.ToString("HH:mm") + " בגלל ניסיונות שגויים.";
+                case LoginAttempt.Deactivated:
+                    return "המשתמש הושבת. פנו למנהל המשרד.";
+                default:
+                    return "שם המשתמש או הסיסמה הנוכחית שגויים.";
+            }
+        }
+
+        /// <summary>The row returned by usp_ChangeOwnPassword.</summary>
+        private class PasswordChange
+        {
+            public int Result { get; set; }
+            public DateTime? LockedUntil { get; set; }
         }
 
         /// <summary>A manager sets a new password for a user who forgot theirs.</summary>

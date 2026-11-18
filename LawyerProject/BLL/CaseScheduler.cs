@@ -103,12 +103,6 @@ namespace LawyerProject.BLL
         }
     }
 
-    /// <summary>
-    /// The heart of QUEDIN: builds a case's timeline from its case type and keeps
-    /// every later deadline up to date when a step is done, moved or undone.
-    /// Estimated dates never fall on a weekend or a holiday, and dates fixed by the court are never moved.
-    /// Pure logic with no database access, so it is fully unit-tested.
-    /// </summary>
     /// <summary>How urgent an open step is.</summary>
     public enum Urgency
     {
@@ -117,6 +111,12 @@ namespace LawyerProject.BLL
         Late
     }
 
+    /// <summary>
+    /// The heart of QUEDIN: builds a case's timeline from its case type and keeps
+    /// every later deadline up to date when a step is done, moved or undone.
+    /// Estimated dates never fall on a weekend or a holiday, and dates fixed by the court are never moved.
+    /// Pure logic with no database access, so it is fully unit-tested.
+    /// </summary>
     public static class CaseScheduler
     {
         /// <summary>

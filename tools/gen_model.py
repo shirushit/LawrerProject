@@ -56,7 +56,9 @@ E = [
         ('SubParcel', 'nvarchar', 50, True, ''), ('PropertyAddress', 'nvarchar', 50, True, ''),
         ('ClaimAmount', 'money', None, True, ''), ('AwardedAmount', 'money', None, True, ''),
         ('FeePercent', 'float', None, True, ''), ('OpposingLawyerId', 'nvarchar', 20, False, ''),
-        ('OpposingPartyId', 'nvarchar', 20, False, ''), ('RowVersion', 'rowversion', None, False, 'rv')]),
+        ('OpposingPartyId', 'nvarchar', 20, False, ''),
+        # the case type's fees when the case was opened, so later catalogue changes do not alter old totals
+        ('MinimumFee', 'money', None, True, ''), ('CourtFee', 'money', None, True, ''), ('RowVersion', 'rowversion', None, False, 'rv')]),
     ('CaseStep', 'CaseSteps', [
         ('CaseStepId', 'int', None, False, 'id'), ('CaseId', 'int', None, False, ''),
         ('ProcedureId', 'int', None, False, ''), ('DueDate', 'date', None, True, ''),

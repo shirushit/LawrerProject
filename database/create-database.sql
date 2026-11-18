@@ -143,6 +143,8 @@ CREATE TABLE [dbo].[Cases] (
     [FeePercent] float NULL,
     [OpposingLawyerId] nvarchar(20) NOT NULL,
     [OpposingPartyId] nvarchar(20) NOT NULL,
+    [MinimumFee] money NULL,
+    [CourtFee] money NULL,
     [RowVersion] rowversion NOT NULL,
     CONSTRAINT [PK_Cases] PRIMARY KEY CLUSTERED ([CaseId])
 );
@@ -214,6 +216,9 @@ ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [CK_Cases_FeePercent] CHECK ([FeePercen
 ALTER TABLE [dbo].[Cases] ADD CONSTRAINT [CK_Cases_NotOwnOpponent] CHECK ([OpposingPartyId] <> [ClientId]);
 ALTER TABLE [dbo].[Payments] ADD CONSTRAINT [CK_Payments_Amount] CHECK ([Amount] <> 0);
 ALTER TABLE [dbo].[Payments] ADD CONSTRAINT [CK_Payments_VatRate] CHECK ([VatRate] IS NULL OR [VatRate] BETWEEN 0 AND 1);
+-- Who really wrote each audit entry: the database login, filled by the database (the app does not
+-- map this column), so an entry inserted directly under someone else's name still shows its author.
+ALTER TABLE [dbo].[AuditLog] ADD [DbLogin] nvarchar(128) NOT NULL CONSTRAINT [DF_AuditLog_DbLogin] DEFAULT (ORIGINAL_LOGIN());
 GO
 
 -- The audit log is append-only: nobody can change or delete what was recorded.
@@ -242,6 +247,16 @@ BEGIN
            OR (d.[IsCancelled] = 1 AND i.[IsCancelled] = 0))
     BEGIN
         RAISERROR (N'A payment cannot be edited. Cancel it with a reversing entry instead.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END
+    -- Marked cancelled only when its credit note (a payment with CancelsPaymentId = this one) exists.
+    IF EXISTS (
+        SELECT 1 FROM inserted i JOIN deleted d ON d.[PaymentId] = i.[PaymentId]
+        WHERE d.[IsCancelled] = 0 AND i.[IsCancelled] = 1
+          AND NOT EXISTS (SELECT 1 FROM [dbo].[Payments] r WHERE r.[CancelsPaymentId] = i.[PaymentId]))
+    BEGIN
+        RAISERROR (N'A payment can be cancelled only together with its credit note.', 16, 1);
         ROLLBACK TRANSACTION;
     END
 END
@@ -275,58 +290,61 @@ BEGIN
 END
 GO
 
--- Result: 0 = success, 1 = wrong password, 2 = locked, 3 = deactivated, 4 = unknown user,
---         5 = wrong password and now locked. 5 wrong passwords lock the user for 15 minutes
---         (the same numbers as LoginPolicy in the app).
+-- Result: 0 = success, 1 = wrong user name or password (the same answer for both), 2 = locked,
+--         3 = deactivated (told only to someone who typed the right password), 5 = wrong password and
+--         now locked. 5 wrong passwords lock the user for 15 minutes (LoginPolicy in the app has the
+--         same numbers; a unit test reads them from this script).
+-- The row is read WITH (UPDLOCK, HOLDLOCK) inside a transaction, so parallel attempts on the same
+-- user wait for each other and every failure is counted.
 CREATE PROCEDURE [dbo].[usp_TryLogin] @UserName nvarchar(50), @Candidate nvarchar(200), @UpgradeHash nvarchar(200) = NULL
 WITH EXECUTE AS OWNER
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
     DECLARE @now datetime = SYSDATETIME();
-    DECLARE @id int, @stored nvarchar(200), @active bit, @fails int, @locked datetime, @role nvarchar(50);
-    SELECT @id = [UserId], @stored = [PasswordHash], @active = [IsActive], @fails = [FailedLogins],
+    DECLARE @id int, @name nvarchar(50), @stored nvarchar(200), @active bit, @locked datetime, @role nvarchar(50), @result int;
+
+    BEGIN TRANSACTION;
+    SELECT @id = [UserId], @name = [UserName], @stored = [PasswordHash], @active = [IsActive],
            @locked = [LockedUntil], @role = [Role]
-    FROM [dbo].[Users] WHERE [UserName] = @UserName;
+    FROM [dbo].[Users] WITH (UPDLOCK, HOLDLOCK) WHERE [UserName] = @UserName;
 
     IF @id IS NULL
-    BEGIN
-        SELECT 4 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
-        RETURN;
-    END
-    IF @locked > @now
-    BEGIN
-        SELECT 2 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], @locked AS [LockedUntil];
-        RETURN;
-    END
-
+        SET @result = 1;
+    ELSE IF @locked > @now
+        SET @result = 2;
     -- Hashes are base64 and therefore case-sensitive: compare with a binary collation.
-    IF @Candidate IS NULL OR @stored COLLATE Latin1_General_BIN2 <> @Candidate COLLATE Latin1_General_BIN2
+    ELSE IF @Candidate IS NULL OR @stored COLLATE Latin1_General_BIN2 <> @Candidate COLLATE Latin1_General_BIN2
     BEGIN
-        SET @fails = @fails + 1;
-        IF @fails >= 5
-        BEGIN
-            UPDATE [dbo].[Users] SET [FailedLogins] = 0, [LockedUntil] = DATEADD(minute, 15, @now) WHERE [UserId] = @id;
-            SELECT 5 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], DATEADD(minute, 15, @now) AS [LockedUntil];
-        END
-        ELSE
-        BEGIN
-            UPDATE [dbo].[Users] SET [FailedLogins] = @fails WHERE [UserId] = @id;
-            SELECT 1 AS [Result], CAST(NULL AS int) AS [UserId], CAST(NULL AS nvarchar(50)) AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
-        END
-        RETURN;
+        UPDATE [dbo].[Users]
+        SET [FailedLogins] = CASE WHEN [FailedLogins] + 1 >= 5 THEN 0 ELSE [FailedLogins] + 1 END,
+            [LockedUntil]  = CASE WHEN [FailedLogins] + 1 >= 5 THEN DATEADD(minute, 15, @now) ELSE [LockedUntil] END
+        WHERE [UserId] = @id;
+        SELECT @locked = [LockedUntil] FROM [dbo].[Users] WHERE [UserId] = @id;
+        SET @result = CASE WHEN @locked > @now THEN 5 ELSE 1 END;
     END
+    ELSE
+    BEGIN
+        UPDATE [dbo].[Users]
+        SET [FailedLogins] = 0, [LockedUntil] = NULL,
+            [PasswordHash] = CASE WHEN [PasswordHash] NOT LIKE N'pbkdf2$%' AND @UpgradeHash LIKE N'pbkdf2$%' THEN @UpgradeHash ELSE [PasswordHash] END
+        WHERE [UserId] = @id;
+        SET @result = CASE WHEN @active = 1 THEN 0 ELSE 3 END;
+    END
+    COMMIT TRANSACTION;
 
-    UPDATE [dbo].[Users]
-    SET [FailedLogins] = 0, [LockedUntil] = NULL,
-        [PasswordHash] = CASE WHEN [PasswordHash] NOT LIKE N'pbkdf2$%' AND @UpgradeHash LIKE N'pbkdf2$%' THEN @UpgradeHash ELSE [PasswordHash] END
-    WHERE [UserId] = @id;
-    -- Only someone who knows the password learns that the user was deactivated.
-    SELECT CASE WHEN @active = 1 THEN 0 ELSE 3 END AS [Result], @id AS [UserId], @role AS [Role], CAST(NULL AS datetime) AS [LockedUntil];
+    SELECT @result AS [Result],
+           CASE WHEN @result = 0 THEN @id END AS [UserId],
+           CASE WHEN @result = 0 THEN @name END AS [UserName],  -- as stored, whatever case was typed
+           CASE WHEN @result = 0 THEN @role END AS [Role],
+           CASE WHEN @result IN (2, 5) THEN @locked END AS [LockedUntil];
 END
 GO
 
--- Changes a password only when the current one (hashed with the stored salt) matches.
+-- Changes a password only after the current one passes usp_TryLogin: the same lock and failure
+-- counting, so this procedure cannot be used to guess passwords. The change is audited here.
+-- Result: the usp_TryLogin result (0 = changed).
 CREATE PROCEDURE [dbo].[usp_ChangeOwnPassword] @UserName nvarchar(50), @OldCandidate nvarchar(200), @NewHash nvarchar(200)
 WITH EXECUTE AS OWNER
 AS
@@ -334,13 +352,20 @@ BEGIN
     SET NOCOUNT ON;
     IF @NewHash IS NULL OR @NewHash NOT LIKE N'pbkdf2$%'
     BEGIN
-        SELECT 0 AS [Changed];
+        SELECT 1 AS [Result], CAST(NULL AS datetime) AS [LockedUntil];
         RETURN;
     END
-    UPDATE [dbo].[Users] SET [PasswordHash] = @NewHash
-    WHERE [UserName] = @UserName AND [IsActive] = 1
-      AND [PasswordHash] COLLATE Latin1_General_BIN2 = @OldCandidate COLLATE Latin1_General_BIN2;
-    SELECT @@ROWCOUNT AS [Changed];
+    DECLARE @attempt TABLE ([Result] int, [UserId] int, [UserName] nvarchar(50), [Role] nvarchar(50), [LockedUntil] datetime);
+    INSERT INTO @attempt EXEC [dbo].[usp_TryLogin] @UserName, @OldCandidate;
+    DECLARE @result int, @id int, @name nvarchar(50), @locked datetime;
+    SELECT @result = [Result], @id = [UserId], @name = [UserName], @locked = [LockedUntil] FROM @attempt;
+    IF @result = 0
+    BEGIN
+        UPDATE [dbo].[Users] SET [PasswordHash] = @NewHash WHERE [UserId] = @id;
+        INSERT INTO [dbo].[AuditLog] ([OccurredAt], [UserName], [Action], [Entity], [EntityId], [Details])
+        VALUES (SYSDATETIME(), @name, N'החלפת סיסמה', N'משתמש', @name, NULL);
+    END
+    SELECT @result AS [Result], @locked AS [LockedUntil];
 END
 GO
 
@@ -447,12 +472,12 @@ INSERT INTO [dbo].[Customers] ([CustomerId], [FirstName], [LastName], [City], [S
     (N'423456706', N'תמר', N'שמש', N'חיפה', N'חורב', N'8', NULL, N'026011110', N'0521244667', N'demo11@example.com', NULL, N'עורך דין נגדי', N'ת.ז.'),
     (N'512345786', N'אלפא נכסים בע"מ', N'', N'תל אביב', N'הארבעה', N'19', NULL, N'026012221', N'0521245677', N'demo12@example.com', NULL, N'לקוח נגדי', N'ח.פ.');
 SET IDENTITY_INSERT [dbo].[Cases] ON;
-INSERT INTO [dbo].[Cases] ([CaseId], [ClientId], [CaseTypeId], [IsInCourt], [CourtId], [CurrentProcedureId], [PowerOfAttorney], [IsPaid], [Advance], [IsAdvancePaid], [Block], [Parcel], [SubParcel], [PropertyAddress], [ClaimAmount], [AwardedAmount], [FeePercent], [OpposingLawyerId], [OpposingPartyId]) VALUES
-    (1, N'300000007', 1, 1, 1, 5, N'נחתם 02/06/2026', 0, 3000, 1, NULL, NULL, NULL, NULL, 85000, NULL, 20, N'398765362', N'361728355'),
-    (2, N'312345671', 3, 1, 4, 3, N'נחתם 20/09/2026', 0, 2000, 0, NULL, NULL, NULL, NULL, 42000, NULL, 25, N'411111032', N'374074029'),
-    (3, N'324691344', 2, 1, 5, 2, N'', 0, 5000, 0, NULL, NULL, NULL, NULL, 120000, NULL, 18, N'423456706', N'386419691'),
-    (4, N'337037014', 4, 0, NULL, 12, N'נחתם 23/10/2026', 0, 1500, 1, N'5432', N'17', N'4', N'נהר הירדן 21, בית שמש', 1850000, NULL, 0.5, N'398765362', N'512345786'),
-    (5, N'349382689', 1, 1, 3, 9, N'נחתם 05/10/2025', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 25, N'411111032', N'374074029');
+INSERT INTO [dbo].[Cases] ([CaseId], [ClientId], [CaseTypeId], [IsInCourt], [CourtId], [CurrentProcedureId], [PowerOfAttorney], [IsPaid], [Advance], [IsAdvancePaid], [Block], [Parcel], [SubParcel], [PropertyAddress], [ClaimAmount], [AwardedAmount], [FeePercent], [OpposingLawyerId], [OpposingPartyId], [MinimumFee], [CourtFee]) VALUES
+    (1, N'300000007', 1, 1, 1, 5, N'נחתם 02/06/2026', 0, 3000, 1, NULL, NULL, NULL, NULL, 85000, NULL, 20, N'398765362', N'361728355', 15000, 1200),
+    (2, N'312345671', 3, 1, 4, 3, N'נחתם 20/09/2026', 0, 2000, 0, NULL, NULL, NULL, NULL, 42000, NULL, 25, N'411111032', N'374074029', 8000, 0),
+    (3, N'324691344', 2, 1, 5, 2, N'', 0, 5000, 0, NULL, NULL, NULL, NULL, 120000, NULL, 18, N'423456706', N'386419691', 12000, 900),
+    (4, N'337037014', 4, 0, NULL, 12, N'נחתם 23/10/2026', 0, 1500, 1, N'5432', N'17', N'4', N'נהר הירדן 21, בית שמש', 1850000, NULL, 0.5, N'398765362', N'512345786', 6000, 0),
+    (5, N'349382689', 1, 1, 3, 9, N'נחתם 05/10/2025', 1, 2500, 1, NULL, NULL, NULL, NULL, 60000, 65000, 25, N'411111032', N'374074029', 15000, 1200);
 SET IDENTITY_INSERT [dbo].[Cases] OFF;
 SET IDENTITY_INSERT [dbo].[CaseSteps] ON;
 INSERT INTO [dbo].[CaseSteps] ([CaseStepId], [CaseId], [ProcedureId], [DueDate], [DoneDate], [IsDone], [DurationDays], [Notes], [IsFixedDate]) VALUES

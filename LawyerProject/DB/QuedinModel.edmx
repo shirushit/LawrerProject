@@ -127,6 +127,8 @@
           <Property Name="FeePercent" Type="float" />
           <Property Name="OpposingLawyerId" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="OpposingPartyId" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="MinimumFee" Type="money" />
+          <Property Name="CourtFee" Type="money" />
           <Property Name="RowVersion" Type="rowversion" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
         <EntityType Name="CaseSteps">
@@ -497,6 +499,8 @@
           <Property Name="FeePercent" Type="Double" Nullable="true" />
           <Property Name="OpposingLawyerId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="OpposingPartyId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MinimumFee" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
+          <Property Name="CourtFee" Type="Decimal" Precision="19" Scale="4" Nullable="true" />
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
           <NavigationProperty Name="Steps" Relationship="Self.FK_CaseSteps_Cases" FromRole="LegalCase" ToRole="CaseStep" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Cases" FromRole="LegalCase" ToRole="Payment" />
@@ -873,6 +877,8 @@
                 <ScalarProperty Name="FeePercent" ColumnName="FeePercent" />
                 <ScalarProperty Name="OpposingLawyerId" ColumnName="OpposingLawyerId" />
                 <ScalarProperty Name="OpposingPartyId" ColumnName="OpposingPartyId" />
+                <ScalarProperty Name="MinimumFee" ColumnName="MinimumFee" />
+                <ScalarProperty Name="CourtFee" ColumnName="CourtFee" />
                 <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
               </MappingFragment>
             </EntityTypeMapping>

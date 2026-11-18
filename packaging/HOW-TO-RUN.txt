@@ -16,6 +16,9 @@ LocalDB comes with Visual Studio; or install "SQL Server Express LocalDB" from M
    These are demo passwords. Before using QUEDIN with real data, change them
    (login screen -> "החלפת סיסמה") or add new users and deactivate the demo ones.
 
+   Already running v1.3 with real data? Do not run create-database.sql (it starts over).
+   Run database\upgrade-from-v1.3.sql instead - it keeps all data.
+
 3. Optional, for a real office: database\security.sql sets permissions inside SQL Server
    (see the Security section of the README).
 

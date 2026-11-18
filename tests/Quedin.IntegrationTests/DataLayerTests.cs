@@ -587,5 +587,120 @@ namespace Quedin.IntegrationTests
             Assert.IsFalse(db.Database.SqlQuery<string>("EXEC dbo.usp_GetLoginSalt @p0", "admin").Single().Contains(
                 db.Users.Single(u => u.UserName == "admin").PasswordHash.Split('$')[3]), "the hash itself is never returned");
         }
+
+        // ------------------------------------------------------------------ v1.3.1: second review
+
+        [TestMethod]
+        public void Login_ReturnsTheStoredUserName_WhateverCaseWasTyped()
+        {
+            User user = new AuthService(db).Login("ADMIN", "Quedin2024");
+            Assert.IsNotNull(user);
+            Assert.AreEqual("admin", user.UserName);
+
+            // A manager logged in as "ADMIN" still cannot deactivate their own account.
+            Session.SignIn(user);
+            Assert.IsNotNull(new AuthService(db).SetActive("admin", false));
+        }
+
+        [TestMethod]
+        public void ChangePassword_WrongCurrentPassword_IsCountedAndLocks()
+        {
+            var auth = new AuthService(db);
+            for (int i = 0; i < LoginPolicy.MaxFailures; i++)
+                Assert.IsNotNull(auth.ChangePassword("admin", "guess-" + i, "NewPass2024", "NewPass2024"));
+
+            StringAssert.Contains(auth.ChangePassword("admin", "Quedin2024", "NewPass2024", "NewPass2024"), "נעול",
+                "after the guesses even the right password is refused until the lock ends");
+            Assert.IsNull(auth.Login("admin", "NewPass2024"), "the password was not changed");
+        }
+
+        [TestMethod]
+        public void ChangePassword_IsAuditedByTheDatabase()
+        {
+            Assert.IsNull(new AuthService(db).ChangePassword("worker", "Worker2024", "NewPass2024", "NewPass2024"));
+            Assert.IsTrue(db.AuditLog.Any(a => a.Action == AuditActions.PasswordChanged && a.EntityId == "worker"));
+        }
+
+        [TestMethod]
+        public void TryLogin_UnknownUserAndWrongPassword_GetTheSameAnswer()
+        {
+            int unknown = TryLoginResult("nobody-here");
+            int wrong = TryLoginResult("worker");
+            Assert.AreEqual(wrong, unknown);
+        }
+
+        private int TryLoginResult(string userName)
+        {
+            return db.Database.SqlQuery<LoginRow>("EXEC dbo.usp_TryLogin @p0, @p1", userName, "not-a-hash").Single().Result;
+        }
+
+        private class LoginRow
+        {
+            public int Result { get; set; }
+        }
+
+        [TestMethod]
+        public void Payment_CannotBeMarkedCancelledWithoutACreditNote()
+        {
+            var ex = Assert.ThrowsException<System.Data.SqlClient.SqlException>(
+                () => db.Database.ExecuteSqlCommand("UPDATE dbo.Payments SET IsCancelled = 1 WHERE PaymentId = 1"));
+            StringAssert.Contains(ex.Message, "credit note");
+        }
+
+        [TestMethod]
+        public void CaseKeepsItsFees_WhenTheCaseTypeChangesLater()
+        {
+            CaseType type = db.CaseTypes.First(s => s.Steps.Any());
+            Assert.IsNull(new CaseService(db).SaveCase(NewCourtCase(type.CaseTypeId), type, true, DateTime.Today));
+            LegalCase legalCase = db.Cases.OrderByDescending(c => c.CaseId).First();
+            decimal before = CaseService.CaseTotal(legalCase);
+
+            type.BaseFee = (type.BaseFee ?? 0m) + 50000m; // the manager raises the minimum fee afterwards
+            type.CourtFee = (type.CourtFee ?? 0m) + 1000m;
+            db.SaveChanges();
+
+            Assert.AreEqual(before, CaseService.CaseTotal(legalCase), "an existing case keeps the fees it was opened with");
+        }
+
+        [TestMethod]
+        public void AuditEntries_RecordTheDatabaseLogin()
+        {
+            AuditService.Log(db, AuditActions.CaseUpdated, "תיק", 1, "TEST-DBLOGIN");
+            db.SaveChanges();
+            string login = db.Database.SqlQuery<string>("SELECT DbLogin FROM dbo.AuditLog WHERE Details = N'TEST-DBLOGIN'").Single();
+            Assert.IsFalse(string.IsNullOrEmpty(login));
+        }
+
+        [TestMethod]
+        public void SaveCase_WithoutAnOuterTransaction_RollsBackAFailedSave()
+        {
+            // The app has no TransactionScope: SaveCase opens its own transaction. Run that path for real
+            // (outside the test's scope) and clean up afterwards.
+            using (new TransactionScope(TransactionScopeOption.Suppress))
+            using (var own = new QuedinDbContext())
+            {
+                CaseType type = own.CaseTypes.First(s => s.Steps.Count >= 2);
+                var service = new CaseService(own);
+                LegalCase legalCase = NewCourtCase(type.CaseTypeId);
+                string realLawyer = legalCase.OpposingLawyerId;
+                legalCase.OpposingLawyerId = "NO-SUCH-ID";
+                int casesBefore = own.Cases.Count();
+
+                Assert.ThrowsException<System.Data.Entity.Infrastructure.DbUpdateException>(
+                    () => service.SaveCase(legalCase, type, true, new DateTime(2025, 1, 1)));
+                Assert.AreEqual(casesBefore, own.Cases.Count(), "nothing was saved");
+
+                legalCase.OpposingLawyerId = realLawyer;
+                Assert.IsNull(service.SaveCase(legalCase, type, true, new DateTime(2025, 1, 1)));
+                try
+                {
+                    Assert.AreEqual(type.Steps.Count, own.CaseSteps.Count(s => s.CaseId == legalCase.CaseId));
+                }
+                finally
+                {
+                    own.Database.ExecuteSqlCommand("DELETE FROM dbo.CaseSteps WHERE CaseId = @p0; DELETE FROM dbo.Cases WHERE CaseId = @p0", legalCase.CaseId);
+                }
+            }
+        }
     }
 }

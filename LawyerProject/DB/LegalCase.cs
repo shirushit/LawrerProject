@@ -40,6 +40,8 @@ namespace LawyerProject.DB
         public Nullable<double> FeePercent { get; set; }
         public string OpposingLawyerId { get; set; }
         public string OpposingPartyId { get; set; }
+        public Nullable<decimal> MinimumFee { get; set; }
+        public Nullable<decimal> CourtFee { get; set; }
         public byte[] RowVersion { get; set; }
     
         public virtual CaseType CaseType { get; set; }

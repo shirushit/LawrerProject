@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.3.2 — Second independent code review (2026)
+
+A second reviewer went over the v1.3.1 changes. Fixed:
+- **Security — guessing passwords through "change password":** `usp_ChangeOwnPassword` accepted any
+  user name and did not count wrong current passwords, so a worker could guess the manager's password
+  without limit. It now runs the same check as login (lock and failure counting) and audits the change.
+- **Security — parallel guesses and user enumeration:** `usp_TryLogin` counts failures under a row lock
+  (`UPDLOCK, HOLDLOCK`), and an unknown user gets the same answer as a wrong password from the
+  procedure itself, not only in the app.
+- **Bug — "Admin" vs "admin":** the session kept the name as typed, so a manager logged in as "Admin"
+  could deactivate their own account. The database returns the stored name; the self-check uses the id.
+- **Bug — the minimum fee changed old totals:** each case now keeps the fees of its case type from when
+  it was opened (`MinimumFee`, `CourtFee`), so editing the catalogue never turns a paid case into a debt.
+- **Upgrade path:** `database/upgrade-from-v1.3.sql` (generated from `create-database.sql`) upgrades a
+  v1.3 database without losing data, in one transaction. CI upgrades a real v1.3 database every build.
+- A payment can be marked cancelled only together with its credit note (trigger); the app saves the
+  credit note first, in one transaction. Audit entries record the real database login (`DbLogin`).
+- An existing customer stored without the leading 0 of their ID is found as a duplicate.
+- CI: sqlcmd runs with `QUOTED_IDENTIFIER ON` (`-I`), every refused query must fail for the expected
+  reason, guessing through the procedures must lock, missing LocalDB fails the build, and the release
+  zip is built in its own job only after every check passed.
+- Code: `CaseForm.cs` (851 lines) split into partial files by topic; a unit test reads the lock numbers
+  from the SQL script; 8 new integration tests, including one without an outer transaction.
+
 ## v1.3.1 — Independent code review and screen polish (2026)
 
 ### Code review findings

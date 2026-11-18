@@ -215,10 +215,13 @@ namespace LawyerProject.GUI
                 id = ReadIdentifier();
                 string idError = Validation.GetIdentifierError(IdType, id);
                 if (idError != null) fail(txtIdNumber, idError);
-                else if (db.Customers.Any(c => c.CustomerId == id))
+                else
                 {
-                    Customer existing = db.Customers.First(c => c.CustomerId == id);
-                    fail(txtIdNumber, "מזהה זה כבר קיים במערכת: " + existing.DisplayName + " (" + existing.PersonType + ")");
+                    // Customers saved before v1.3.1 may be stored without the leading zeros.
+                    string withoutZeros = id.TrimStart('0');
+                    Customer existing = db.Customers.FirstOrDefault(c => c.CustomerId == id || c.CustomerId == withoutZeros);
+                    if (existing != null)
+                        fail(txtIdNumber, "מזהה זה כבר קיים במערכת: " + existing.DisplayName + " (" + existing.PersonType + ")");
                 }
             }
 
