@@ -58,6 +58,7 @@ jobs:
             database/security.sql
             database/backup-nightly.cmd
             packaging/HOW-TO-RUN.txt
+            packaging/setup-demo.cmd
             LICENSE
 
   release-zip:
@@ -82,7 +83,7 @@ jobs:
           mkdir -p "$dir/app" "$dir/database"
           cp artifact/LawyerProject/bin/Release/* "$dir/app/"
           cp artifact/database/* "$dir/database/"
-          cp artifact/packaging/HOW-TO-RUN.txt artifact/LICENSE "$dir/"
+          cp artifact/packaging/HOW-TO-RUN.txt artifact/packaging/setup-demo.cmd artifact/LICENSE "$dir/"
           zip -r "$dir.zip" "$dir"
           gh release upload "$TAG" "$dir.zip" --clobber --repo "$REPO"
 

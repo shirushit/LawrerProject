@@ -1,34 +1,49 @@
-QUEDIN - law office manager (demo)
-==================================
+QUEDIN - law office manager
+===========================
 
-Requirements: Windows 10/11, .NET Framework 4.7.2 (built in), SQL Server Express LocalDB.
-LocalDB comes with Visual Studio; or install "SQL Server Express LocalDB" from Microsoft.
+Requirements
+  Windows 10 or 11
+  .NET Framework 4.7.2 (included in Windows 10 1803 and later)
+  SQL Server Express LocalDB and the sqlcmd utility
 
-1. Create the database with fictional demo data (Command Prompt, in this folder):
+New installation with demo data
+  1. Run setup-demo.cmd. It creates the QuedinDB database on (localdb)\MSSQLLocalDB
+     and starts the application. Equivalent manual steps:
 
-       sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
+       sqlcmd -S "(localdb)\MSSQLLocalDB" -I -b -i database\create-database.sql
+       app\LawyerProject.exe
 
-2. Run app\LawyerProject.exe and log in:
+  2. Sign in:
 
-       admin  / Quedin2024   (manager)
-       worker / Worker2024   (regular user)
+       admin  / Quedin2024   manager
+       worker / Worker2024   worker
 
-   These are demo passwords. Before using QUEDIN with real data, change them
-   (login screen -> "החלפת סיסמה") or add new users and deactivate the demo ones.
+     The demo passwords are public. Change them, or create new accounts and
+     deactivate the demo ones, before entering real data.
 
-   Already running v1.3 with real data? Do not run create-database.sql (it starts over).
-   Run database\upgrade-from-v1.3.sql instead - it keeps all data.
+Upgrading an existing v1.3 database
+  Do not run create-database.sql or setup-demo.cmd; they recreate the database.
+  Run instead:
 
-3. Optional, for a real office: database\security.sql sets permissions inside SQL Server
-   (see the Security section of the README).
+       sqlcmd -S "(localdb)\MSSQLLocalDB" -I -b -i database\upgrade-from-v1.3.sql
 
-Source code, screenshots and documentation:
-https://github.com/shirushit/quedin-law-office-manager
+  then run database\security.sql again if it is in use.
+
+Production use
+  database\security.sql creates the QuedinWorker and QuedinManager roles.
+  database\backup-nightly.cmd can be scheduled for a nightly backup.
+  See the Deployment section of the README.
+
+Documentation and source code
+  https://github.com/shirushit/quedin-law-office-manager
 
 ----------------------------------------------------------------------------
-הוראות בעברית
+הוראות התקנה
 
-1. יוצרים את מסד הנתונים עם נתוני דמו בדויים (בשורת הפקודה, בתיקייה הזו):
-       sqlcmd -S "(localdb)\MSSQLLocalDB" -i database\create-database.sql
-2. מפעילים את app\LawyerProject.exe ונכנסים עם admin / Quedin2024.
-   אלה סיסמאות דמו - יש להחליף אותן לפני שימוש עם נתונים אמיתיים.
+התקנה חדשה עם נתוני הדגמה:
+  מריצים את setup-demo.cmd. הקובץ יוצר את מסד הנתונים QuedinDB ומפעיל את התוכנה.
+  נכנסים עם admin / Quedin2024. יש להחליף את סיסמאות ההדגמה לפני עבודה עם נתונים אמיתיים.
+
+שדרוג מגרסה 1.3:
+  אין להריץ את create-database.sql או את setup-demo.cmd, כי הם יוצרים את המסד מחדש.
+  מריצים את database\upgrade-from-v1.3.sql, שמשדרג את המסד בלי למחוק נתונים.
